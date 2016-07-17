@@ -1,0 +1,32 @@
+/ Sidebar
+#sidebar-wrapper
+  .sidebar-brand
+    %h1 GiraGira
+  .list-group.sidebar-nav
+    %a.list-group-item{:href => "#"}
+      %span.fa-stack.fa-2x
+        %i.fa.fa-circle.fa-stack-2x.fa-blue
+        %i.fa.fa-area-chart.fa-stack-1x.fa-inverse
+      \&nbsp; Dashboard
+    %a.list-group-item{:href => companies_url}
+      %span.fa-stack.fa-2x
+        %i.fa.fa-circle.fa-stack-2x.fa-yellow
+        %i.fa.fa-flag.fa-stack-1x.fa-inverse
+      \&nbsp; Companies
+    %a.list-group-item{:href => sectors_url}
+      %span.fa-stack.fa-2x
+        %i.fa.fa-circle.fa-stack-2x.fa-red
+        %i.fa.fa-bank.fa-stack-1x.fa-inverse(style='padding-left: 3px;')
+      \&nbsp; Sectors
+    %a.list-group-item{:href => "#"}
+      %span.fa-stack.fa-2x
+        %i.fa.fa-circle.fa-stack-2x.fa-green
+        %i.fa.fa-money.fa-stack-1x.fa-inverse
+      \&nbsp; Portfolio
+    %a.list-group-item{:href => "#"}
+      %span.fa-stack.fa-2x
+        %i.fa.fa-circle.fa-stack-2x.fa-red
+        %i.fa.fa-newspaper-o.fa-stack-1x.fa-inverse
+      \&nbsp; News
+  .mascot= image_tag('raccoon', :alt => 'raccoon')
+/ #sidebar-wrapper

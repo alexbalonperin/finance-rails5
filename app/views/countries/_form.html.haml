@@ -1,0 +1,19 @@
+= form_for(country) do |f|
+  - if country.errors.any?
+    #error_explanation
+      %h2
+        = pluralize(country.errors.count, "error")
+        prohibited this country from being saved:
+      %ul
+        - country.errors.full_messages.each do |message|
+          %li= message
+  .field
+    = f.label :name
+    %br/
+    = f.text_field :name
+  .field
+    = f.label :code
+    %br/
+    = f.text_field :code
+  .actions
+    = f.submit

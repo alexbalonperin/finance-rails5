@@ -1,0 +1,18 @@
+%p#notice= notice
+%h1 Listing Markets
+%table
+  %thead
+    %tr
+      %th Name
+      %th Country
+      %th{:colspan => "3"}
+  %tbody
+    - @markets.each do |market|
+      %tr
+        %td= market.name
+        %td= market.country_name
+        %td= link_to 'Show', market
+        %td= link_to 'Edit', edit_market_path(market)
+        %td= link_to 'Destroy', market, method: :delete, data: { confirm: 'Are you sure?' }
+%br/
+= link_to 'New Market', new_market_path

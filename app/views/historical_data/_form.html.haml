@@ -1,0 +1,34 @@
+= form_for([company, historical_datum]) do |f|
+  - if historical_datum.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(historical_datum.errors.count, "error")} prohibited this historical_datum from being saved:"
+      %ul
+        - historical_datum.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :trade_date
+    = f.date_select :trade_date
+  .field
+    = f.label :open
+    = f.text_field :open
+  .field
+    = f.label :high
+    = f.text_field :high
+  .field
+    = f.label :low
+    = f.text_field :low
+  .field
+    = f.label :close
+    = f.text_field :close
+  .field
+    = f.label :volume
+    = f.number_field :volume
+  .field
+    = f.label :adjusted_close
+    = f.text_field :adjusted_close
+  .field
+    = f.label :company_id
+    = f.text_field :company_id
+  .actions
+    = f.submit 'Save'

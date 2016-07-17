@@ -1,0 +1,30 @@
+%p#notice= notice
+
+%p
+  %b Trade date:
+  = @historical_datum.trade_date
+%p
+  %b Open:
+  = @historical_datum.open
+%p
+  %b High:
+  = @historical_datum.high
+%p
+  %b Low:
+  = @historical_datum.low
+%p
+  %b Close:
+  = @historical_datum.close
+%p
+  %b Volume:
+  = @historical_datum.volume
+%p
+  %b Adjusted close:
+  = @historical_datum.adjusted_close
+%p
+  %b Company:
+  = @company.name
+
+= link_to 'Edit', edit_company_historical_datum_path(@company, @historical_datum)
+\|
+= link_to 'Back', company_historical_data_path(@company)

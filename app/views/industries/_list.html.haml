@@ -1,0 +1,13 @@
+.element-container
+  .title
+    %span Industries
+    %span.small= link_to 'all', industries_path
+  .content
+    %table.table
+      %thead
+        %tr
+          %th Name
+          %th Companies
+          %th{:colspan => "3"}
+      %tbody
+        = render :partial => 'industries/industry', :collection => industries

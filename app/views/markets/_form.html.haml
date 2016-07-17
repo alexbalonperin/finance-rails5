@@ -1,0 +1,19 @@
+= form_for(market) do |f|
+  - if market.errors.any?
+    #error_explanation
+      %h2
+        = pluralize(market.errors.count, "error")
+        prohibited this market from being saved:
+      %ul
+        - market.errors.full_messages.each do |message|
+          %li= message
+  .field
+    = f.label :name
+    %br/
+    = f.text_field :name
+  .field
+    = f.label :country_id
+    %br/
+    = f.text_field :country_id
+  .actions
+    = f.submit

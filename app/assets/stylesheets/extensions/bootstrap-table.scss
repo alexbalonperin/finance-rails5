@@ -1,0 +1,43 @@
+@import "colors";
+
+.table-striped>tbody {
+  tr.delisted {
+    background-color: $black;
+    td {
+      color: white;
+      a {
+        color: white
+      }
+    }
+  }
+
+  tr.liquidated {
+    background-color: $red;
+    td {
+      color: white;
+
+      a {
+        color: white
+      }
+    }
+  }
+
+  tr.merged {
+    background-color: $blue;
+    td {
+      color: white;
+      a {
+        color: white
+      }
+    }
+  }
+  tr.changed {
+    background-color: $yellow;
+    td {
+      color: white;
+      a {
+        color: white
+      }
+    }
+  }
+}

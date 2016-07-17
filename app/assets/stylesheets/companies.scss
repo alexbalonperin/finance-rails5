@@ -1,0 +1,49 @@
+// Place all the styles related to the companies controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+@import "colors";
+
+.company-delisted {
+  background-color: $black;
+}
+.company-liquidated {
+  background-color: $red;
+}
+.company-merged {
+  background-color: $blue;
+}
+.company-changed {
+  background-color: $yellow;
+}
+
+.company-legend {
+  .legend-scale {
+    ul {
+      margin: 0;
+      margin-bottom: 5px;
+      padding: 0;
+      float: left;
+      list-style: none;
+
+      li {
+        font-size: 80%;
+        list-style: none;
+        margin-left: 0;
+        line-height: 18px;
+        margin-bottom: 2px;
+      }
+    }
+    ul.legend-labels li span {
+      display: block;
+      float: left;
+      height: 16px;
+      width: 30px;
+      margin-right: 5px;
+      margin-left: 0;
+      border: 1px solid #999;
+    }
+  }
+  a {
+    color: #777;
+  }
+}

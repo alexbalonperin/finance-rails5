@@ -1,0 +1,60 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require bootstrap
+ *= require bootstrap-table.min
+ *= require bootstrap-table-sticky-header
+ *= require sidebar
+ *= require colors
+ *= require font-awesome
+ *= require_tree ./extensions
+ *= require_self
+ *= require companies
+ */
+
+@font-face {
+    font-family: 'Glyphicons Halflings';
+    src: url('/assets/glyphicons-halflings-regular.eot');
+    src: url('/assets/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+    url('/assets/glyphicons-halflings-regular.woff') format('woff'),
+    url('/assets/glyphicons-halflings-regular.ttf') format('truetype'),
+    url('/assets/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+
+* {
+    color: #808a98;
+}
+
+body {
+    background-color: #f5f8fb;
+}
+
+.element-container {
+    background-color: white;
+    border: 1px solid #EAEAEA;
+    box-shadow: 1px 1px 1px #f5f8fb;
+    margin: 10px 0px 10px 0px;
+}
+
+.title {
+    padding: 10px 30px 10px 30px;
+    font-size: 22px;
+    border-bottom: 1px solid #EAEAEA;
+}
+
+.content {
+    padding: 10px 30px 10px 30px;
+}
+
+
+
+

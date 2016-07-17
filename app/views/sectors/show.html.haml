@@ -1,0 +1,22 @@
+= link_to 'Back', sectors_path
+.row
+  .col-md-12
+    .element-container
+      #industry_chart{'data-url' => "/sectors/#{@sector.id}/companies_ratio"}
+.row
+  .col-md-6
+    .element-container
+      .title Sector
+      .content
+        %p
+          %strong Name:
+          = @sector.name
+        %p
+          %strong Total number of industries:
+          = @sector.industries.count
+        %p
+          %strong Total number of companies:
+          = @sector.companies.count
+  .col-md-6
+    = render :partial => 'industries/list', :locals => { :industries =>  @industries }
+= link_to 'Back', sectors_path
