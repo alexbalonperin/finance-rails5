@@ -21,7 +21,7 @@ namespace :populate do
         if rec.save
           puts "#{klass} '#{rec.name}' saved to database"
         else
-          puts "Couldn't save #{klass.downcase} '#{rec.name}''"
+          puts "Couldn't save #{klass.to_s.downcase} '#{rec.name}'. Error: #{rec.errors.full_messages.join(',')}"
         end
       end
     end
@@ -49,7 +49,7 @@ namespace :populate do
 
   desc 'populate the database with a list of sectors from the web'
   task sectors: :environment do
-    sectors = Sector.select(:name)
+    sectors = Sector.select(:name).map(&:name)
     missing_companies = client.all_companies.reject { |company| sectors.include?(company.sector) }
     missing_sectors = missing_companies.map { |company| Sector.new(:name => company.sector) }.uniq(&:name)
     BulkUpdater.update(Sector, missing_sectors)
@@ -57,7 +57,7 @@ namespace :populate do
 
   desc 'populate the database with a list of industries from the web'
   task industries: :environment do
-    industries = Industry.select(:name)
+    industries = Industry.select(:name).map(&:name)
     missing_companies = client.all_companies.reject { |company| industries.include?(company.industry) }
     missing_industries = missing_companies.map(&company_to_industry).uniq(&:name)
     BulkUpdater.update(Industry, missing_industries)
@@ -113,5 +113,32 @@ namespace :populate do
       i += 1
     end
     puts 'Done.'
+  end
+
+  desc 'first trade date'
+  task first_trade_date: :environment do
+    companies = Company.where('first_trade_date is null and active and skip_historical_data is false')
+    puts "Found #{companies.size} companies without first_trade_date"
+    i = 0
+    companies.each_slice(500) do |batch|
+      puts "Batch : #{i}"
+      updates = batch.inject({}) do |h, company|
+        first_historical_data = company.first_historical_data
+        if first_historical_data.present?
+          first_trade_date = first_historical_data.first.trade_date
+          h[company.id] = {:first_trade_date => first_trade_date}
+        end
+        h
+      end
+      puts updates
+      Company.update(updates.keys, updates.values)
+      i += 1
+    end
+    puts 'Done.'
+  end
+
+  desc 'financial indices + key indicators (DOW, S&P500, Silver, etc)'
+  task indices: :environment do
+
   end
 end

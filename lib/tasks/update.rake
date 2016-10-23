@@ -9,6 +9,7 @@ namespace :update do
   desc 'update historical data for all companies in the database'
   task historical_data: :environment do
     companies = Company.where('skip_historical_data is false and active')
+    puts "Found #{companies.size} to update"
     companies.sort.each_with_index do |company, i|
       puts "#{i}: #{company.name}"
       records = client.historical_data_update(company)
