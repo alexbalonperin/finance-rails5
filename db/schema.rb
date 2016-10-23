@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -11,10 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160501101733) do
+ActiveRecord::Schema.define(version: 20160731102059) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "commodities", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "companies", force: :cascade do |t|
     t.string   "name"
@@ -28,20 +33,19 @@ ActiveRecord::Schema.define(version: 20160501101733) do
     t.boolean  "delisted",             default: false
     t.boolean  "active",               default: true
     t.date     "last_trade_date"
+    t.date     "first_trade_date"
+    t.index ["industry_id"], name: "index_companies_on_industry_id", using: :btree
+    t.index ["name", "symbol", "industry_id", "market_id"], name: "index_companies_on_name_symbol_industry_id_market_id", unique: true, using: :btree
   end
-
-  add_index "companies", ["industry_id"], name: "index_companies_on_industry_id", using: :btree
-  add_index "companies", ["name", "symbol", "industry_id", "market_id"], name: "index_companies_on_name_symbol_industry_id_market_id", unique: true, using: :btree
 
   create_table "companies_changes", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "from_id"
     t.integer  "to_id"
+    t.index ["from_id"], name: "index_companies_changes_on_from_id", using: :btree
+    t.index ["to_id"], name: "index_companies_changes_on_to_id", using: :btree
   end
-
-  add_index "companies_changes", ["from_id"], name: "index_companies_changes_on_from_id", using: :btree
-  add_index "companies_changes", ["to_id"], name: "index_companies_changes_on_to_id", using: :btree
 
   create_table "countries", force: :cascade do |t|
     t.string   "name"
@@ -61,47 +65,48 @@ ActiveRecord::Schema.define(version: 20160501101733) do
     t.integer  "company_id"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
+    t.index ["company_id"], name: "index_historical_data_on_company_id", using: :btree
   end
 
-  add_index "historical_data", ["company_id"], name: "index_historical_data_on_company_id", using: :btree
+  create_table "indices", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "industries", force: :cascade do |t|
     t.string   "name"
     t.integer  "sector_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "sector_id"], name: "index_industries_on_name_and_sector_id", unique: true, using: :btree
+    t.index ["sector_id"], name: "index_industries_on_sector_id", using: :btree
   end
-
-  add_index "industries", ["name", "sector_id"], name: "index_industries_on_name_and_sector_id", unique: true, using: :btree
-  add_index "industries", ["sector_id"], name: "index_industries_on_sector_id", using: :btree
 
   create_table "markets", force: :cascade do |t|
     t.string   "name"
     t.integer  "country_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["country_id"], name: "index_markets_on_country_id", using: :btree
+    t.index ["name", "country_id"], name: "index_markets_on_name_and_country_id", unique: true, using: :btree
   end
-
-  add_index "markets", ["country_id"], name: "index_markets_on_country_id", using: :btree
-  add_index "markets", ["name", "country_id"], name: "index_markets_on_name_and_country_id", unique: true, using: :btree
 
   create_table "mergers", force: :cascade do |t|
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
     t.integer  "acquiring_id"
     t.integer  "acquired_id"
+    t.index ["acquired_id"], name: "index_mergers_on_acquired_id", using: :btree
+    t.index ["acquiring_id"], name: "index_mergers_on_acquiring_id", using: :btree
   end
-
-  add_index "mergers", ["acquired_id"], name: "index_mergers_on_acquired_id", using: :btree
-  add_index "mergers", ["acquiring_id"], name: "index_mergers_on_acquiring_id", using: :btree
 
   create_table "sectors", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_sectors_on_name", unique: true, using: :btree
   end
-
-  add_index "sectors", ["name"], name: "index_sectors_on_name", unique: true, using: :btree
 
   add_foreign_key "companies", "industries"
   add_foreign_key "companies", "markets"
