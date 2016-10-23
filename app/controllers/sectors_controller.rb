@@ -11,6 +11,7 @@ class SectorsController < ApplicationController
   # GET /sectors/1.json
   def show
     @industries = @sector.industries
+    @newcomers = @sector.newcomers
   end
 
   # GET /sectors/new

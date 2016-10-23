@@ -6,7 +6,7 @@ document.addEventListener 'turbolinks:load', ->
     sortable: true
   $.extend $.fn.bootstrapTable.utils,
     toPercent: (value) ->
-      value + '%'
+      value  + '%'
     toCurrency: (value) ->
       value.toString().commify() + '円'
     commify: (value) ->

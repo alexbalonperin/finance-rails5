@@ -17,6 +17,9 @@
         %p
           %strong Total number of companies:
           = @sector.companies.count
+.row
   .col-md-6
     = render :partial => 'industries/list', :locals => { :industries =>  @industries }
+  .col-md-6
+    = render :partial => 'companies/list', :locals => { :companies =>  @newcomers }
 = link_to 'Back', sectors_path

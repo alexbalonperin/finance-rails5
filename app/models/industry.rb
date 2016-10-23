@@ -8,4 +8,8 @@ class Industry < ApplicationRecord
     sector.name
   end
 
+  def newcomers
+    companies.where("first_trade_date > now() - interval '1 year'").order(first_trade_date: :desc)
+  end
+
 end

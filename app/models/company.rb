@@ -29,6 +29,18 @@ class Company < ApplicationRecord
     historical_data.order('trade_date desc').limit(1)
   end
 
+  def first_historical_data
+    historical_data.order('trade_date asc').limit(1)
+  end
+
+  def growth(lower_bound = 1.week.ago, upper_bound = Time.now)
+    lower, upper = historical_data.where(['trade_date = ? or trade_date = ?', lower_bound.to_date.beginning_of_week, upper_bound.to_date.end_of_week + 1.day])
+    lower ||= historical_data.joins(:company).where('trade_date = companies.first_trade_date').first
+    upper ||= historical_data.joins(:company).where('trade_date = companies.last_trade_date').first
+    return 0 if lower.nil? || upper.nil?
+    ((upper.adjusted_close - lower.adjusted_close) / upper.adjusted_close) * 100
+  end
+
   def to_json
     {
         :id => id,

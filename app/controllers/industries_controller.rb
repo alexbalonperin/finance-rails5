@@ -10,6 +10,7 @@ class IndustriesController < ApplicationController
   # GET /industries/1
   # GET /industries/1.json
   def show
+    @newcomers = @industry.newcomers
   end
 
   def companies_ratio

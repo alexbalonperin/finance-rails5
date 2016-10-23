@@ -6,4 +6,5 @@ class HistoricalDatum < ApplicationRecord
   def trade_date_as_timestamp
     trade_date.to_time.to_i * 1000
   end
+
 end

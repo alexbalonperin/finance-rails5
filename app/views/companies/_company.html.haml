@@ -1,0 +1,7 @@
+%tr
+  %td= company.name
+  %td= company.first_trade_date
+  %td{style: 'text-align:right'}= number_to_percentage(company.growth, precision: 1)
+  %td{style: 'text-align:right'}= number_to_percentage(company.growth(1.month.ago), precision: 1)
+  %td{style: 'text-align:right'}= number_to_percentage(company.growth(1.year.ago), precision: 1)
+  %td= link_to 'Show', company

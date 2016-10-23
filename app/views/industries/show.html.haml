@@ -1,10 +1,20 @@
-%p#notice= notice
-%p
-  %strong Name:
-  = @industry.name
-%p
-  %strong Sector:
-  = @industry.sector_name
-= link_to 'Edit', edit_industry_path(@industry)
-|
+.row
+  .col-md-6
+    .element-container
+      .title
+        %span Industry
+        %span.small= link_to 'Edit', edit_industry_path(@industry)
+      .content
+        %p
+          %strong Name:
+          = @industry.name
+        %p
+          %strong Sector:
+          = @industry.sector_name
+        %p
+          %strong Total number of companies:
+          = @industry.companies.count
+.row
+  .col-md-6
+    = render :partial => 'companies/list', :locals => { :companies =>  @newcomers }
 = link_to 'Back', industries_path
