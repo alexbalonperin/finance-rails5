@@ -13,6 +13,10 @@ class Company < ApplicationRecord
 
   validates :name, :symbol, presence: true
 
+  def self.active
+    Company.where(:active => true)
+  end
+
   def industry_name
     industry.name
   end
