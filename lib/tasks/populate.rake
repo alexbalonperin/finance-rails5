@@ -1,9 +1,9 @@
-require "#{Rails.root}/lib/client/yahoo"
+require "#{Rails.root}/lib/client/historical_price/yahoo"
 
 namespace :populate do
 
   def client
-    @client ||= Client::Yahoo.new
+    @client ||= Client::HistoricalPrice::Yahoo.new
   end
 
   company_to_industry = lambda do |company|
