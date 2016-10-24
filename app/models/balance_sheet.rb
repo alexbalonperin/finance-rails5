@@ -1,0 +1,2 @@
+class BalanceSheet < ApplicationRecord
+end

@@ -10,10 +10,58 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160731102059) do
+ActiveRecord::Schema.define(version: 20161024041955) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "balance_sheets", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "year"
+    t.datetime "report_date"
+    t.decimal  "cash_and_equivalents"
+    t.decimal  "trade_and_non_trade_receivables"
+    t.decimal  "inventory"
+    t.decimal  "current_assets"
+    t.decimal  "goodwill_and_intangible_assets"
+    t.decimal  "assets_non_current"
+    t.decimal  "total_assets"
+    t.decimal  "trade_and_non_trade_payables"
+    t.decimal  "current_liabilities"
+    t.decimal  "total_debt"
+    t.decimal  "liabilities_non_current"
+    t.decimal  "total_liabilities"
+    t.decimal  "accumulated_other_comprehensive_income"
+    t.decimal  "accumulated_retained_earnings_deficit"
+    t.decimal  "shareholders_equity"
+    t.decimal  "shareholders_equity_usd"
+    t.decimal  "total_debt_usd"
+    t.decimal  "cash_and_equivalents_usd"
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.index ["company_id", "year"], name: "index_balance_sheets_on_company_id_and_year", unique: true, using: :btree
+    t.index ["company_id"], name: "index_balance_sheets_on_company_id", using: :btree
+  end
+
+  create_table "cash_flow_statements", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "year"
+    t.datetime "report_date"
+    t.decimal  "depreciation_amortization_accretion"
+    t.decimal  "net_cash_flow_from_operations"
+    t.decimal  "capital_expenditure"
+    t.decimal  "net_cash_flow_from_investing"
+    t.decimal  "issuance_repayment_of_debt_securities"
+    t.decimal  "issuance_purchase_of_equity_shares"
+    t.decimal  "payment_of_dividends_and_other_cash_distributions"
+    t.decimal  "net_cash_flow_from_financing"
+    t.decimal  "effect_of_exchange_rate_changes_on_cash"
+    t.decimal  "net_cash_flow_change_in_cash_and_cash_equivalents"
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.index ["company_id", "year"], name: "index_cash_flow_statements_on_company_id_and_year", unique: true, using: :btree
+    t.index ["company_id"], name: "index_cash_flow_statements_on_company_id", using: :btree
+  end
 
   create_table "commodities", force: :cascade do |t|
     t.string   "name"
@@ -66,6 +114,38 @@ ActiveRecord::Schema.define(version: 20160731102059) do
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
     t.index ["company_id"], name: "index_historical_data_on_company_id", using: :btree
+  end
+
+  create_table "income_statements", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "year"
+    t.datetime "report_date"
+    t.decimal  "revenues"
+    t.decimal  "cost_of_revenue"
+    t.decimal  "gross_profit"
+    t.decimal  "selling_general_and_administrative_expense"
+    t.decimal  "research_and_development_expense"
+    t.decimal  "ebit"
+    t.decimal  "interest_expense"
+    t.decimal  "income_tax_expense"
+    t.decimal  "net_income"
+    t.decimal  "net_income_common_stock"
+    t.decimal  "preferred_dividends_income_statement_impact"
+    t.decimal  "eps_basic"
+    t.decimal  "eps_diluted"
+    t.decimal  "weighted_avg_shares"
+    t.decimal  "weighted_avg_shares_diluted"
+    t.decimal  "dividends_per_basic_common_share"
+    t.decimal  "net_income_discontinued_operations"
+    t.decimal  "gross_margin"
+    t.decimal  "revenues_usd"
+    t.decimal  "ebit_usd"
+    t.decimal  "net_income_common_stock_usd"
+    t.decimal  "eps_basic_usd"
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
+    t.index ["company_id", "year"], name: "index_income_statements_on_company_id_and_year", unique: true, using: :btree
+    t.index ["company_id"], name: "index_income_statements_on_company_id", using: :btree
   end
 
   create_table "indices", force: :cascade do |t|
