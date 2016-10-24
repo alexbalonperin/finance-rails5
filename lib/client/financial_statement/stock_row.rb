@@ -1,5 +1,3 @@
-require "#{Rails.root}/lib/client/financial_statement/provider"
-
 module Client
 
   module FinancialStatement

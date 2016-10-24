@@ -1,9 +1,7 @@
-require "#{Rails.root}/lib/client/yahoo"
-
 namespace :update do
 
   def client
-    @client ||= Client::Yahoo.new
+    @client ||= Client::HistoricalPrice::Yahoo.new
   end
 
   desc 'update historical data for all companies in the database'

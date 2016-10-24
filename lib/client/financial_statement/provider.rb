@@ -1,5 +1,3 @@
-require "#{Rails.root}/lib/utils/file_util"
-
 module Client
 
   module FinancialStatement

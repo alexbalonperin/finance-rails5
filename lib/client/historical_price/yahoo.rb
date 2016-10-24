@@ -1,5 +1,3 @@
-require "#{Rails.root}/lib/client/historical_price/provider"
-
 module Client
 
   module HistoricalPrice

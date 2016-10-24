@@ -1,5 +1,3 @@
-require "#{Rails.root}/lib/client/historical_price/yahoo"
-
 namespace :populate do
 
   def client
