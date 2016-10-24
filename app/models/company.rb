@@ -3,6 +3,9 @@ class Company < ApplicationRecord
   has_one :sector, :through => :industry
   has_many :historical_data
   has_many :subsidiaries_mergers, :class_name => 'Merger', :foreign_key => :acquiring_id
+  has_many :income_statements
+  has_many :balance_sheets
+  has_many :cash_flow_statements
   has_one :parent_merger, :class_name => 'Merger', :foreign_key => :acquired_id
   has_one :parent, :through => :parent_merger, :source => :acquiring
   has_many :subsidiaries, :through => :subsidiaries_mergers, :source => :acquired

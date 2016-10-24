@@ -47,3 +47,22 @@
     color: #777;
   }
 }
+
+.financial-statements {
+  td {
+    min-width: 120px;
+    text-align: right;
+  }
+  td.attribute {
+    text-align: left;
+    min-width: 200px;
+    font-weight: bold;
+  }
+  th {
+    text-align: center;
+  }
+  .tab-content{
+    max-width: 1200px;
+    overflow-x:scroll;
+  }
+}

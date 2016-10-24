@@ -2,6 +2,8 @@ class CompaniesController < ApplicationController
   before_action :set_company, only: [:show, :edit, :update, :destroy]
   before_action(only: :list) { sanitize_order_params([Company, Industry, Sector]) }
 
+  helper CompanyHelper
+
   # GET /companies
   # GET /companies.json
   def index
