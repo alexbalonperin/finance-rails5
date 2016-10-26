@@ -5,7 +5,7 @@ module Financials
     module Compounding
 
       def annual_rate_of_return(pv, fv, n_years)
-        Math.log(fv / pv) / n_years
+        (fv / pv) ** (1 / n_years.to_f) - 1
       end
 
       def future_val(pv, rate, n_years)
@@ -24,48 +24,52 @@ module Financials
 
     module Ratio
 
-      def debt_to_equity(total_liabilities, shareholders_equity)
-        total_liabilities / shareholders_equity
+      def debt_to_equity(total_debt, shareholders_equity)
+        return 0.0 if total_debt.nil? || shareholders_equity.nil?
+        total_debt / shareholders_equity
       end
 
+      def return_on_equity(net_income, shareholders_equity)
+        return 0.0 if net_income.nil? || shareholders_equity.nil?
+        net_income / shareholders_equity
+      end
 
     end
 
     module Growth
 
-      def avg(all, period, label)
-        sorted_by_year = all.sort.reverse.to_h
-        in_period = sorted_by_year.take(period)
-        data = in_period.map { |_, data| data[label] }
-        data.inject(:+) / period.to_f
+      def avg(arr)
+        return 0.0 if arr.blank?
+        arr.inject(:+) / arr.size
       end
 
-      def period(all, period, label)
-        return 0.0 if period < 2
-        in_period = all.sort.reverse.take(period)
-        growth(in_period.first.last[label], in_period.last.last[label])
+      # assuming arr is sorted from newest to oldest
+      def period(arr)
+        growth(arr.first, arr.last)
       end
 
-      def yoy(all, period, label)
-        return 0.0 if period < 2
-        in_period = all.sort.reverse.take(period)
-        data = in_period.to_h
-        years, _ = in_period.transpose
-        years[0..-2].inject({}) do |h, year|
-          h[year] = period(data, 2, label)
-          data = data.drop(1)
-          h
+      def yoy(years)
+        prev = nil
+        h = {}
+        years.sort.each do |year, data|
+          cur = data
+          if prev.nil?
+            prev = cur
+            next
+          end
+          h[year] = period([cur, prev])
+          prev = cur
         end
+        h
       end
 
-      def avg_yoy(all, period, label)
-        return 0.0 if period < 2
-        yoy = yoy(all, period, label)
-        yoy.values.inject(:+) / yoy.size
+      def avg_yoy(years)
+        yoy = yoy(years)
+        avg(yoy.values)
       end
 
       def growth(current, previous)
-        return 0.0 if previous.zero?
+        return 0.0 if previous.nil? || previous.zero?
         (current - previous) / previous.to_f
       end
     end

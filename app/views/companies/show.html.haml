@@ -1,4 +1,5 @@
 = link_to 'Back', companies_path
+- kfis = %w[debt_to_equity debt_to_equity_yoy_growth return_on_equity return_on_equity_yoy_growth eps_basic eps_basic_yoy_growth]
 .row
   .col-md-5
     .element-container
@@ -12,7 +13,7 @@
           %strong Sector:
           = link_to @company.sector_name, sector_path(@company.sector_id)
         %p
-          %strong industry:
+          %strong Industry:
           = link_to @company.industry_name, industry_path(@company.industry_id)
         %p
           %strong Symbol:
@@ -25,7 +26,29 @@
     .element-container
       .title Key Statistics
       .content
+        %table.table
+          %tbody
+            - @ki.all.each do |label, kfi|
+              %tr
+                %td= label
+                %td= number_to_percentage(kfi * 100, precision: 2)
 
+.row
+  .col-md-12
+    .element-container
+      .title Key Financials
+      .content
+        %table.table
+          %thead
+            %th
+            - @ki.per_year_in_asc_order.each do |year, _|
+              %th= year
+          %tbody
+            - kfis.each do |kfi|
+              %tr
+                %td= kfi.to_s
+                - @ki.per_year_in_asc_order.each do |_, stat|
+                  %td= stat[kfi].nil? || !kfi.include?('yoy_growth') ?  number_with_precision(stat[kfi], precision: 2) : number_to_percentage(stat[kfi] * 100, precision: 2)
 .row.financial-statements
   .col-md-12
     .element-container

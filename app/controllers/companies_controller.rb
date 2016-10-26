@@ -37,6 +37,8 @@ class CompaniesController < ApplicationController
   # GET /companies/1
   # GET /companies/1.json
   def show
+    kib = Financials::KeyIndicatorsBuilder.new(@company)
+    @ki = kib.build
   end
 
   # GET /companies/new
@@ -92,6 +94,9 @@ class CompaniesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_company
       @company = Company.find(params[:id])
+    rescue => e
+      @company = Company.find_by_symbol(params[:id])
+      raise "Coudn't find company #{params[:id]}" if @company.nil?
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
