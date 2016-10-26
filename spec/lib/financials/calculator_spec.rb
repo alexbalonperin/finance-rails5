@@ -3,6 +3,7 @@ require 'financials/calculator'
 
 RSpec.configure do |c|
   c.include Financials::Calculator::Growth
+  c.include Financials::Calculator::Compounding
 end
 
 RSpec.describe Financials::Calculator do
@@ -11,6 +12,7 @@ RSpec.describe Financials::Calculator do
     before do
       @values = [1, 0.5, 0.1]
       @years = ['2016', '2015', '2014']
+      @data = @years.zip(@values).to_h
     end
 
     it "should calculate the growth between two values" do
@@ -34,19 +36,35 @@ RSpec.describe Financials::Calculator do
     end
 
     it "should calculate the yoy growth over a period of 2 years" do
-      expect(yoy(@values.take(2), @years.take(2))).to eq({'2016' => 1})
+      expect(yoy(@data.take(2))).to eq({'2016' => 1})
     end
 
     it "should calculate the yoy growth over a period of 3 years" do
-      expect(yoy(@values, @years)).to eq({'2016' => 1, '2015' => 4})
+      expect(yoy(@data)).to eq({'2016' => 1, '2015' => 4})
     end
 
     it "should calculate the avg yoy growth over a period of 2 years" do
-      expect(avg_yoy(@values.take(2), @years.take(2))).to eq(1)
+      expect(avg_yoy(@data.take(2))).to eq(1)
     end
 
     it "should calculate the avg yoy growth over a period of 3 years" do
-      expect(avg_yoy(@values, @years)).to eq(2.5)
+      expect(avg_yoy(@data)).to eq(2.5)
+    end
+
+  end
+
+  describe "Compounding" do
+    before do
+      @years = {'2015' => 1.33, '2014' => 1.23, '2013' => 0.23}
+    end
+
+    it 'should return an array with yoy annual rate of return' do
+      expected = {
+          '2015' => annual_rate_of_return(0.23, 1.33, 2),
+          '2014' => annual_rate_of_return(0.23, 1.23, 1)
+      }
+
+      expect(yoy_annual_rate_of_return(@years)).to eq(expected)
     end
 
   end

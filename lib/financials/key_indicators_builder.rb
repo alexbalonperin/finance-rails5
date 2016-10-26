@@ -22,6 +22,7 @@ module Financials
     class KeyIndicator
 
       include Calculator::Growth
+      include Calculator::Compounding
 
       attr_reader :per_year, :all
 
@@ -70,20 +71,111 @@ module Financials
         avg_yoy(data_as_hash(period, label))
       end
 
+      def yoy_annual_compounding_rate_of_return(period, label)
+        return 0.0 if period < 2
+        data = in_period(period)
+        first = data.first.last[label]
+        i = 1
+        data.drop(1).inject({}) do |h, (year, kfi)|
+          h[year] = annual_rate_of_return(first, kfi.last[label], i)
+          i += 1
+          h
+        end
+      end
+
+      # INPUT:
+      #    {
+      #      '2015' => {
+      #          :debt_to_equity => 1.23,
+      #          :eps_basic => 2.23
+      #      },
+      #      '2014' => {
+      #          :debt_to_equity => 1.33,
+      #          :eps_basic => 2.33
+      #      }
+      #    }
+      #
+      # OUTPUT:
+      #    ['2015', '2014']
+      #
+      #
       def years(in_period)
         in_period.map { |el| el.first }
       end
 
+      # example:
+      #    {
+      #     '2015' => {
+      #         :debt_to_equity => 1.23,
+      #         :eps_basic => 2.23
+      #     },
+      #     '2014' => {
+      #         :debt_to_equity => 1.33,
+      #         :eps_basic => 2.33
+      #     },
+      #     '2013' => {
+      #         :debt_to_equity => 1.43,
+      #         :eps_basic => 2.43
+      #     },
+      #   }
+      #   in_period(2)
+      #    => {
+      #         '2015' => {
+      #             :debt_to_equity => 1.23,
+      #             :eps_basic => 2.23
+      #         },
+      #         '2014' => {
+      #             :debt_to_equity => 1.33,
+      #             :eps_basic => 2.33
+      #         }
+      #       }
+      #
       def in_period(period)
         sorted_by_year = @per_year.sort.reverse.to_h
         sorted_by_year.take(period)
       end
 
+      # example:
+      #   @per_year = {
+      #     '2015' => {
+      #         :debt_to_equity => 1.23,
+      #         :eps_basic => 2.23
+      #     },
+      #     '2014' => {
+      #         :debt_to_equity => 1.33,
+      #         :eps_basic => 2.33
+      #     },
+      #     '2013' => {
+      #         :debt_to_equity => 1.43,
+      #         :eps_basic => 2.43
+      #     },
+      #   }
+      #   data_in_period(2, :debt_to_equity)
+      #    =>  [1.23, 1.33]
+      #
       def data_in_period(period, label)
         in_period = in_period(period)
         in_period.map { |_, data| data[label] }
       end
 
+      # example:
+      #   @per_year = {
+      #     '2015' => {
+      #         :debt_to_equity => 1.23,
+      #         :eps_basic => 2.23
+      #     },
+      #     '2014' => {
+      #         :debt_to_equity => 1.33,
+      #         :eps_basic => 2.33
+      #     },
+      #     '2013' => {
+      #         :debt_to_equity => 1.43,
+      #         :eps_basic => 2.43
+      #     },
+      #   }
+      #   data_as_hash(2, :debt_to_equity)
+      #    => {'2015' => 1.23, '2014' => 1.33}
+      #
       def data_as_hash(period, label)
         years(in_period(period)).zip(data_in_period(period, label)).to_h
       end

@@ -20,6 +20,17 @@ module Financials
         Math.log(fv / pv) / Math.log(1 + rate)
       end
 
+      def yoy_annual_rate_of_return(years)
+        sorted_years = years.sort
+        first = sorted_years.first.last
+        i = 1
+        sorted_years.drop(1).inject({}) do |h, (year, data)|
+          h[year] = annual_rate_of_return(first, data, i)
+          i += 1
+          h
+        end
+      end
+
     end
 
     module Ratio
