@@ -107,7 +107,6 @@ module Financials
 
     def build
       res = @years.sort.reverse.inject(KeyIndicator.new) do |kfi, year|
-        puts year, @balance_sheets[year].shareholders_equity
         calc = KFICalculator.new(@balance_sheets[year], @income_statements[year], @cash_flow_statements[year], @balance_sheets[(year.to_i-1).to_s])
         KFI.each { |label, func| kfi.add(year, label, func.call(calc)) }
         kfi

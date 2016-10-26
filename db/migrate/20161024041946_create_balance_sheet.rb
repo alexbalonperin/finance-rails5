@@ -1,7 +1,7 @@
 class CreateBalanceSheet < ActiveRecord::Migration[5.0]
   def change
     create_table :balance_sheets do |t|
-      t.references(:company)
+      t.references :company, foreign_key: true
       t.string :year
       t.timestamp :report_date
       t.decimal :cash_and_equivalents

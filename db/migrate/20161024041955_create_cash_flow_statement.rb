@@ -1,7 +1,7 @@
 class CreateCashFlowStatement < ActiveRecord::Migration[5.0]
   def change
     create_table :cash_flow_statements do |t|
-      t.references(:company)
+      t.references :company, foreign_key: true
       t.string :year
       t.timestamp :report_date
       t.decimal :depreciation_amortization_accretion

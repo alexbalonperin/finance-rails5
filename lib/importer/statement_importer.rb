@@ -1,7 +1,8 @@
 module Importer
 
   class StatementImporter
-    require 'rubyXL'
+    require 'roo'
+
     DOWNLOAD_DIR = 'public/financial_statements'
 
     def initialize(symbol, dry_run = false)
@@ -16,7 +17,7 @@ module Importer
       return if filenames.nil?
       latest_filename = filenames.sort.last
       return if latest_filename.nil?
-      File.open("#{file_path}/#{latest_filename}", 'r')
+      "#{file_path}/#{latest_filename}"
     end
 
     def workbook(type)
@@ -26,7 +27,7 @@ module Importer
         puts "Couldn't find any file to import for symbol '#{@symbol}"
         return
       end
-      RubyXL::Parser.parse(file)
+      Roo::Spreadsheet.open(file, extension: :xlsx)
     rescue => e
       puts "Couldn't parse the file for symbol #{@symbol}. Error: #{e}"
       puts 'Skipping....'

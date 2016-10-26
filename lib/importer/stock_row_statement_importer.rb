@@ -2,62 +2,62 @@ module Importer
 
   class StockRowStatementImporter < StatementImporter
 
-    INCOME_STAT_MAPPING = [
-        :revenues,
-        :cost_of_revenue,
-        :gross_profit,
-        :selling_general_and_administrative_expense,
-        :research_and_development_expense,
-        :ebit,
-        :interest_expense,
-        :income_tax_expense,
-        :net_income,
-        :net_income_common_stock,
-        :preferred_dividends_income_statement_impact,
-        :eps_basic,
-        :eps_diluted,
-        :weighted_avg_shares,
-        :weighted_avg_shares_diluted,
-        :dividends_per_basic_common_share,
-        :net_income_discontinued_operations,
-        :gross_margin,
-        :revenues_usd,
-        :ebit_usd,
-        :net_income_common_stock_usd,
-        :eps_basic_usd
-    ]
-    BALANCE_SHEET_MAPPING = [
-        :cash_and_equivalents,
-        :trade_and_non_trade_receivables,
-        :inventory,
-        :current_assets,
-        :goodwill_and_intangible_assets,
-        :assets_non_current,
-        :total_assets,
-        :trade_and_non_trade_payables,
-        :current_liabilities,
-        :total_debt,
-        :liabilities_non_current,
-        :total_liabilities,
-        :accumulated_other_comprehensive_income,
-        :accumulated_retained_earnings_deficit,
-        :shareholders_equity,
-        :shareholders_equity_usd,
-        :total_debt_usd,
-        :cash_and_equivalents_usd
-    ]
-    CASH_FLOW_STAT_MAPPING = [
-        :depreciation_amortization_accretion,
-        :net_cash_flow_from_operations,
-        :capital_expenditure,
-        :net_cash_flow_from_investing,
-        :issuance_repayment_of_debt_securities,
-        :issuance_purchase_of_equity_shares,
-        :payment_of_dividends_and_other_cash_distributions,
-        :net_cash_flow_from_financing,
-        :effect_of_exchange_rate_changes_on_cash,
-        :net_cash_flow_change_in_cash_and_cash_equivalents
-    ]
+    INCOME_STAT_MAPPING = {
+        'Revenues' => :revenues,
+        'Cost of Revenue' => :cost_of_revenue,
+        'Gross Profit' => :gross_profit,
+        'Selling, General and Administrative Expense' => :selling_general_and_administrative_expense,
+        'Research and Development Expense' => :research_and_development_expense,
+        'Earning Before Interest & Taxes (EBIT)' => :ebit,
+        'Interest Expense' => :interest_expense,
+        'Income Tax Expense' => :income_tax_expense,
+        'Net Income' => :net_income,
+        'Net Income Common Stock' => :net_income_common_stock,
+        'Preferred Dividends Income Statement Impact' => :preferred_dividends_income_statement_impact,
+        'Earnings per Basic Share' => :eps_basic,
+        'Earnings per Diluted Share' => :eps_diluted,
+        'Weighted Average Shares' => :weighted_avg_shares,
+        'Weighted Average Shares Diluted' => :weighted_avg_shares_diluted,
+        'Dividends per Basic Common Share' => :dividends_per_basic_common_share,
+        'Net Income from Discontinued Operations' => :net_income_discontinued_operations,
+        'Gross Margin' => :gross_margin,
+        'Revenues (USD)' => :revenues_usd,
+        'Earning Before Interest & Taxes (USD)' => :ebit_usd,
+        'Net Income Common Stock (USD)' => :net_income_common_stock_usd,
+        'Earnings per Basic Share (USD)' => :eps_basic_usd
+    }
+    BALANCE_SHEET_MAPPING = {
+        'Cash and Equivalents' => :cash_and_equivalents,
+        'Trade and Non-Trade Receivables' => :trade_and_non_trade_receivables,
+        'Inventory' => :inventory,
+        'Current Assets' => :current_assets,
+        'Goodwill and Intangible Assets' => :goodwill_and_intangible_assets,
+        'Assets Non-Current' => :assets_non_current,
+        'Total Assets' => :total_assets,
+        'Trade and Non-Trade Payables' => :trade_and_non_trade_payables,
+        'Current Liabilities' => :current_liabilities,
+        'Total Debt' => :total_debt,
+        'Liabilities Non-Current' => :liabilities_non_current,
+        'Total Liabilities' => :total_liabilities,
+        'Accumulated Other Comprehensive Income' => :accumulated_other_comprehensive_income,
+        'Accumulated Retained Earnings (Deficit)' => :accumulated_retained_earnings_deficit,
+        'Shareholders Equity' => :shareholders_equity,
+        'Shareholders Equity (USD)' => :shareholders_equity_usd,
+        'Total Debt (USD)' => :total_debt_usd,
+        'Cash and Equivalents (USD)' => :cash_and_equivalents_usd
+    }
+    CASH_FLOW_STAT_MAPPING = {
+        'Depreciation, Amortization & Accretion' => :depreciation_amortization_accretion,
+        'Net Cash Flow from Operations' => :net_cash_flow_from_operations,
+        'Capital Expenditure' => :capital_expenditure,
+        'Net Cash Flow from Investing' => :net_cash_flow_from_investing,
+        'Issuance (Repayment) of Debt Securities' => :issuance_repayment_of_debt_securities,
+        'Issuance (Purchase) of Equity Shares' => :issuance_purchase_of_equity_shares,
+        'Payment of Dividends & Other Cash Distributions' => :payment_of_dividends_and_other_cash_distributions,
+        'Net Cash Flow from Financing' => :net_cash_flow_from_financing,
+        'Effect of Exchange Rate Changes on Cash' => :effect_of_exchange_rate_changes_on_cash,
+        'Net Cash Flow / Change in Cash & Cash Equivalents' => :net_cash_flow_change_in_cash_and_cash_equivalents
+    }
 
     def income_stat_mapping
       INCOME_STAT_MAPPING
@@ -72,7 +72,7 @@ module Importer
     end
 
     def init_years(row, h)
-      years = row.cells.drop(1)
+      years = row.drop(1)
       years = years.map do |cell|
         time = cell.value
         year = time.year
@@ -83,25 +83,39 @@ module Importer
       [years, h]
     end
 
+
     def map_data(type, mapping)
       i = 0
       h = {}
       years = []
       book = workbook(type)
       return if book.nil?
-      book[0].each do |row|
-        next if row.nil? || row.cells.blank? || row.cells.any?(&:nil?)
+      book.each_row_streaming do |row|
+        next if row.blank?
         if i == 0
           years, h = init_years(row, h)
         else
-          kfi = row.cells.drop(1)
+          label = row.first.value.strip
+          kfi = row.drop(1)
           kfi.each_with_index do |cell, index|
-            h[years[index]][mapping[i-1]] = cell.value
+            h[years[index]][mapping[label]] = cell.value
           end
         end
         i += 1
       end
       h
+    rescue => e
+      puts "Couldn't read file #{type}. Error: #{e}"
+      begin
+        StatementDownloadError.create({
+          :company_id => @company.id,
+          :statement_type => type,
+          :error => e
+        })
+      rescue => e1
+        puts "Couldn't save error. Error: #{e1}"
+      end
+      {}
     end
 
   end

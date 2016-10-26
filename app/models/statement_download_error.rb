@@ -1,0 +1,2 @@
+class StatementDownloadError < ApplicationRecord
+end

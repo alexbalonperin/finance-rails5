@@ -42,7 +42,7 @@ gem 'yahoo-finance', :path => '/Users/abalonperin/dev/yahoo-finance'
 
 gem 'stock_quote', '~> 1.2.3'
 
-gem 'rubyXL'
+gem 'roo', '~> 2.5.0'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161024041955) do
+ActiveRecord::Schema.define(version: 20161026020630) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -188,13 +188,26 @@ ActiveRecord::Schema.define(version: 20161024041955) do
     t.index ["name"], name: "index_sectors_on_name", unique: true, using: :btree
   end
 
+  create_table "statement_download_errors", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "statement_type"
+    t.string   "error"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.index ["company_id"], name: "index_statement_download_errors_on_company_id", using: :btree
+  end
+
+  add_foreign_key "balance_sheets", "companies"
+  add_foreign_key "cash_flow_statements", "companies"
   add_foreign_key "companies", "industries"
   add_foreign_key "companies", "markets"
   add_foreign_key "companies_changes", "companies", column: "from_id"
   add_foreign_key "companies_changes", "companies", column: "to_id"
   add_foreign_key "historical_data", "companies"
+  add_foreign_key "income_statements", "companies"
   add_foreign_key "industries", "sectors"
   add_foreign_key "markets", "countries"
   add_foreign_key "mergers", "companies", column: "acquired_id"
   add_foreign_key "mergers", "companies", column: "acquiring_id"
+  add_foreign_key "statement_download_errors", "companies"
 end
