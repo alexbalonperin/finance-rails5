@@ -106,15 +106,7 @@ module Importer
       h
     rescue => e
       puts "Couldn't read file #{type}. Error: #{e}"
-      begin
-        StatementDownloadError.create({
-          :company_id => @company.id,
-          :statement_type => type,
-          :error => e
-        })
-      rescue => e1
-        puts "Couldn't save error. Error: #{e1}"
-      end
+      record_error(type, 'unreadable', e)
       {}
     end
 

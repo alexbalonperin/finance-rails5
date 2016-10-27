@@ -20,4 +20,16 @@ namespace :update do
     puts 'Done updating historical data'
   end
 
+  desc 'resolve financial statement errors'
+  task resolve_fs_errors: :environment do
+    resolver = Financials::StatementIssueResolver.new
+    resolver.resolve
+  end
+
+  desc 'update the list of potential investments'
+  task potential_investments: :environment do
+    selector = Financials::BasicSelector.new
+    selector.select
+  end
+
 end

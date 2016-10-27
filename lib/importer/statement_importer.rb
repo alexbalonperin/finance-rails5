@@ -20,17 +20,29 @@ module Importer
       "#{file_path}/#{latest_filename}"
     end
 
+    def record_error(statement_type, error_type, error)
+      begin
+        StatementError.create({
+            :company_id => @company.id,
+            :statement_type => statement_type,
+            :error => error,
+            :error_type => error_type
+        })
+      rescue => e1
+        puts "Couldn't save error. Error: #{e1}"
+      end
+    end
+
     def workbook(type)
       file_path = "#{@file_path}/#{type}"
       file = latest_file(file_path)
       if file.nil?
-        puts "Couldn't find any file to import for symbol '#{@symbol}"
+        error = "Couldn't find any file to import for symbol '#{@symbol}"
+        puts error
+        record_error(type, 'missing', error)
         return
       end
       Roo::Spreadsheet.open(file, extension: :xlsx)
-    rescue => e
-      puts "Couldn't parse the file for symbol #{@symbol}. Error: #{e}"
-      puts 'Skipping....'
     end
 
     def map_data(type, mapping)

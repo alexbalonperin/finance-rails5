@@ -25,17 +25,10 @@ namespace :populate do
     end
   end
 
-  desc 'populate the database with all entities'
-  task all: :environment do
-    Rake::Task['sectors'].invoke
-    Rake::Task['industries'].invoke
-    Rake::Task['companies'].invoke
-  end
-
   desc 'set market to company'
   task markets: :environment do
     Market.select(:name).map(&:name).each do |name|
-      nyse_companies = client.get_companies('us', name.downcase)
+      nyse_companies = client.companies('us', name.downcase)
       puts "Number of companies on the #{name} market: #{nyse_companies.size}."
       companies = Company.where("market_id is null and symbol in ('#{nyse_companies.map{|c| c.symbol.strip }.join("', '")}')")
       puts "Found #{companies.size} companies to update."
@@ -50,6 +43,7 @@ namespace :populate do
     sectors = Sector.select(:name).map(&:name)
     missing_companies = client.all_companies.reject { |company| sectors.include?(company.sector) }
     missing_sectors = missing_companies.map { |company| Sector.new(:name => company.sector) }.uniq(&:name)
+    puts "Found #{missing_sectors.size} sectors."
     BulkUpdater.update(Sector, missing_sectors)
   end
 
@@ -58,6 +52,7 @@ namespace :populate do
     industries = Industry.select(:name).map(&:name)
     missing_companies = client.all_companies.reject { |company| industries.include?(company.industry) }
     missing_industries = missing_companies.map(&company_to_industry).uniq(&:name)
+    puts "Found #{missing_industries.size} industries."
     BulkUpdater.update(Industry, missing_industries)
   end
 
@@ -139,4 +134,18 @@ namespace :populate do
   task indices: :environment do
 
   end
+
+  desc 'populate the database with all entities'
+  task all: :environment do
+    Rake::Task['populate:sectors'].invoke
+    Rake::Task['populate:industries'].invoke
+    Rake::Task['populate:companies'].invoke
+    Rake::Task['populate:markets'].invoke
+    Rake::Task['populate:deactivate'].invoke
+    Rake::Task['populate:last_trade_date'].invoke
+    Rake::Task['populate:first_trade_date'].invoke
+    Rake::Task['update:historical_data'].invoke
+    Rake::Task['update:potential_investments'].invoke
+  end
+
 end

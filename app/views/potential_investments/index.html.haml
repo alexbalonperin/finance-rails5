@@ -11,6 +11,7 @@
               %th Comp Name
               %th Sector
               %th Industry
+              %th Year of analysis
               %th ROE annual ror (5y)
               %th ROE annual ror (10y)
               %th EPS annual ror (5y)
@@ -26,6 +27,7 @@
                 %td= pi.company.name.html_safe
                 %td= pi.company.sector_name
                 %td= pi.company.industry_name
+                %td= pi.year
                 %td= number_to_percentage(pi.roe_5y_annual_compounding_ror * 100, precision: 2)
                 %td= number_to_percentage(pi.roe_10y_annual_compounding_ror * 100, precision: 2)
                 %td= number_to_percentage([pi.eps_5y_annual_compounding_ror, 1000].min * 100, precision: 2)

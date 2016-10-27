@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161027015623) do
+ActiveRecord::Schema.define(version: 20161027035936) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -194,6 +194,7 @@ ActiveRecord::Schema.define(version: 20161027015623) do
     t.decimal  "n_past_financial_statements"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
+    t.string   "year"
     t.index ["company_id"], name: "index_potential_investments_on_company_id", using: :btree
   end
 
@@ -204,13 +205,16 @@ ActiveRecord::Schema.define(version: 20161027015623) do
     t.index ["name"], name: "index_sectors_on_name", unique: true, using: :btree
   end
 
-  create_table "statement_download_errors", force: :cascade do |t|
+  create_table "statement_errors", force: :cascade do |t|
     t.integer  "company_id"
     t.string   "statement_type"
     t.string   "error"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-    t.index ["company_id"], name: "index_statement_download_errors_on_company_id", using: :btree
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.boolean  "resolved",       default: false
+    t.datetime "resolved_at"
+    t.string   "error_type"
+    t.index ["company_id"], name: "index_statement_errors_on_company_id", using: :btree
   end
 
   add_foreign_key "balance_sheets", "companies"
@@ -226,5 +230,5 @@ ActiveRecord::Schema.define(version: 20161027015623) do
   add_foreign_key "mergers", "companies", column: "acquired_id"
   add_foreign_key "mergers", "companies", column: "acquiring_id"
   add_foreign_key "potential_investments", "companies"
-  add_foreign_key "statement_download_errors", "companies"
+  add_foreign_key "statement_errors", "companies"
 end
