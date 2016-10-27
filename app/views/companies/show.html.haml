@@ -31,7 +31,7 @@
             - @ki.all.each do |label, kfi|
               %tr
                 %td= label
-                %td= number_to_percentage(kfi * 100, precision: 2)
+                %td= number_to_percentage(kfi.to_f * 100, precision: 4)
 
 .row
   .col-md-12
@@ -48,7 +48,7 @@
               %tr
                 %td= kfi.to_s
                 - @ki.per_year_in_asc_order.each do |_, stat|
-                  %td= stat[kfi].nil? || !kfi.include?('yoy_growth') ?  number_with_precision(stat[kfi], precision: 2) : number_to_percentage(stat[kfi] * 100, precision: 2)
+                  %td= stat[kfi].nil? || !kfi.include?('yoy_growth') ?  number_with_precision(stat[kfi], precision: 4) : number_to_percentage(stat[kfi] * 100, precision: 4)
 .row.financial-statements
   .col-md-12
     .element-container

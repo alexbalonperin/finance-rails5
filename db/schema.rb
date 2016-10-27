@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161026020630) do
+ActiveRecord::Schema.define(version: 20161027015623) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -82,6 +82,7 @@ ActiveRecord::Schema.define(version: 20161026020630) do
     t.boolean  "active",               default: true
     t.date     "last_trade_date"
     t.date     "first_trade_date"
+    t.index ["active"], name: "index_companies_on_active", using: :btree
     t.index ["industry_id"], name: "index_companies_on_industry_id", using: :btree
     t.index ["name", "symbol", "industry_id", "market_id"], name: "index_companies_on_name_symbol_industry_id_market_id", unique: true, using: :btree
   end
@@ -181,6 +182,21 @@ ActiveRecord::Schema.define(version: 20161026020630) do
     t.index ["acquiring_id"], name: "index_mergers_on_acquiring_id", using: :btree
   end
 
+  create_table "potential_investments", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "selector"
+    t.decimal  "roe_5y_annual_compounding_ror"
+    t.decimal  "roe_10y_annual_compounding_ror"
+    t.boolean  "roe_steady_growth"
+    t.decimal  "eps_5y_annual_compounding_ror"
+    t.decimal  "eps_10y_annual_compounding_ror"
+    t.boolean  "eps_steady_growth"
+    t.decimal  "n_past_financial_statements"
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.index ["company_id"], name: "index_potential_investments_on_company_id", using: :btree
+  end
+
   create_table "sectors", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
@@ -209,5 +225,6 @@ ActiveRecord::Schema.define(version: 20161026020630) do
   add_foreign_key "markets", "countries"
   add_foreign_key "mergers", "companies", column: "acquired_id"
   add_foreign_key "mergers", "companies", column: "acquiring_id"
+  add_foreign_key "potential_investments", "companies"
   add_foreign_key "statement_download_errors", "companies"
 end

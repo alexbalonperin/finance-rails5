@@ -1,0 +1,2 @@
+class PotentialInvestment < ApplicationRecord
+end

@@ -31,6 +31,10 @@ module Financials
         @all = {}
       end
 
+      def n_past_financial_statements
+        @per_year.keys.size
+      end
+
       def add(year, label, value)
         @per_year[year][label] = value
       end
@@ -73,14 +77,14 @@ module Financials
 
       def yoy_annual_compounding_rate_of_return(period, label)
         return 0.0 if period < 2
-        data = in_period(period)
-        first = data.first.last[label]
-        i = 1
-        data.drop(1).inject({}) do |h, (year, kfi)|
-          h[year] = annual_rate_of_return(first, kfi.last[label], i)
-          i += 1
-          h
-        end
+        yoy_annual_rate_of_return(data_as_hash(period, label))
+      end
+
+      def annual_compounding_rate_of_return(period, label)
+        return 0.0 if period < 2
+        data = data_in_period(period, label)
+        ror = annual_rate_of_return(data.last, data.first, data.size)
+        ror
       end
 
       # INPUT:
@@ -203,12 +207,16 @@ module Financials
         KFI.each { |label, func| kfi.add(year, label, func.call(calc)) }
         kfi
       end
-      res.add_all('eps_5_years_avg_growth', res.avg_growth(5, 'eps_basic'))
-      res.add_all('eps_10_years_avg_growth', res.avg_growth(10, 'eps_basic'))
-      res.add_all('eps_5_years_period_growth', res.period_growth(5, 'eps_basic'))
-      res.add_all('eps_10_years_period_growth', res.period_growth(10, 'eps_basic'))
-      res.add_all('eps_5_years_avg_yoy_growth', res.avg_yoy_growth(5, 'eps_basic'))
-      res.add_all('eps_10_years_avg_yoy_growth', res.avg_yoy_growth(10, 'eps_basic'))
+      res.add_all('EPS_5y_avg_growth', res.avg_growth(5, 'eps_basic'))
+      res.add_all('EPS_10y_avg_growth', res.avg_growth(10, 'eps_basic'))
+      res.add_all('EPS_5y_period_growth', res.period_growth(5, 'eps_basic'))
+      res.add_all('EPS_10y_period_growth', res.period_growth(10, 'eps_basic'))
+      res.add_all('EPS_5y_avg_yoy_growth', res.avg_yoy_growth(5, 'eps_basic'))
+      res.add_all('EPS_10y_avg_yoy_growth', res.avg_yoy_growth(10, 'eps_basic'))
+      res.add_all('EPS_5y_annual_compounding_RoR', res.annual_compounding_rate_of_return(5, 'eps_basic'))
+      res.add_all('EPS_10y_annual_compounding_RoR', res.annual_compounding_rate_of_return(10, 'eps_basic'))
+      res.add_all('ROE_5y_annual_compounding_RoR', res.annual_compounding_rate_of_return(5, 'return_on_equity'))
+      res.add_all('ROE_10y_annual_compounding_RoR', res.annual_compounding_rate_of_return(10, 'return_on_equity'))
       res.yoy_growth(10, 'eps_basic')
       res.yoy_growth(10, 'debt_to_equity')
       res.yoy_growth(10, 'return_on_equity')
@@ -227,15 +235,18 @@ module Financials
       end
 
       def debt_to_equity_ratio
+        return BigDecimal(0) if @bs.nil?
         debt_to_equity(@bs.total_debt, @bs.shareholders_equity)
       end
 
       def return_on_equity_ratio
-        return 0.0 if @bs.shareholders_equity.nil?
+        return BigDecimal(0) if @bs.nil? || @is.nil?
+        return BigDecimal(0) if @bs.shareholders_equity.nil? || @is.net_income.nil?
         return_on_equity(@is.net_income, (@bs.shareholders_equity + @pbs.shareholders_equity)/2)
       end
 
       def eps_basic
+        return BigDecimal(0) if @is.nil?
         @is.eps_basic
       end
 

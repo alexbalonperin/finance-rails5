@@ -5,7 +5,12 @@ module Financials
     module Compounding
 
       def annual_rate_of_return(pv, fv, n_years)
-        (fv / pv) ** (1 / n_years.to_f) - 1
+        return 0.0 if pv.nil? || fv.nil? || pv < 0 || fv < 0
+        exponent = (BigDecimal(1) / BigDecimal(n_years))
+        divisor = BigDecimal(fv / pv, 2)
+        return BigDecimal(Fixnum::MAX) if divisor.infinite?
+
+        (divisor.power(exponent)) - BigDecimal(1)
       end
 
       def future_val(pv, rate, n_years)
@@ -51,6 +56,8 @@ module Financials
 
       def avg(arr)
         return 0.0 if arr.blank?
+        arr = arr.compact
+        return if arr.blank?
         arr.inject(:+) / arr.size
       end
 
@@ -81,7 +88,7 @@ module Financials
 
       def growth(current, previous)
         return 0.0 if previous.nil? || previous.zero?
-        (current - previous) / previous.to_f
+        ((current - previous) / BigDecimal(previous)) * (BigDecimal(previous).sign / BigDecimal(2))
       end
     end
 
