@@ -1,6 +1,7 @@
 module Financials
 
   class BasicSelector < PotentialInvestmentSelector
+    SELECTOR = 'basic'
     ROE_MIN = 12
     EPS_MIN = 15
     POSITIVE_GROWTH_PERCENTAGE = 0.7
@@ -11,7 +12,7 @@ module Financials
       @roe_min = ROE_MIN
       @eps_min = EPS_MIN
       @positive_growth_percentage = POSITIVE_GROWTH_PERCENTAGE
-      @selector = 'basic'
+      @selector = SELECTOR
       @steady_growth_n_years = STEADY_GROWTH_N_YEARS
     end
 
@@ -29,6 +30,16 @@ module Financials
         select
       end
       save(selected, selected_ki)
+    end
+
+    def to_html
+      s = ["Type: #{@selector}"]
+      s << "Minimum ROE: #{@roe_min}%"
+      s << "Minimum EPS: #{@eps_min}%"
+      s << "Minimum positive growth: #{@positive_growth_percentage * 100}%"
+      s << "Max period for steady growth: #{@steady_growth_n_years} years"
+      s << "Total number of companies evaluated: #{@companies.size}"
+      s.join('<br>')
     end
 
   end

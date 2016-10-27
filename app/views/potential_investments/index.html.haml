@@ -1,0 +1,45 @@
+
+.row
+  .col-lg-12
+    .element-container
+      .title Listing Potential Investments
+      .content
+        %table.table
+          %thead
+            %tr
+              %th Symbol
+              %th Comp Name
+              %th Sector
+              %th Industry
+              %th ROE annual ror (5y)
+              %th ROE annual ror (10y)
+              %th EPS annual ror (5y)
+              %th EPS annual ror (10y)
+              %th Nr past FS
+              %th
+
+          %tbody
+
+            - @potential_investments.each do |pi|
+              %tr
+                %td= pi.company.symbol
+                %td= pi.company.name.html_safe
+                %td= pi.company.sector_name
+                %td= pi.company.industry_name
+                %td= number_to_percentage(pi.roe_5y_annual_compounding_ror * 100, precision: 2)
+                %td= number_to_percentage(pi.roe_10y_annual_compounding_ror * 100, precision: 2)
+                %td= number_to_percentage([pi.eps_5y_annual_compounding_ror, 1000].min * 100, precision: 2)
+                %td= number_to_percentage([pi.eps_10y_annual_compounding_ror, 1000].min * 100, precision: 2)
+                %td= number_with_precision(pi.n_past_financial_statements, precision: 0)
+                %td= link_to 'Show', pi.company
+
+        .alert.alert-info(role="alert")
+          %strong Notice
+          %p
+            %ul
+              %li "annual ror" means "annual compounding rate of return"
+              %li "nr past FS" means "number of past financial statements"
+        .alert.alert-info(role="alert")
+          %strong Selector Criteria
+          %p= Financials::BasicSelector.new.to_html.html_safe
+

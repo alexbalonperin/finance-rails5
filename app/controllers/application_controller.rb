@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  around_action :catch_exception
+ # around_action :catch_exception
 
   def list_sort_params(klass_array, custom_sort_array)
     klass_array.inject([]) do |sort_params, klass|

@@ -19,6 +19,8 @@ Rails.application.routes.draw do
     get 'companies_ratio'
     get 'companies_ratio', on: :collection
   end
+
+  resources :potential_investments
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
