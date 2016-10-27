@@ -25,10 +25,17 @@ module Financials
       positive.size >= (@positive_growth_percentage * data.size).floor
     end
 
+    def constant_value?(ki, label, value = 0)
+      data = ki.data_in_period(@steady_growth_n_years, label)
+      data.compact.all? { |d| d >= value }
+    end
+
     def multi_criteria
       {
           'ROR_steady_growth' => lambda { |ki| steady_growth?(ki, 'return_on_equity_yoy_growth') },
-          'EPS_steady_growth' => lambda { |ki| steady_growth?(ki, 'eps_basic_yoy_growth') }
+          'EPS_steady_growth' => lambda { |ki| steady_growth?(ki, 'eps_basic_yoy_growth') },
+          'FCF_positive' => lambda { |ki| constant_value?(ki, 'free_cash_flow') },
+          'Current_ratio_positive' => lambda { |ki| constant_value?(ki, 'current_ratio', @current_ratio_min) }
       }
     end
 
@@ -50,7 +57,11 @@ module Financials
             :eps_5y_annual_compounding_ror => ki.all['EPS_5y_annual_compounding_RoR'],
             :eps_10y_annual_compounding_ror => ki.all['EPS_10y_annual_compounding_RoR'],
             :eps_steady_growth => steady_growth?(ki, 'eps_basic_yoy_growth'),
-            :n_past_financial_statements => ki.n_past_financial_statements
+            :current_price => company.latest_historical_data.adjusted_close,
+            :fair_price_min => 0.0,
+            :fair_price_max => 0.0,
+            :n_past_financial_statements => ki.n_past_financial_statements,
+            :year => Time.current.year
         })
       end
     end

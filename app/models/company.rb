@@ -33,11 +33,13 @@ class Company < ApplicationRecord
   end
 
   def latest_historical_data
-    historical_data.order('trade_date desc').limit(1)
+    hist_data = historical_data.order('trade_date desc').limit(1)
+    hist_data.first if hist_data.present?
   end
 
   def first_historical_data
-    historical_data.order('trade_date asc').limit(1)
+    hist_data = historical_data.order('trade_date asc').limit(1)
+    hist_data.first if hist_data.present?
   end
 
   def growth(lower_bound = 1.week.ago, upper_bound = Time.now)

@@ -96,7 +96,7 @@ namespace :populate do
       updates = batch.inject({}) do |h, company|
         last_historical_data = company.latest_historical_data
         if last_historical_data.present?
-          last_trade_date = last_historical_data.first.trade_date
+          last_trade_date = last_historical_data.trade_date
           h[company.id] = {:last_trade_date => last_trade_date}
         end
         h
@@ -118,7 +118,7 @@ namespace :populate do
       updates = batch.inject({}) do |h, company|
         first_historical_data = company.first_historical_data
         if first_historical_data.present?
-          first_trade_date = first_historical_data.first.trade_date
+          first_trade_date = first_historical_data.trade_date
           h[company.id] = {:first_trade_date => first_trade_date}
         end
         h

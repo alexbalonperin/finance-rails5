@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161027035936) do
+ActiveRecord::Schema.define(version: 20161027090138) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -192,10 +192,15 @@ ActiveRecord::Schema.define(version: 20161027035936) do
     t.decimal  "eps_10y_annual_compounding_ror"
     t.boolean  "eps_steady_growth"
     t.decimal  "n_past_financial_statements"
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
     t.string   "year"
+    t.decimal  "current_price"
+    t.decimal  "fair_price_min"
+    t.decimal  "fair_price_max"
+    t.boolean  "latest",                         default: true
     t.index ["company_id"], name: "index_potential_investments_on_company_id", using: :btree
+    t.index ["latest", "company_id"], name: "index_potential_investments_on_latest_and_company_id", unique: true, using: :btree
   end
 
   create_table "sectors", force: :cascade do |t|

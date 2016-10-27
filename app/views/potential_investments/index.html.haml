@@ -16,6 +16,7 @@
               %th ROE annual ror (10y)
               %th EPS annual ror (5y)
               %th EPS annual ror (10y)
+              %th Current Price
               %th Nr past FS
               %th
 
@@ -32,6 +33,7 @@
                 %td= number_to_percentage(pi.roe_10y_annual_compounding_ror * 100, precision: 2)
                 %td= number_to_percentage([pi.eps_5y_annual_compounding_ror, 1000].min * 100, precision: 2)
                 %td= number_to_percentage([pi.eps_10y_annual_compounding_ror, 1000].min * 100, precision: 2)
+                %td= number_with_precision(pi.current_price, precision: 2)
                 %td= number_with_precision(pi.n_past_financial_statements, precision: 0)
                 %td= link_to 'Show', pi.company
 

@@ -6,7 +6,9 @@ module Financials
     KFI = {
         'debt_to_equity' => lambda { |calc| calc.debt_to_equity_ratio },
         'return_on_equity' => lambda { |calc| calc.return_on_equity_ratio },
-        'eps_basic' => lambda { |calc| calc.eps_basic }
+        'eps_basic' => lambda { |calc| calc.eps_basic },
+        'free_cash_flow' => lambda { |calc| calc.free_cash_flow },
+        'current_ratio' => lambda { |calc| calc.current_ratio }
     }
 
     def initialize(company)
@@ -220,6 +222,8 @@ module Financials
       res.yoy_growth(10, 'eps_basic')
       res.yoy_growth(10, 'debt_to_equity')
       res.yoy_growth(10, 'return_on_equity')
+      res.yoy_growth(10, 'free_cash_flow')
+      res.yoy_growth(10, 'current_ratio')
       res
     end
 
@@ -243,6 +247,16 @@ module Financials
         return BigDecimal(0) if @bs.nil? || @is.nil?
         return BigDecimal(0) if @bs.shareholders_equity.nil? || @is.net_income.nil?
         return_on_equity(@is.net_income, (@bs.shareholders_equity + @pbs.shareholders_equity)/2)
+      end
+
+      def free_cash_flow
+        @cfs.net_cash_flow_from_operations - @cfs.capital_expenditure
+      end
+
+      def current_ratio
+        return BigDecimal(0) if @bs.nil?
+        return BigDecimal(0) if @bs.current_liabilities.nil? || @bs.current_assets.nil?
+        @bs.current_assets / @bs.current_liabilities
       end
 
       def eps_basic
