@@ -8,6 +8,11 @@ module Client
       require 'open-uri'
       require 'fileutils'
 
+      def initialize(companies = nil)
+        @companies = companies || Company.active
+        FileUtils::mkdir_p DOWNLOAD_DIR
+      end
+
       def downloading_statement(url, symbol, type)
         file_path = "#{DOWNLOAD_DIR}/#{symbol}/#{type}/"
         FileUtils::mkdir_p file_path
@@ -33,4 +38,3 @@ module Client
   end
 
 end
-

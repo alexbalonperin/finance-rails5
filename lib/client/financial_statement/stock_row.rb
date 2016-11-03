@@ -39,9 +39,9 @@ module Client
         downloading_statement(url, symbol, type)
       end
 
-      def download_financials(companies)
+      def download_financials
         ds = downloaded_symbols
-        missing_companies = companies.reject { |c| ds.include?(c.symbol) }
+        missing_companies = @companies.reject { |c| ds.include?(c.symbol) }
         total = missing_companies.size
         puts "FOUND #{total} companies from which we need the financial statements"
         missing_companies.each_with_index do |company, index|

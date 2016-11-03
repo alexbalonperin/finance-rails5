@@ -30,6 +30,7 @@ capybara-*.html
 rerun.txt
 pickle-email-*.html
 .ackrc
+.tags
 /spec/examples.txt
 
 config/initializers/secret_token.rb

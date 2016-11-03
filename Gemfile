@@ -38,7 +38,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'require_reloader', '~> 0.2.0'
 
 # gem 'yahoo-finance', :github => 'herval/yahoo-finance', :branch => 'markets_improvements'
-gem 'yahoo-finance', :path => '/Users/abalonperin/dev/yahoo-finance'
+gem 'yahoo-finance', :path => '~/dev/yahoo-finance'
 
 gem 'stock_quote', '~> 1.2.3'
 

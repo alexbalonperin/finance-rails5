@@ -4,14 +4,32 @@ namespace :populate do
     @client ||= Client::HistoricalPrice::Yahoo.new
   end
 
-  company_to_industry = lambda do |company|
-    sector = Sector.find_by_name(company.sector)
+  to_industry = lambda do |industry|
+    sector = Sector.find_by_name(industry.sector)
     if sector.nil?
-      puts "Couldn't find sector '#{company.sector}. Please update the sector first"
+      puts "Couldn't find sector '#{industry.sector}. Please update the sector first"
       return
     end
-    Industry.new(:sector_id => sector.id, :name => company.industry)
+    Industry.new(:sector_id => sector.id, :name => industry.name)
   end
+
+  to_company = lambda do |company|
+    markets = Market.where(['lower(name) = ?', company.market])
+    if markets.blank? || markets.first.nil?
+      puts "Couldn't find market '#{company.market}. Please update the market first"
+      return
+    end
+    Company.new(:industry => Industry.find_by_name(company.industry),
+                :name => company.name,
+                :symbol => company.symbol,
+                :market_id => markets.first.id,
+                :ipo_year => company.ipo_year,
+                :market_cap => Utils::NumberUtil.currency_to_number(company.market_cap))
+  end
+
+  to_sector = lambda do |sector|
+     Sector.new(:name => sector.name)
+   end
 
   class BulkUpdater
     def self.update(klass, records)
@@ -25,10 +43,15 @@ namespace :populate do
     end
   end
 
+  task test: :environment do
+    companies = client.companies
+    puts companies.map(&:market_cap).inspect
+  end
+
   desc 'set market to company'
   task markets: :environment do
     Market.select(:name).map(&:name).each do |name|
-      nyse_companies = client.companies('us', name.downcase)
+      nyse_companies = client.companies([name.downcase])
       puts "Number of companies on the #{name} market: #{nyse_companies.size}."
       companies = Company.where("market_id is null and symbol in ('#{nyse_companies.map{|c| c.symbol.strip }.join("', '")}')")
       puts "Found #{companies.size} companies to update."
@@ -38,42 +61,27 @@ namespace :populate do
     puts 'DONE'
   end
 
+  def populate_missing(klass, entities, &to_func)
+    available_entities = klass.select(:name).map(&:name)
+    missing_entities = entities.reject { |entity| available_entities.include?(entity.name) }
+    missing_entities = missing_entities.map { |m| to_func.call(m) }.uniq(&:name)
+    puts "Found #{missing_entities.size} new #{klass.to_s.downcase}."
+    BulkUpdater.update(klass, missing_entities)
+  end
+
   desc 'populate the database with a list of sectors from the web'
   task sectors: :environment do
-    sectors = Sector.select(:name).map(&:name)
-    missing_companies = client.all_companies.reject { |company| sectors.include?(company.sector) }
-    missing_sectors = missing_companies.map { |company| Sector.new(:name => company.sector) }.uniq(&:name)
-    puts "Found #{missing_sectors.size} sectors."
-    BulkUpdater.update(Sector, missing_sectors)
+    populate_missing(Sector, client.sectors, &to_sector)
   end
 
   desc 'populate the database with a list of industries from the web'
   task industries: :environment do
-    industries = Industry.select(:name).map(&:name)
-    missing_companies = client.all_companies.reject { |company| industries.include?(company.industry) }
-    missing_industries = missing_companies.map(&company_to_industry).uniq(&:name)
-    puts "Found #{missing_industries.size} industries."
-    BulkUpdater.update(Industry, missing_industries)
+    populate_missing(Industry, client.industries, &to_industry)
   end
-
 
   desc 'populate the database with a list of companies from the web'
   task companies: :environment do
-    Market.all.each do |market|
-      company_to_company = lambda do |company|
-        Company.new(:industry => Industry.find_by_name(company.industry),
-                    :name => company.name,
-                    :symbol => company.symbol,
-                    :market_id => market.id)
-      end
-      cur_companies = Company.where("market_id = #{market.id}").select(:name).map(&:name)
-      companies = client.companies(market.country_code, market.name)
-      missing_companies = companies.reject { |company| cur_companies.include?(company.name) }
-      missing_companies = missing_companies.map(&company_to_company).uniq(&:name)
-      next unless missing_companies.size > 0
-      puts "Found #{missing_companies.size} companies to add to market #{market.name}."
-      BulkUpdater.update(Company, missing_companies)
-    end
+    populate_missing(Company, client.companies, &to_company)
   end
 
   desc 'mark companies as inactive'
@@ -135,6 +143,12 @@ namespace :populate do
 
   end
 
+  desc 'download financial statements'
+  task financials: :environment do
+    client = Client::FinancialStatement::StockRow.new
+    client.download_financials
+  end
+
   desc 'populate the database with all entities'
   task all: :environment do
     Rake::Task['populate:sectors'].invoke
@@ -145,6 +159,7 @@ namespace :populate do
     Rake::Task['populate:last_trade_date'].invoke
     Rake::Task['populate:first_trade_date'].invoke
     Rake::Task['update:historical_data'].invoke
+    Rake::Task['populate:financials'].invoke
     Rake::Task['update:potential_investments'].invoke
   end
 

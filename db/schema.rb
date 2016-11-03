@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161027090138) do
+ActiveRecord::Schema.define(version: 20161103073408) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -82,6 +82,8 @@ ActiveRecord::Schema.define(version: 20161027090138) do
     t.boolean  "active",               default: true
     t.date     "last_trade_date"
     t.date     "first_trade_date"
+    t.string   "ipo_year"
+    t.decimal  "market_cap"
     t.index ["active"], name: "index_companies_on_active", using: :btree
     t.index ["industry_id"], name: "index_companies_on_industry_id", using: :btree
     t.index ["name", "symbol", "industry_id", "market_id"], name: "index_companies_on_name_symbol_industry_id_market_id", unique: true, using: :btree
