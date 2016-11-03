@@ -6,4 +6,9 @@ class PotentialInvestment < ApplicationRecord
     PotentialInvestment.where(:latest => true)
   end
 
+  def reset_latest
+    latest = false
+    save
+  end
+
 end

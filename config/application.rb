@@ -14,6 +14,7 @@ module FinanceRails5
     config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
     config.autoload_paths << "#{Rails.root}/lib"
     config.assets.precompile += %w( .svg .eot .woff .ttf)
+    config.logger = Logger.new(STDOUT)
     config.generators do |g|
       g.test_framework :rspec,
                        :fixtures => true,

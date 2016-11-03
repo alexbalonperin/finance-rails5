@@ -21,16 +21,16 @@
           %p
             %strong Details:
             = @company.details
-  .col-md-7
-    .element-container
-      .title Key Statistics
-      .content
-        %table.table
-          %tbody
-            - @ki.all.each do |label, kfi|
-              %tr
-                %td= label
-                %td= number_to_percentage(kfi.to_f * 100, precision: 4)
+  -# .col-md-7
+  -#   .element-container
+  -#     .title Key Statistics
+  -#     .content
+  -#       %table.table
+  -#         %tbody
+  -#           - @ki.all.each do |label, kfi|
+  -#             %tr
+  -#               %td= label
+  -#               %td= number_to_percentage(kfi.to_f * 100, precision: 4)
 
 .row
   .col-md-12

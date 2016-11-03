@@ -23,7 +23,7 @@ module Financials
     def select
       ActiveRecord::Base.transaction do
         pis = PotentialInvestment.latest
-        pis.each { |pi| pi.latest = false; pi.save }
+        pis.each(&:reset_latest)
 
         selected_ki = {}
         selected = @companies.select do |company|

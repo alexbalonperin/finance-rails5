@@ -6,6 +6,7 @@ class Company < ApplicationRecord
   has_many :income_statements
   has_many :balance_sheets
   has_many :cash_flow_statements
+  has_many :key_financial_indicators
   has_one :parent_merger, :class_name => 'Merger', :foreign_key => :acquired_id
   has_one :parent, :through => :parent_merger, :source => :acquiring
   has_many :subsidiaries, :through => :subsidiaries_mergers, :source => :acquired
@@ -15,6 +16,10 @@ class Company < ApplicationRecord
   has_one :was, :through => :companies_changes_to, :source => :from
 
   validates :name, :symbol, presence: true
+
+  def latest_key_financial_indicators
+    key_financial_indicators.where(:latest => true)
+  end
 
   def self.active
     Company.where(:active => true)

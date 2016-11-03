@@ -1,11 +1,11 @@
 module CompanyHelper
 
-  def percent_func(val, precision = 4)
+  def percent_func(val, precision = 1)
     return 0.0 if val.nil?
     number_to_percentage(val.to_f * 100, precision: precision)
   end
 
-  def precision_func(val, precision = 4)
+  def precision_func(val, precision = 3)
     return 0.0 if val.nil?
     number_with_precision(val, precision: precision)
   end
@@ -25,7 +25,12 @@ module CompanyHelper
         'eps_basic_yoy_growth'        => lambda { |val| percent_func(val) },
         'free_cash_flow'              => lambda { |val| currency_func(val) },
         'free_cash_flow_yoy_growth'   => lambda { |val| percent_func(val) },
-        'current_ratio'               => lambda { |val| precision_func(val) }
+        'current_ratio'               => lambda { |val| precision_func(val) },
+        'current_ratio_yoy_growth'    => lambda { |val| percent_func(val) },
+        'net_margin'                  => lambda { |val| precision_func(val) },
+        'net_margin_yoy_growth'       => lambda { |val| percent_func(val) },
+        'return_on_assets'            => lambda { |val| precision_func(val) },
+        'return_on_assets_yoy_growth' => lambda { |val| percent_func(val) },
     }
   end
 

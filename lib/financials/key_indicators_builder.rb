@@ -6,9 +6,11 @@ module Financials
     KFI = {
         'debt_to_equity' => lambda { |calc| calc.debt_to_equity_ratio },
         'return_on_equity' => lambda { |calc| calc.return_on_equity_ratio },
+        'return_on_assets' => lambda { |calc| calc.return_on_assets_ratio },
         'eps_basic' => lambda { |calc| calc.eps_basic },
         'free_cash_flow' => lambda { |calc| calc.free_cash_flow },
-        'current_ratio' => lambda { |calc| calc.current_ratio }
+        'current_ratio' => lambda { |calc| calc.current_ratio },
+        'net_margin' => lambda { |calc| calc.net_margin_ratio }
     }
 
     def initialize(company)
@@ -20,17 +22,32 @@ module Financials
       @years = company.balance_sheets.map(&:year)
     end
 
+    def build
+      years = @years.sort.reverse
+      res = years.inject(KeyIndicator.new) do |kfi, year|
+        calc = KFICalculator.new(@balance_sheets[year], @income_statements[year], @cash_flow_statements[year], @balance_sheets[(year.to_i-1).to_s])
+        KFI.each { |label, func| kfi.add(year, label, func.call(calc)) }
+        kfi
+      end
+      years.each do |year|
+        KFI.each do |label, func|
+          res.add(year, "#{label}_5y_annual_rate_of_return", res.annual_compounding_rate_of_return(label, year.to_i - 5, year.to_i))
+          res.add(year, "#{label}_10y_annual_rate_of_return", res.annual_compounding_rate_of_return(label, year.to_i - 10, year.to_i))
+          res.yoy_growth(label, year.to_i - 10, year.to_i)
+        end
+      end
+      res
+    end
 
     class KeyIndicator
 
       include Calculator::Growth
       include Calculator::Compounding
 
-      attr_reader :per_year, :all
+      attr_reader :per_year
 
       def initialize(per_year = nil)
         @per_year = per_year || Hash.new { |h, k| h[k] = {} }
-        @all = {}
       end
 
       def n_past_financial_statements
@@ -49,42 +66,32 @@ module Financials
         @per_year.sort.reverse
       end
 
-      def add_all(label, value)
-        @all[label] = value
+      def avg_growth(label, period_start, period_end = Time.current.year)
+        avg(data_in_period(label, period_start, period_end))
       end
 
-      def avg_growth(period, label)
-        return 0.0 if period < 2
-        avg(data_in_period(period, label))
-      end
-
-      def period_growth(period, label)
-        return 0.0 if period < 2
-        data = data_in_period(period, label)
+      def period_growth(label, period_start, period_end = Time.current.year)
+        data = data_in_period(label, period_start, period_end)
         period(data)
       end
 
-      def yoy_growth(period, label)
-        return 0.0 if period < 2
-        yoy = yoy(data_as_hash(period, label))
+      def yoy_growth(label, period_start, period_end = Time.current.year)
+        yoy = yoy(data_as_hash(label, period_start, period_end))
         yoy.each do |year, value|
           @per_year[year]["#{label}_yoy_growth"] = value
         end
       end
 
-      def avg_yoy_growth(period, label)
-        return 0.0 if period < 2
-        avg_yoy(data_as_hash(period, label))
+      def avg_yoy_growth(label, period_start, period_end = Time.current.year)
+        avg_yoy(data_as_hash(label, period_start, period_end))
       end
 
-      def yoy_annual_compounding_rate_of_return(period, label)
-        return 0.0 if period < 2
-        yoy_annual_rate_of_return(data_as_hash(period, label))
+      def yoy_annual_compounding_rate_of_return(label, period_start, period_end = Time.current.year)
+        yoy_annual_rate_of_return(data_as_hash(label, period_start, period_end))
       end
 
-      def annual_compounding_rate_of_return(period, label)
-        return 0.0 if period < 2
-        data = data_in_period(period, label)
+      def annual_compounding_rate_of_return(label, period_start, period_end = Time.current.year)
+        data = data_in_period(label, period_start, period_end)
         ror = annual_rate_of_return(data.last, data.first, data.size)
         ror
       end
@@ -124,7 +131,7 @@ module Financials
       #         :eps_basic => 2.43
       #     },
       #   }
-      #   in_period(2)
+      #   in_period(2014)
       #    => {
       #         '2015' => {
       #             :debt_to_equity => 1.23,
@@ -136,9 +143,9 @@ module Financials
       #         }
       #       }
       #
-      def in_period(period)
+      def in_period(period_start, period_end = Time.current.year)
         sorted_by_year = @per_year.sort.reverse.to_h
-        sorted_by_year.take(period)
+        sorted_by_year.delete_if {|year, _| year.to_i > period_end || year.to_i < period_start }
       end
 
       # example:
@@ -159,8 +166,8 @@ module Financials
       #   data_in_period(2, :debt_to_equity)
       #    =>  [1.23, 1.33]
       #
-      def data_in_period(period, label)
-        in_period = in_period(period)
+      def data_in_period(label, period_start, period_end = Time.current.year)
+        in_period = in_period(period_start, period_end)
         in_period.map { |_, data| data[label] }
       end
 
@@ -179,11 +186,11 @@ module Financials
       #         :eps_basic => 2.43
       #     },
       #   }
-      #   data_as_hash(2, :debt_to_equity)
+      #   data_as_hash(2014, :debt_to_equity)
       #    => {'2015' => 1.23, '2014' => 1.33}
       #
-      def data_as_hash(period, label)
-        years(in_period(period)).zip(data_in_period(period, label)).to_h
+      def data_as_hash(label, period_start, period_end = Time.current.year)
+        years(in_period(period_start, period_end)).zip(data_in_period(label, period_start, period_end)).to_h
       end
 
       def to_s
@@ -194,37 +201,9 @@ module Financials
             s << "------ #{label} => #{value}\n"
           end
         end
-        s << "\nGROWTH\n"
-        @all.each do |k, value|
-          s << "------ #{k} => #{value}\n"
-        end
         s
       end
 
-    end
-
-    def build
-      res = @years.sort.reverse.inject(KeyIndicator.new) do |kfi, year|
-        calc = KFICalculator.new(@balance_sheets[year], @income_statements[year], @cash_flow_statements[year], @balance_sheets[(year.to_i-1).to_s])
-        KFI.each { |label, func| kfi.add(year, label, func.call(calc)) }
-        kfi
-      end
-      res.add_all('EPS_5y_avg_growth', res.avg_growth(5, 'eps_basic'))
-      res.add_all('EPS_10y_avg_growth', res.avg_growth(10, 'eps_basic'))
-      res.add_all('EPS_5y_period_growth', res.period_growth(5, 'eps_basic'))
-      res.add_all('EPS_10y_period_growth', res.period_growth(10, 'eps_basic'))
-      res.add_all('EPS_5y_avg_yoy_growth', res.avg_yoy_growth(5, 'eps_basic'))
-      res.add_all('EPS_10y_avg_yoy_growth', res.avg_yoy_growth(10, 'eps_basic'))
-      res.add_all('EPS_5y_annual_compounding_RoR', res.annual_compounding_rate_of_return(5, 'eps_basic'))
-      res.add_all('EPS_10y_annual_compounding_RoR', res.annual_compounding_rate_of_return(10, 'eps_basic'))
-      res.add_all('ROE_5y_annual_compounding_RoR', res.annual_compounding_rate_of_return(5, 'return_on_equity'))
-      res.add_all('ROE_10y_annual_compounding_RoR', res.annual_compounding_rate_of_return(10, 'return_on_equity'))
-      res.yoy_growth(10, 'eps_basic')
-      res.yoy_growth(10, 'debt_to_equity')
-      res.yoy_growth(10, 'return_on_equity')
-      res.yoy_growth(10, 'free_cash_flow')
-      res.yoy_growth(10, 'current_ratio')
-      res
     end
 
     class KFICalculator
@@ -240,13 +219,25 @@ module Financials
 
       def debt_to_equity_ratio
         return BigDecimal(0) if @bs.nil?
-        debt_to_equity(@bs.total_debt, @bs.shareholders_equity)
+        debt_to_equity(@bs.total_liabilities, @bs.shareholders_equity)
       end
 
       def return_on_equity_ratio
         return BigDecimal(0) if @bs.nil? || @is.nil?
         return BigDecimal(0) if @bs.shareholders_equity.nil? || @is.net_income.nil?
         return_on_equity(@is.net_income, (@bs.shareholders_equity + @pbs.shareholders_equity)/2)
+      end
+
+      def return_on_assets_ratio
+        return BigDecimal(0) if @bs.nil? || @is.nil?
+        return BigDecimal(0) if @bs.shareholders_equity.nil? || @is.net_income.nil?
+        return_on_assets(@is.net_income, (@bs.total_assets + @pbs.total_assets)/2)
+      end
+
+      def net_margin_ratio
+        return BigDecimal(0) if @is.nil?
+        return BigDecimal(0) if @is.net_income.nil? || @is.revenues.nil?
+        net_margin(@is.net_income, @is.revenues)
       end
 
       def free_cash_flow
@@ -269,4 +260,3 @@ module Financials
   end
 
 end
-

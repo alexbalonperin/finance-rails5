@@ -12,10 +12,10 @@ module Financials
 
     def single_criteria
       {
-          'ROE_5y_annual_compounding_RoR' => lambda { |roe| roe_criteria(roe) },
-          'ROE_10y_annual_compounding_RoR' => lambda { |roe| roe_criteria(roe) },
-          'EPS_5y_annual_compounding_RoR' => lambda { |eps| eps_criteria(eps) },
-          'EPS_10y_annual_compounding_RoR' => lambda { |eps| eps_criteria(eps) },
+          'return_on_equity_5y_annual_compounding_RoR' => lambda { |roe| roe_criteria(roe) },
+          'return_on_equity_10y_annual_compounding_RoR' => lambda { |roe| roe_criteria(roe) },
+          'eps_basic_5y_annual_compounding_RoR' => lambda { |eps| eps_criteria(eps) },
+          'eps_basic_10y_annual_compounding_RoR' => lambda { |eps| eps_criteria(eps) },
       }
     end
 

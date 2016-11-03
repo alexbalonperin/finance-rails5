@@ -40,14 +40,24 @@ module Financials
 
     module Ratio
 
-      def debt_to_equity(total_debt, shareholders_equity)
-        return 0.0 if total_debt.nil? || shareholders_equity.nil?
-        total_debt / shareholders_equity
+      def debt_to_equity(total_liabilities, shareholders_equity)
+        return 0.0 if total_liabilities.nil? || shareholders_equity.nil?
+        total_liabilities / shareholders_equity
       end
 
       def return_on_equity(net_income, shareholders_equity)
         return 0.0 if net_income.nil? || shareholders_equity.nil?
         net_income / shareholders_equity
+      end
+
+      def return_on_assets(net_income, total_assets)
+        return 0.0 if net_income.nil? || total_assets.nil?
+        net_income / total_assets
+      end
+
+      def net_margin(net_income, revenues)
+        return 0.0 if net_income.nil? || revenues.nil?
+        net_income / revenues
       end
 
     end
@@ -88,7 +98,9 @@ module Financials
 
       def growth(current, previous)
         return 0.0 if previous.nil? || previous.zero?
-        ((current - previous) / BigDecimal(previous)) * (BigDecimal(previous).sign / BigDecimal(2))
+        cur = BigDecimal(current, 5)
+        prev = BigDecimal(previous, 5)
+        ((cur - prev) / prev) * (prev.sign / BigDecimal(2))
       end
     end
 
