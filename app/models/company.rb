@@ -3,9 +3,33 @@ class Company < ApplicationRecord
   has_one :sector, :through => :industry
   has_many :historical_data
   has_many :subsidiaries_mergers, :class_name => 'Merger', :foreign_key => :acquiring_id
-  has_many :income_statements
-  has_many :balance_sheets
-  has_many :cash_flow_statements
+  has_many :income_statements do
+    def latest
+      self.order('year desc').limit(1)
+    end
+
+    def oldest
+      self.order('year asc').limit(1)
+    end
+  end
+  has_many :balance_sheets do
+    def latest
+      self.order('year desc').limit(1)
+    end
+
+    def oldest
+      self.order('year asc').limit(1)
+    end
+  end
+  has_many :cash_flow_statements do
+    def latest
+      self.order('year desc').limit(1)
+    end
+
+    def oldest
+      self.order('year asc').limit(1)
+    end
+  end
   has_many :key_financial_indicators
   has_one :parent_merger, :class_name => 'Merger', :foreign_key => :acquired_id
   has_one :parent, :through => :parent_merger, :source => :acquiring
@@ -19,6 +43,14 @@ class Company < ApplicationRecord
 
   def latest_key_financial_indicators
     key_financial_indicators.where(:latest => true)
+  end
+
+  def first_year_with_fully_available_statements
+    oldest_income_statement =  income_statements.oldest.first
+    oldest_balance_sheet = balance_sheets.oldest.first
+    oldest_cash_flow_statement = cash_flow_statements.oldest.first
+    return if oldest_balance_sheet.nil? || oldest_cash_flow_statement.nil? || oldest_income_statement.nil?
+    [oldest_cash_flow_statement.year, oldest_income_statement.year, oldest_balance_sheet.year].map(&:to_i).max
   end
 
   def self.active

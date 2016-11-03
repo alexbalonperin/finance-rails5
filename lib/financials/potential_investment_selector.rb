@@ -20,13 +20,13 @@ module Financials
     end
 
     def steady_growth?(ki, label)
-      data = ki.data_in_period(@steady_growth_n_years, label)
+      data = ki.data_in_period(label, Time.current.year - @steady_growth_n_years)
       positive = data.compact.select { |d| d >= 0 }
       positive.size >= (@positive_growth_percentage * data.size).floor
     end
 
     def constant_value?(ki, label, value = 0)
-      data = ki.data_in_period(@steady_growth_n_years, label)
+      data = ki.data_in_period(label, Time.current.year - @steady_growth_n_years)
       data.compact.all? { |d| d >= value }
     end
 
@@ -40,7 +40,7 @@ module Financials
     end
 
     def meet_criteria?(ki)
-      single = single_criteria.all? { |label, func| func.call(ki.all[label]) }
+      single = single_criteria.all? { |label, func| func.call(ki.per_year[Time.current.year - 1][label]) }
       multi = multi_criteria.all? { |_, func| func.call(ki) }
       single && multi
     end

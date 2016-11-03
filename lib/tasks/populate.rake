@@ -149,6 +149,12 @@ namespace :populate do
     client.download_financials
   end
 
+  desc 'generate key financial indicators'
+  task kfi: :environment do
+    importer = Financials::KeyIndicatorsImporter.new
+    importer.import
+  end
+
   desc 'populate the database with all entities'
   task all: :environment do
     Rake::Task['populate:sectors'].invoke

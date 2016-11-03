@@ -33,6 +33,8 @@ module Financials
         KFI.each do |label, func|
           res.add(year, "#{label}_5y_annual_rate_of_return", res.annual_compounding_rate_of_return(label, year.to_i - 5, year.to_i))
           res.add(year, "#{label}_10y_annual_rate_of_return", res.annual_compounding_rate_of_return(label, year.to_i - 10, year.to_i))
+          res.add(year, "#{label}_5y_avg", res.avg_value(label, year.to_i - 5, year.to_i))
+          res.add(year, "#{label}_10y_avg", res.avg_value(label, year.to_i - 10, year.to_i))
           res.yoy_growth(label, year.to_i - 10, year.to_i)
         end
       end
@@ -54,6 +56,10 @@ module Financials
         @per_year.keys.size
       end
 
+      def all_years(period_start, period_end = Time.current.year)
+        @per_year.keys.delete_if {|year| year.to_i > period_end || year.to_i < period_start }
+      end
+
       def add(year, label, value)
         @per_year[year][label] = value
       end
@@ -66,7 +72,7 @@ module Financials
         @per_year.sort.reverse
       end
 
-      def avg_growth(label, period_start, period_end = Time.current.year)
+      def avg_value(label, period_start, period_end = Time.current.year)
         avg(data_in_period(label, period_start, period_end))
       end
 
@@ -144,7 +150,10 @@ module Financials
       #       }
       #
       def in_period(period_start, period_end = Time.current.year)
+        # puts "IN PERIOD----------------------------------------------"
+        # puts @per_year.inspect
         sorted_by_year = @per_year.sort.reverse.to_h
+
         sorted_by_year.delete_if {|year, _| year.to_i > period_end || year.to_i < period_start }
       end
 
@@ -219,6 +228,8 @@ module Financials
 
       def debt_to_equity_ratio
         return BigDecimal(0) if @bs.nil?
+        return BigDecimal(0) if @bs.total_liabilities.nil? || @bs.shareholders_equity.nil?
+        return BigDecimal(0) if @bs.shareholders_equity.zero?
         debt_to_equity(@bs.total_liabilities, @bs.shareholders_equity)
       end
 
@@ -241,12 +252,15 @@ module Financials
       end
 
       def free_cash_flow
+        return BigDecimal(0) if @cfs.nil?
+        return BigDecimal(0) if @cfs.net_cash_flow_from_operations.nil? || @cfs.capital_expenditure.nil?
         @cfs.net_cash_flow_from_operations - @cfs.capital_expenditure
       end
 
       def current_ratio
         return BigDecimal(0) if @bs.nil?
         return BigDecimal(0) if @bs.current_liabilities.nil? || @bs.current_assets.nil?
+        return BigDecimal(0) if @bs.current_liabilities.zero?
         @bs.current_assets / @bs.current_liabilities
       end
 

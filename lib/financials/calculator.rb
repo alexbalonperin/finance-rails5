@@ -3,12 +3,14 @@ module Financials
   module Calculator
 
     module Compounding
+      FIXNUM_MAX = (2**(0.size * 8 -2) -1)
+      FIXNUM_MIN = -(2**(0.size * 8 -2))
 
       def annual_rate_of_return(pv, fv, n_years)
-        return 0.0 if pv.nil? || fv.nil? || pv < 0 || fv < 0
+        return 0.0 if pv.nil? || fv.nil? || pv <= 0 || fv < 0
         exponent = (BigDecimal(1) / BigDecimal(n_years))
         divisor = BigDecimal(fv / pv, 2)
-        return BigDecimal(Fixnum::MAX) if divisor.infinite?
+        return BigDecimal(FIXNUM_MAX) if divisor.infinite?
 
         (divisor.power(exponent)) - BigDecimal(1)
       end
@@ -41,22 +43,22 @@ module Financials
     module Ratio
 
       def debt_to_equity(total_liabilities, shareholders_equity)
-        return 0.0 if total_liabilities.nil? || shareholders_equity.nil?
+        return 0.0 if total_liabilities.nil? || shareholders_equity.nil? || shareholders_equity.zero?
         total_liabilities / shareholders_equity
       end
 
       def return_on_equity(net_income, shareholders_equity)
-        return 0.0 if net_income.nil? || shareholders_equity.nil?
+        return 0.0 if net_income.nil? || shareholders_equity.nil? || shareholders_equity.zero?
         net_income / shareholders_equity
       end
 
       def return_on_assets(net_income, total_assets)
-        return 0.0 if net_income.nil? || total_assets.nil?
+        return 0.0 if net_income.nil? || total_assets.nil? || total_assets.zero?
         net_income / total_assets
       end
 
       def net_margin(net_income, revenues)
-        return 0.0 if net_income.nil? || revenues.nil?
+        return 0.0 if net_income.nil? || revenues.nil? || revenues.zero?
         net_income / revenues
       end
 

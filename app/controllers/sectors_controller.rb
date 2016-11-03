@@ -4,13 +4,13 @@ class SectorsController < ApplicationController
   # GET /sectors
   # GET /sectors.json
   def index
-    @sectors = Sector.includes(:industries, :companies)
+    @sectors = Sector.includes(:industries, :companies).sort_by { |s| -s.companies.size }
   end
 
   # GET /sectors/1
   # GET /sectors/1.json
   def show
-    @industries = @sector.industries
+    @industries = @sector.industries.sort_by { |i| -i.companies.size }
     @newcomers = @sector.newcomers
   end
 
