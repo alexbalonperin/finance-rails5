@@ -30,7 +30,7 @@ module Financials
         kfi
       end
       years.each do |year|
-        KFI.each do |label, func|
+        KFI.each do |label, _|
           res.add(year, "#{label}_5y_annual_rate_of_return", res.annual_compounding_rate_of_return(label, year.to_i - 5, year.to_i))
           res.add(year, "#{label}_10y_annual_rate_of_return", res.annual_compounding_rate_of_return(label, year.to_i - 10, year.to_i))
           res.add(year, "#{label}_5y_avg", res.avg_value(label, year.to_i - 5, year.to_i))
@@ -61,7 +61,7 @@ module Financials
       end
 
       def add(year, label, value)
-        @per_year[year][label] = value
+        @per_year[year.to_s][label] = value
       end
 
       def per_year_in_asc_order
@@ -84,7 +84,7 @@ module Financials
       def yoy_growth(label, period_start, period_end = Time.current.year)
         yoy = yoy(data_as_hash(label, period_start, period_end))
         yoy.each do |year, value|
-          @per_year[year]["#{label}_yoy_growth"] = value
+          @per_year[year.to_s]["#{label}_yoy_growth"] = value
         end
       end
 
@@ -150,10 +150,7 @@ module Financials
       #       }
       #
       def in_period(period_start, period_end = Time.current.year)
-        # puts "IN PERIOD----------------------------------------------"
-        # puts @per_year.inspect
         sorted_by_year = @per_year.sort.reverse.to_h
-
         sorted_by_year.delete_if {|year, _| year.to_i > period_end || year.to_i < period_start }
       end
 
@@ -254,7 +251,7 @@ module Financials
       def free_cash_flow
         return BigDecimal(0) if @cfs.nil?
         return BigDecimal(0) if @cfs.net_cash_flow_from_operations.nil? || @cfs.capital_expenditure.nil?
-        @cfs.net_cash_flow_from_operations - @cfs.capital_expenditure
+        @cfs.net_cash_flow_from_operations + @cfs.capital_expenditure
       end
 
       def current_ratio

@@ -3,8 +3,8 @@ module Financials
   module Calculator
 
     module Compounding
-      FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-      FIXNUM_MIN = -(2**(0.size * 8 -2))
+      FIXNUM_MAX = (2 ** (0.size * 8 -2) -1)
+      FIXNUM_MIN = -(2 ** (0.size * 8 -2))
 
       def annual_rate_of_return(pv, fv, n_years)
         return 0.0 if pv.nil? || fv.nil? || pv <= 0 || fv < 0
@@ -32,7 +32,7 @@ module Financials
         first = sorted_years.first.last
         i = 1
         sorted_years.drop(1).inject({}) do |h, (year, data)|
-          h[year] = annual_rate_of_return(first, data, i)
+          h[year.to_s] = annual_rate_of_return(first, data, i)
           i += 1
           h
         end
@@ -87,7 +87,7 @@ module Financials
             prev = cur
             next
           end
-          h[year] = period([cur, prev])
+          h[year.to_s] = period([cur, prev])
           prev = cur
         end
         h

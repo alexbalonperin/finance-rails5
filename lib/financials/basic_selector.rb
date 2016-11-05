@@ -10,13 +10,7 @@ module Financials
     STEADY_GROWTH_N_YEARS = 10
 
     def initialize(companies = nil)
-      @companies = companies || Company.active
-                                    .where("first_trade_date < now() - interval '8 years'")
-                                    .includes(:income_statements, :balance_sheets, :cash_flow_statements)
-      @comapnies = @companies.select do |c|
-        oldest_statement_year = c.first_year_with_fully_available_statements
-        oldest_statement_year && oldest_statement_year < 8.years.ago.year
-      end
+      @companies = companies || Company.active.where("first_trade_date < now() - interval '8 years'")
       @roe_min = ROE_MIN
       @eps_min = EPS_MIN
       @positive_growth_percentage = POSITIVE_GROWTH_PERCENTAGE
@@ -30,7 +24,6 @@ module Financials
       ActiveRecord::Base.transaction do
         pis = PotentialInvestment.latest
         pis.each(&:reset_latest)
-
         selected_ki = {}
         index = 1
         selected = @companies.select do |company|
@@ -38,6 +31,7 @@ module Financials
           kib = Financials::KeyIndicatorsBuilder.new(company)
           ki = kib.build
           select = meet_criteria?(ki)
+          puts ki.to_s
           if select
             selected_ki[company.id] = ki
           end

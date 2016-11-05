@@ -40,7 +40,7 @@ module Financials
     end
 
     def meet_criteria?(ki)
-      single = single_criteria.all? { |label, func| func.call(ki.per_year[Time.current.year - 1][label]) }
+      single = single_criteria.all? { |label, func| func.call(ki.per_year[(Time.current.year - 1).to_s][label]) }
       multi = multi_criteria.all? { |_, func| func.call(ki) }
       single && multi
     end
