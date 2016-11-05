@@ -30,7 +30,11 @@ class Company < ApplicationRecord
       self.order('year asc').limit(1)
     end
   end
-  has_many :key_financial_indicators
+  has_many :key_financial_indicators do
+    def latest
+      self.where(:latest => true).order('year desc').limit(1)
+    end
+  end
   has_one :parent_merger, :class_name => 'Merger', :foreign_key => :acquired_id
   has_one :parent, :through => :parent_merger, :source => :acquiring
   has_many :subsidiaries, :through => :subsidiaries_mergers, :source => :acquired

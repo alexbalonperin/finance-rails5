@@ -19,6 +19,7 @@
  *= require_tree ./extensions
  *= require_self
  *= require companies
+ *= require potential_investments
  */
 
 @font-face {
