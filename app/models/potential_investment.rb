@@ -7,8 +7,7 @@ class PotentialInvestment < ApplicationRecord
   end
 
   def reset_latest
-    latest = false
-    save
+    update_attribute(:latest, false)
   end
 
 end

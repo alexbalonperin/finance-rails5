@@ -10,7 +10,8 @@ module Financials
         'eps_basic' => lambda { |calc| calc.eps_basic },
         'free_cash_flow' => lambda { |calc| calc.free_cash_flow },
         'current_ratio' => lambda { |calc| calc.current_ratio },
-        'net_margin' => lambda { |calc| calc.net_margin_ratio }
+        'net_margin' => lambda { |calc| calc.net_margin_ratio },
+        'price_earnings_ratio' => lambda { |calc| calc.price_earnings_ratio }
     }
 
     def initialize(company)
@@ -25,7 +26,8 @@ module Financials
     def build
       years = @years.sort.reverse
       res = years.inject(KeyIndicator.new) do |kfi, year|
-        calc = KFICalculator.new(@balance_sheets[year], @income_statements[year], @cash_flow_statements[year], @balance_sheets[(year.to_i-1).to_s])
+
+        calc = KFICalculator.new(@company.historical_data_for(year), @balance_sheets[year], @income_statements[year], @cash_flow_statements[year], @balance_sheets[(year.to_i-1).to_s])
         KFI.each { |label, func| kfi.add(year, label, func.call(calc)) }
         kfi
       end
@@ -54,6 +56,11 @@ module Financials
 
       def n_past_financial_statements
         @per_year.keys.size
+      end
+
+      def current_year
+        cur = @per_year.sort.reverse.first
+        cur[1] if cur.present?
       end
 
       def all_years(period_start, period_end = Time.current.year)
@@ -216,11 +223,19 @@ module Financials
 
       include Calculator::Ratio
 
-      def initialize(balance_sheet, income_statement, cash_flow_statement, previous_balance_sheet)
+      def initialize(historical_data, balance_sheet, income_statement, cash_flow_statement, previous_balance_sheet)
+        @hd = historical_data
         @bs = balance_sheet
         @is = income_statement
         @cfs = cash_flow_statement
         @pbs = previous_balance_sheet.nil? ? @bs : previous_balance_sheet
+      end
+
+      def price_earnings_ratio
+        return BigDecimal(0) if @is.nil? || @hd.nil? || @is.eps_basic.nil? || @is.eps_basic.zero?
+        last_historical_data = @hd.sort_by { |hd| hd.trade_date }.last
+        return BigDecimal(0) if last_historical_data.nil?
+        last_historical_data.adjusted_close / @is.eps_basic
       end
 
       def debt_to_equity_ratio

@@ -23,7 +23,7 @@ module Financials
     def select
       ActiveRecord::Base.transaction do
         pis = PotentialInvestment.latest
-        pis.each(&:reset_latest)
+        pis.update_all(:latest => false)
         selected_ki = {}
         index = 1
         selected = @companies.select do |company|
@@ -31,7 +31,6 @@ module Financials
           kib = Financials::KeyIndicatorsBuilder.new(company)
           ki = kib.build
           select = meet_criteria?(ki)
-          puts ki.to_s
           if select
             selected_ki[company.id] = ki
           end

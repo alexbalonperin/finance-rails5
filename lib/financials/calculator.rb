@@ -7,7 +7,9 @@ module Financials
       FIXNUM_MIN = -(2 ** (0.size * 8 -2))
 
       def annual_rate_of_return(pv, fv, n_years)
-        return 0.0 if pv.nil? || fv.nil? || pv <= 0 || fv < 0
+        return 0.0 if pv.nil? || fv.nil?
+        pv = pv <= 0 ? 10.0**-6 : pv
+        fv = fv <= 0 ? 10.0**-6 : fv
         exponent = (BigDecimal(1) / BigDecimal(n_years))
         divisor = BigDecimal(fv / pv, 2)
         return BigDecimal(FIXNUM_MAX) if divisor.infinite?

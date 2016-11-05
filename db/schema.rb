@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161103110827) do
+ActiveRecord::Schema.define(version: 20161105160114) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -201,6 +201,9 @@ ActiveRecord::Schema.define(version: 20161103110827) do
     t.boolean  "latest"
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
+    t.decimal  "price_earnings_ratio"
+    t.decimal  "price_earnings_ratio_5y_avg"
+    t.decimal  "price_earnings_ratio_10y_avg"
     t.index ["company_id", "year"], name: "index_key_financial_indicators_on_company_id_and_year", unique: true, where: "(latest IS TRUE)", using: :btree
     t.index ["company_id"], name: "index_key_financial_indicators_on_company_id", using: :btree
   end
@@ -237,9 +240,12 @@ ActiveRecord::Schema.define(version: 20161103110827) do
     t.datetime "updated_at",                                    null: false
     t.string   "year"
     t.decimal  "current_price"
-    t.decimal  "fair_price_min"
-    t.decimal  "fair_price_max"
     t.boolean  "latest",                         default: true
+    t.decimal  "projected_eps"
+    t.decimal  "projected_price_min"
+    t.decimal  "projected_price_max"
+    t.decimal  "projected_rate_of_return_min"
+    t.decimal  "projected_rate_of_return_max"
     t.index ["company_id", "year"], name: "index_potential_investments_on_company_id_and_year", unique: true, where: "(latest IS TRUE)", using: :btree
     t.index ["company_id"], name: "index_potential_investments_on_company_id", using: :btree
   end

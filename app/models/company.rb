@@ -69,6 +69,10 @@ class Company < ApplicationRecord
     sector.id
   end
 
+  def historical_data_for(year)
+    historical_data.where("extract(year from trade_date) = #{year}")
+  end
+
   def latest_historical_data
     hist_data = historical_data.order('trade_date desc').limit(1)
     hist_data.first if hist_data.present?

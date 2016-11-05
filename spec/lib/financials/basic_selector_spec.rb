@@ -17,7 +17,7 @@ RSpec.describe Financials::Calculator do
   before do
     good_ki = {
       '2015' => {
-
+        'return_on_equity_5y_annual_compounding_' => 0.0
       },
       '2014' => {
 
@@ -25,25 +25,25 @@ RSpec.describe Financials::Calculator do
       '2013' => {
 
       },
-      '2014' => {
+      '2012' => {
 
       },
-      '2014' => {
+      '2011' => {
 
       },
-      '2014' => {
+      '2010' => {
 
       },
-      '2014' => {
+      '2009' => {
 
       },
-      '2014' => {
+      '2008' => {
 
       },
-      '2014' => {
+      '2007' => {
 
       },
-      '2014' => {
+      '2006' => {
 
       },
     }
