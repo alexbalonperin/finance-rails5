@@ -35,6 +35,11 @@ class Company < ApplicationRecord
       self.where(:latest => true).order('year desc').limit(1)
     end
   end
+  has_many :projections do
+    def latest
+      self.where(:latest => true)
+    end
+  end
   has_one :parent_merger, :class_name => 'Merger', :foreign_key => :acquired_id
   has_one :parent, :through => :parent_merger, :source => :acquiring
   has_many :subsidiaries, :through => :subsidiaries_mergers, :source => :acquired
@@ -44,6 +49,10 @@ class Company < ApplicationRecord
   has_one :was, :through => :companies_changes_to, :source => :from
 
   validates :name, :symbol, presence: true
+
+  def latest_kfi
+    key_financial_indicators.latest
+  end
 
   def latest_key_financial_indicators
     key_financial_indicators.where(:latest => true)

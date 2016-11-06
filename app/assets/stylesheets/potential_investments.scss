@@ -1,6 +1,13 @@
 .potential-investments {
+  .small {
+    font-size: 10px;
+  }
   .table {
     overflow:scroll;
-    min-width: 1250px;
+    min-width: 2500px;
+    td {
+      min-width:120px;
+    }
+    text-align:right;
   }
 }

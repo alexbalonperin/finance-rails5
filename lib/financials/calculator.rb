@@ -75,6 +75,20 @@ module Financials
         arr.inject(:+) / arr.size
       end
 
+      def min(arr)
+        return 0.0 if arr.blank?
+        arr = arr.compact
+        return if arr.blank?
+        arr.min
+      end
+
+      def max(arr)
+        return 0.0 if arr.blank?
+        arr = arr.compact
+        return if arr.blank?
+        arr.max
+      end
+
       # assuming arr is sorted from newest to oldest
       def period(arr)
         growth(arr.first, arr.last)

@@ -20,15 +20,34 @@ module Financials
       @current_ratio_min = CURRENT_RATIO_MIN
     end
 
+    def single_criteria
+      {
+          'return_on_equity_5y_annual_rate_of_return' => lambda { |roe| roe_criteria(roe) },
+          'return_on_equity_10y_annual_rate_of_return' => lambda { |roe| roe_criteria(roe) },
+          'eps_basic_5y_annual_rate_of_return' => lambda { |eps| eps_criteria(eps) },
+          'eps_basic_10y_annual_rate_of_return' => lambda { |eps| eps_criteria(eps) },
+      }
+    end
+
+    def multi_criteria
+      {
+          'ROR_steady_growth' => lambda { |ki| steady_growth?(ki, 'return_on_equity_yoy_growth') },
+          'EPS_steady_growth' => lambda { |ki| steady_growth?(ki, 'eps_basic_yoy_growth') },
+          'EPS_positive' => lambda { |ki| constant_value?(ki, 'eps_basic') },
+          'FCF_positive' => lambda { |ki| steady_growth?(ki, 'free_cash_flow') },
+          'Current_ratio_positive' => lambda { |ki| constant_value?(ki, 'current_ratio', @current_ratio_min) }
+      }
+    end
+
     def select
       ActiveRecord::Base.transaction do
-        pis = PotentialInvestment.latest
-        pis.update_all(:latest => false)
+        PotentialInvestment.latest.update_all(:latest => false)
+        ::Projection.latest.update_all(:latest => false)
         selected_ki = {}
         index = 1
         selected = @companies.select do |company|
           puts "(#{index}/#{@companies.size}) Evaluating #{company.name} (#{company.id})"
-          kib = Financials::KeyIndicatorsBuilder.new(company)
+          kib = KeyIndicatorsBuilder.new(company)
           ki = kib.build
           select = meet_criteria?(ki)
           if select

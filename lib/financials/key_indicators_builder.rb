@@ -37,6 +37,8 @@ module Financials
           res.add(year, "#{label}_10y_annual_rate_of_return", res.annual_compounding_rate_of_return(label, year.to_i - 10, year.to_i))
           res.add(year, "#{label}_5y_avg", res.avg_value(label, year.to_i - 5, year.to_i))
           res.add(year, "#{label}_10y_avg", res.avg_value(label, year.to_i - 10, year.to_i))
+          res.add(year, "#{label}_10y_min", res.min_value(label, year.to_i - 10, year.to_i))
+          res.add(year, "#{label}_10y_max", res.max_value(label, year.to_i - 10, year.to_i))
           res.yoy_growth(label, year.to_i - 10, year.to_i)
         end
       end
@@ -81,6 +83,14 @@ module Financials
 
       def avg_value(label, period_start, period_end = Time.current.year)
         avg(data_in_period(label, period_start, period_end))
+      end
+
+      def min_value(label, period_start, period_end = Time.current.year)
+        min(data_in_period(label, period_start, period_end))
+      end
+
+      def max_value(label, period_start, period_end = Time.current.year)
+        max(data_in_period(label, period_start, period_end))
       end
 
       def period_growth(label, period_start, period_end = Time.current.year)
@@ -223,12 +233,12 @@ module Financials
 
       include Calculator::Ratio
 
-      def initialize(historical_data, balance_sheet, income_statement, cash_flow_statement, previous_balance_sheet)
+      def initialize(historical_data, balance_sheet, income_statement, cash_flow_statement, prev_balance_sheet)
         @hd = historical_data
         @bs = balance_sheet
         @is = income_statement
         @cfs = cash_flow_statement
-        @pbs = previous_balance_sheet.nil? ? @bs : previous_balance_sheet
+        @pbs = prev_balance_sheet.nil? ? @bs : prev_balance_sheet
       end
 
       def price_earnings_ratio

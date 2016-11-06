@@ -3,45 +3,50 @@
   .col-lg-12
     .element-container
       .title Listing Potential Investments
-      .content.table-responsive
-        %table.table
-          %thead
-            %tr
-              %th Sym
-              %th Comp Name
-              %th Sector
-              %th Industry
-              %th Year
-              %th ROE annual ror (5y)
-              %th ROE annual ror (10y)
-              %th EPS annual ror (5y)
-              %th EPS annual ror (10y)
-              %th Avg P/E (5y)
-              %th Avg P/E (10y)
-              %th Current Price
-              %th Projected Price range (5y)
-              %th Projected ror range (5y)
-              %th Nr past FS
-
-          %tbody
-
-            - @potential_investments.each do |pi|
+      .content
+        .table-responsive
+          %table.table.table-bordered
+            %thead
               %tr
-                %td= pi.company.symbol
-                %td= link_to pi.company.name.html_safe, pi.company
-                %td= link_to pi.company.sector_name, pi.company.sector
-                %td.col-md-2= link_to pi.company.industry_name, pi.company.industry
-                %td= pi.year
-                %td= number_to_percentage(pi.roe_5y_annual_compounding_ror * 100, precision: 2)
-                %td= number_to_percentage(pi.roe_10y_annual_compounding_ror * 100, precision: 2)
-                %td= number_to_percentage([pi.eps_5y_annual_compounding_ror, 1000].min * 100, precision: 2)
-                %td= number_to_percentage([pi.eps_10y_annual_compounding_ror, 1000].min * 100, precision: 2)
-                %td= number_with_precision(pi.company.key_financial_indicators.latest.first.price_earnings_ratio_5y_avg, precision: 2)
-                %td= number_with_precision(pi.company.key_financial_indicators.latest.first.price_earnings_ratio_10y_avg, precision: 2)
-                %td= number_with_precision(pi.current_price, precision: 2)
-                %td.col-md-2= "[#{number_with_precision(pi.projected_price_min, precision: 2)} - #{number_with_precision(pi.projected_price_max, precision: 2)}]"
-                %td.col-md-2= "[#{number_to_percentage(pi.projected_rate_of_return_min * 100, precision: 2)} - #{number_to_percentage(pi.projected_rate_of_return_max * 100, precision: 2)}]"
-                %td= number_with_precision(pi.n_past_financial_statements, precision: 0)
+                %th Sym
+                %th Comp Name
+                %th Sector
+                %th Industry
+                %th Year
+                %th ROE annual ror (5y)
+                %th ROE annual ror (10y)
+                %th EPS annual ror (5y)
+                %th EPS annual ror (10y)
+                %th Current EPS
+                %th Projected EPS
+                %th Avg P/E (5y)
+                %th Avg P/E (10y)
+                %th Current Price
+                %th Projected Price range (5y)
+                %th Projected ror range (5y)
+                %th Nr past FS
+
+            %tbody
+
+              - @potential_investments.each do |pi|
+                %tr
+                  %td= pi.company.symbol
+                  %td.col-md-3= link_to pi.company.name.html_safe, pi.company
+                  %td= link_to pi.company.sector_name, pi.company.sector
+                  %td= link_to truncate(pi.company.industry_name, length: 22), pi.company.industry
+                  %td= pi.year
+                  %td= number_to_percentage(pi.roe_5y_annual_compounding_ror * 100, precision: 2)
+                  %td= number_to_percentage(pi.roe_10y_annual_compounding_ror * 100, precision: 2)
+                  %td= number_to_percentage([pi.eps_5y_annual_compounding_ror, 1000].min * 100, precision: 2)
+                  %td= number_to_percentage([pi.eps_10y_annual_compounding_ror, 1000].min * 100, precision: 2)
+                  %td= number_with_precision(pi.eps_basic, precision: 2)
+                  %td= number_with_precision(pi.projected_eps, precision: 2)
+                  %td= number_with_precision(pi.price_earnings_ratio_5y_avg, precision: 2)
+                  %td= number_with_precision(pi.price_earnings_ratio_10y_avg, precision: 2)
+                  %td= number_to_currency(pi.current_price, precision: 2)
+                  %td.col-md-5= extended_range(pi.projected_price_worst, pi.projected_price_min, pi.projected_price_max, pi.projected_price_best, :currency)
+                  %td.col-md-5= extended_range(pi.projected_rate_of_return_worst, pi.projected_rate_of_return_min, pi.projected_rate_of_return_max, pi.projected_rate_of_return_best, :percent)
+                  %td= number_with_precision(pi.n_past_financial_statements, precision: 0)
 
         .alert.alert-info(role="alert")
           %strong Notice

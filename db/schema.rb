@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161105160114) do
+ActiveRecord::Schema.define(version: 20161106025738) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -239,15 +239,27 @@ ActiveRecord::Schema.define(version: 20161105160114) do
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
     t.string   "year"
-    t.decimal  "current_price"
     t.boolean  "latest",                         default: true
-    t.decimal  "projected_eps"
-    t.decimal  "projected_price_min"
-    t.decimal  "projected_price_max"
-    t.decimal  "projected_rate_of_return_min"
-    t.decimal  "projected_rate_of_return_max"
     t.index ["company_id", "year"], name: "index_potential_investments_on_company_id_and_year", unique: true, where: "(latest IS TRUE)", using: :btree
     t.index ["company_id"], name: "index_potential_investments_on_company_id", using: :btree
+  end
+
+  create_table "projections", force: :cascade do |t|
+    t.integer  "company_id"
+    t.boolean  "latest",                         default: true
+    t.decimal  "current_price"
+    t.decimal  "projected_eps"
+    t.decimal  "projected_price_worst"
+    t.decimal  "projected_price_min"
+    t.decimal  "projected_price_max"
+    t.decimal  "projected_price_best"
+    t.decimal  "projected_rate_of_return_worst"
+    t.decimal  "projected_rate_of_return_min"
+    t.decimal  "projected_rate_of_return_max"
+    t.decimal  "projected_rate_of_return_best"
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
+    t.index ["company_id"], name: "index_projections_on_company_id", using: :btree
   end
 
   create_table "sectors", force: :cascade do |t|
@@ -283,5 +295,6 @@ ActiveRecord::Schema.define(version: 20161105160114) do
   add_foreign_key "mergers", "companies", column: "acquired_id"
   add_foreign_key "mergers", "companies", column: "acquiring_id"
   add_foreign_key "potential_investments", "companies"
+  add_foreign_key "projections", "companies"
   add_foreign_key "statement_errors", "companies"
 end
