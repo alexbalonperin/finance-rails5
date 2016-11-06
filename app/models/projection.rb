@@ -2,8 +2,8 @@ class Projection < ApplicationRecord
 
   belongs_to :company
 
-  def self.latest
-    Projection.where(:latest => true)
+  def self.latest(type = 'basic')
+    Projection.where('latest = true AND selector = ?', type)
   end
 
 end

@@ -2,8 +2,19 @@ class PotentialInvestment < ApplicationRecord
 
   belongs_to :company
 
-  def self.latest
-    PotentialInvestment.where(:latest => true)
+  def self.latest(type = 'basic')
+    PotentialInvestment.where('latest = true AND selector = ?', type)
+  end
+
+  def self.sorted_latest(type = 'basic')
+    pis = PotentialInvestment.latest(type)
+    pis.sort_by do |pi|
+      [-pi.n_past_financial_statements, -pi.eps_5y_annual_compounding_ror, -pi.roe_5y_annual_compounding_ror]
+    end
+  end
+
+  def good?
+    projected_rate_of_return_min > 13 && projected_rate_of_return_worst > 0
   end
 
   def kfi

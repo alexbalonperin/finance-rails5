@@ -4,10 +4,8 @@ class PotentialInvestmentsController < ApplicationController
   # GET /potential_investments
   # GET /potential_investments.json
   def index
-    @potential_investments = PotentialInvestment.latest
-    @potential_investments = @potential_investments.sort_by do |pi|
-      [-pi.n_past_financial_statements, -pi.eps_5y_annual_compounding_ror, -pi.roe_5y_annual_compounding_ror]
-    end
+    @potential_investments = PotentialInvestment.sorted_latest
+    @promising_investments = PotentialInvestment.sorted_latest(type = 'promising')
   end
 
   # GET /potential_investments/1

@@ -6,6 +6,20 @@ module Financials
       @companies = companies || Company.active
     end
 
+    def update(keys = [])
+      @companies.each_with_index do |company, index|
+        puts "(#{index + 1}/#{@companies.size}) Updating KFI for company #{company.name}"
+        kib = KeyIndicatorsBuilder.new(company)
+        ki = kib.build
+        ActiveRecord::Base.transaction do
+          company.latest_key_financial_indicators.each do |kfi|
+            keys_to_update = keys.inject({}) { |h, k| h[k] = ki.per_year[kfi.year][k.to_s]; h }
+            kfi.update(keys_to_update)
+          end
+        end
+      end
+    end
+
     def import
       @companies.each_with_index do |company, index|
         puts "(#{index + 1}/#{@companies.size}) Generating KFI for company #{company.name}"
