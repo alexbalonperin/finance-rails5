@@ -36,8 +36,8 @@ class Company < ApplicationRecord
     end
   end
   has_many :projections do
-    def latest
-      self.where(:latest => true)
+    def latest(type = 'basic')
+      self.where(:latest => true, :selector => type)
     end
   end
   has_one :parent_merger, :class_name => 'Merger', :foreign_key => :acquired_id

@@ -3,6 +3,10 @@ module Financials
   class PotentialInvestmentSelector
     include Financials::Calculator::Compounding
 
+    def selector_name
+      @selector
+    end
+
     def active_companies
       Company.where(:id =>
            Company.active
@@ -93,7 +97,8 @@ module Financials
          :projected_rate_of_return_worst => projection['projected_rate_of_return_worst'],
          :projected_rate_of_return_min => projection['projected_rate_of_return_min'],
          :projected_rate_of_return_max => projection['projected_rate_of_return_max'],
-         :projected_rate_of_return_best => projection['projected_rate_of_return_best']
+         :projected_rate_of_return_best => projection['projected_rate_of_return_best'],
+         :max_price => projection['max_price']
       })
 
     end

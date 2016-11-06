@@ -19,6 +19,8 @@ module Financials
       self['projected_rate_of_return_min'] = annual_rate_of_return(current_price, self['projected_price_min'], 5)
       self['projected_rate_of_return_max'] = annual_rate_of_return(current_price, self['projected_price_max'], 5)
       self['projected_rate_of_return_best'] = annual_rate_of_return(current_price, self['projected_price_best'], 5)
+      target_rate = 0.15
+      self['max_price'] = present_val(self['projected_eps'], target_rate, 5) * this_year['price_earnings_ratio']
     end
 
   end

@@ -16,4 +16,14 @@ module PotentialInvestmentsHelper
     "#{worst} ~ [#{min} - #{max}] ~ #{best}".html_safe
   end
 
+  def evaluate(pi)
+    if pi.good?
+      'success'
+    elsif pi.bad?
+      'danger'
+    elsif pi.not_so_good?
+      'warning'
+    end
+  end
+
 end

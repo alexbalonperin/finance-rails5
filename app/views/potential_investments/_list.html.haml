@@ -18,6 +18,7 @@
           %th Avg P/E (5y)
           %th Avg P/E (10y)
           %th Current Price
+          %th Maximum price
           %th Projected Price range (5y)
           %th Projected ror range (5y)
           %th Nr past FS
@@ -25,9 +26,10 @@
       %tbody
 
         - potential_investments.each do |pi|
-          %tr(class="#{pi.good? ? 'success' : '' }")
+          - pi.projection(selector.selector_name)
+          %tr(class="#{evaluate(pi)}")
             %td= pi.company.symbol
-            %td.col-md-3= link_to pi.company.name.html_safe, pi.company
+            %td.col-md-2= link_to pi.company.name.html_safe, pi.company
             %td= link_to pi.company.sector_name, pi.company.sector
             %td= link_to truncate(pi.company.industry_name, length: 22), pi.company.industry
             %td= pi.year
@@ -40,8 +42,9 @@
             %td= number_with_precision(pi.price_earnings_ratio_5y_avg, precision: 2)
             %td= number_with_precision(pi.price_earnings_ratio_10y_avg, precision: 2)
             %td= number_to_currency(pi.current_price, precision: 2)
-            %td.col-md-5= extended_range(pi.projected_price_worst, pi.projected_price_min, pi.projected_price_max, pi.projected_price_best, :currency)
-            %td.col-md-5= extended_range(pi.projected_rate_of_return_worst, pi.projected_rate_of_return_min, pi.projected_rate_of_return_max, pi.projected_rate_of_return_best, :percent)
+            %td= number_to_currency(pi.max_price, precision: 2)
+            %td.col-md-3= extended_range(pi.projected_price_worst, pi.projected_price_min, pi.projected_price_max, pi.projected_price_best, :currency)
+            %td.col-md-3= extended_range(pi.projected_rate_of_return_worst, pi.projected_rate_of_return_min, pi.projected_rate_of_return_max, pi.projected_rate_of_return_best, :percent)
             %td= number_with_precision(pi.n_past_financial_statements, precision: 0)
 
     .alert.alert-info(role="alert")
@@ -50,6 +53,14 @@
         %ul
           %li "annual ror" means "annual compounding rate of return"
           %li "nr past FS" means "number of past financial statements"
+      %p
+        %dl
+          %dt [green]
+          %dd - current price <= max price AND projected worst ror > 0 AND projected min ror > 15%
+          %dt [red]
+          %dd - current price > max price
+          %dt [yellow]
+          %dd - projected worst ror <= 0
     .alert.alert-info(role="alert")
       %strong Selector Criteria
       %p= selector.to_html.html_safe

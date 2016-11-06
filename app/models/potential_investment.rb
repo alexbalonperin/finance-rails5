@@ -14,15 +14,24 @@ class PotentialInvestment < ApplicationRecord
   end
 
   def good?
-    projected_rate_of_return_min > 13 && projected_rate_of_return_worst > 0
+    projected_rate_of_return_min > 15 && projected_rate_of_return_worst > 0 &&
+        current_price <= max_price
+  end
+
+  def bad?
+    current_price > max_price
+  end
+
+  def not_so_good?
+    projected_rate_of_return_worst <= 0
   end
 
   def kfi
     company.latest_kfi.first
   end
 
-  def projection
-    company.projections.latest.first
+  def projection(type = 'basic')
+    @projection ||= company.projections.latest(type).first
   end
 
   def price_earnings_ratio_10y_avg
@@ -58,42 +67,46 @@ class PotentialInvestment < ApplicationRecord
   # end
 
   def current_price
-    projection.current_price
+    @projection.current_price
+  end
+
+  def max_price
+    @projection.max_price
   end
 
   def projected_eps
-    projection.projected_eps
+    @projection.projected_eps
   end
 
   def projected_price_worst
-    projection.projected_price_worst
+    @projection.projected_price_worst
   end
 
   def projected_price_min
-    projection.projected_price_min
+    @projection.projected_price_min
   end
 
   def projected_price_max
-    projection.projected_price_max
+    @projection.projected_price_max
   end
 
   def projected_price_best
-    projection.projected_price_best
+    @projection.projected_price_best
   end
 
   def projected_rate_of_return_worst
-    projection.projected_rate_of_return_worst * 100
+    @projection.projected_rate_of_return_worst * 100
   end
 
   def projected_rate_of_return_min
-    projection.projected_rate_of_return_min * 100
+    @projection.projected_rate_of_return_min * 100
   end
 
   def projected_rate_of_return_max
-    projection.projected_rate_of_return_max * 100
+    @projection.projected_rate_of_return_max * 100
   end
 
   def projected_rate_of_return_best
-    projection.projected_rate_of_return_best * 100
+    @projection.projected_rate_of_return_best * 100
   end
 end

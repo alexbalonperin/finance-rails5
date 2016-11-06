@@ -4,10 +4,17 @@
   }
   .table {
     overflow:scroll;
-    min-width: 2500px;
+    min-width: 2600px;
     td {
       min-width:120px;
     }
     text-align:right;
   }
+  dl {
+    width: 600px;
+    background: lightgoldenrodyellow;
+    border: 1px solid #000;
+    padding: 5px 15px;
+  }
+
 }
