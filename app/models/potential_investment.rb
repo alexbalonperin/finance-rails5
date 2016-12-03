@@ -58,8 +58,8 @@ class PotentialInvestment < ApplicationRecord
   #   kfi.eps_basic_10y_annual_rate_of_return
   # end
 
-  def eps_basic
-    kfi.eps_basic
+  def eps_diluted
+    kfi.eps_diluted
   end
 
   # def n_past_financial_statements

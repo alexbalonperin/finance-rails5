@@ -44,8 +44,8 @@ namespace :populate do
   end
 
   task test: :environment do
-    companies = client.companies
-    puts companies.map(&:market_cap).inspect
+    # companies = client.companies
+    # puts companies.map(&:market_cap).inspect
   end
 
   desc 'set market to company'
@@ -161,12 +161,12 @@ namespace :populate do
     Rake::Task['populate:industries'].invoke
     Rake::Task['populate:companies'].invoke
     Rake::Task['populate:markets'].invoke
+    Rake::Task['update:historical_data'].invoke
     Rake::Task['populate:deactivate'].invoke
     Rake::Task['populate:last_trade_date'].invoke
     Rake::Task['populate:first_trade_date'].invoke
-    Rake::Task['update:historical_data'].invoke
     Rake::Task['populate:financials'].invoke
-    Rake::Task['update:potential_investments'].invoke
+    # Rake::Task['update:potential_investments'].invoke
   end
 
 end

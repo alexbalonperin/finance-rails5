@@ -22,6 +22,7 @@
           %th Projected Price range (5y)
           %th Projected ror range (5y)
           %th Nr past FS
+          %th
 
       %tbody
 
@@ -37,7 +38,7 @@
             %td= number_to_percentage(pi.roe_10y_annual_compounding_ror * 100, precision: 2)
             %td= number_to_percentage([pi.eps_5y_annual_compounding_ror, 1000].min * 100, precision: 2)
             %td= number_to_percentage([pi.eps_10y_annual_compounding_ror, 1000].min * 100, precision: 2)
-            %td= number_with_precision(pi.eps_basic, precision: 2)
+            %td= number_with_precision(pi.eps_diluted, precision: 2)
             %td= number_with_precision(pi.projected_eps, precision: 2)
             %td= number_with_precision(pi.price_earnings_ratio_5y_avg, precision: 2)
             %td= number_with_precision(pi.price_earnings_ratio_10y_avg, precision: 2)
@@ -46,6 +47,12 @@
             %td.col-md-3= extended_range(pi.projected_price_worst, pi.projected_price_min, pi.projected_price_max, pi.projected_price_best, :currency)
             %td.col-md-3= extended_range(pi.projected_rate_of_return_worst, pi.projected_rate_of_return_min, pi.projected_rate_of_return_max, pi.projected_rate_of_return_best, :percent)
             %td= number_with_precision(pi.n_past_financial_statements, precision: 0)
+            %td
+              .btn-group.btn-group-xs{"aria-label" => "...", :role => "group"}
+                %button.btn.btn-primary.btn-default.add-to-watchlist{ 'data-id' => pi.company.id }
+                  %span.glyphicon.glyphicon-zoom-in
+                %button.btn.btn-primary.btn-default.add-to-portfolio{ 'data-id' => pi.company.id }
+                  %span.glyphicon.glyphicon-plus
 
     .alert.alert-info(role="alert")
       %strong Notice

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161106063516) do
+ActiveRecord::Schema.define(version: 20161115144842) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -206,6 +206,10 @@ ActiveRecord::Schema.define(version: 20161106063516) do
     t.decimal  "price_earnings_ratio_10y_avg"
     t.decimal  "price_earnings_ratio_10y_min"
     t.decimal  "price_earnings_ratio_10y_max"
+    t.decimal  "eps_diluted"
+    t.decimal  "eps_diluted_yoy_growth"
+    t.decimal  "eps_diluted_5y_annual_rate_of_return"
+    t.decimal  "eps_diluted_10y_annual_rate_of_return"
     t.index ["company_id", "year"], name: "index_key_financial_indicators_on_company_id_and_year", unique: true, where: "(latest IS TRUE)", using: :btree
     t.index ["company_id"], name: "index_key_financial_indicators_on_company_id", using: :btree
   end
@@ -285,6 +289,14 @@ ActiveRecord::Schema.define(version: 20161106063516) do
     t.index ["company_id"], name: "index_statement_errors_on_company_id", using: :btree
   end
 
+  create_table "watchlists", force: :cascade do |t|
+    t.integer  "company_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_watchlists_on_company_id", using: :btree
+  end
+
   add_foreign_key "balance_sheets", "companies"
   add_foreign_key "cash_flow_statements", "companies"
   add_foreign_key "companies", "industries"
@@ -301,4 +313,5 @@ ActiveRecord::Schema.define(version: 20161106063516) do
   add_foreign_key "potential_investments", "companies"
   add_foreign_key "projections", "companies"
   add_foreign_key "statement_errors", "companies"
+  add_foreign_key "watchlists", "companies"
 end

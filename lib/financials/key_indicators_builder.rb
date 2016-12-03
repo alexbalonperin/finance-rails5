@@ -7,7 +7,7 @@ module Financials
         'debt_to_equity' => lambda { |calc| calc.debt_to_equity_ratio },
         'return_on_equity' => lambda { |calc| calc.return_on_equity_ratio },
         'return_on_assets' => lambda { |calc| calc.return_on_assets_ratio },
-        'eps_basic' => lambda { |calc| calc.eps_basic },
+        'eps_diluted' => lambda { |calc| calc.eps_diluted },
         'free_cash_flow' => lambda { |calc| calc.free_cash_flow },
         'current_ratio' => lambda { |calc| calc.current_ratio },
         'net_margin' => lambda { |calc| calc.net_margin_ratio },
@@ -24,9 +24,11 @@ module Financials
     end
 
     def build
+      # kfi = @company.latest_key_financial_indicators.map(&:attributes).inject({}) { |h, kfi| h[kfi['year']] = kfi; h }
+      # return KeyIndicator.new(kfi) if kfi.present?
+
       years = @years.sort.reverse
       res = years.inject(KeyIndicator.new) do |kfi, year|
-
         calc = KFICalculator.new(@company.historical_data_for(year), @balance_sheets[year], @income_statements[year], @cash_flow_statements[year], @balance_sheets[(year.to_i-1).to_s])
         KFI.each { |label, func| kfi.add(year, label, func.call(calc)) }
         kfi
@@ -242,10 +244,12 @@ module Financials
       end
 
       def price_earnings_ratio
-        return BigDecimal(0) if @is.nil? || @hd.nil? || @is.eps_basic.nil? || @is.eps_basic.zero?
+        return BigDecimal(0) if @is.nil? || @hd.nil?
         last_historical_data = @hd.sort_by { |hd| hd.trade_date }.last
         return BigDecimal(0) if last_historical_data.nil?
-        last_historical_data.adjusted_close / @is.eps_basic
+        eps = @is.eps_diluted || @is.eps_basic
+        return BigDecimal(0) if eps.nil? || eps.zero?
+        last_historical_data.adjusted_close / eps
       end
 
       def debt_to_equity_ratio
@@ -286,9 +290,9 @@ module Financials
         @bs.current_assets / @bs.current_liabilities
       end
 
-      def eps_basic
+      def eps_diluted
         return BigDecimal(0) if @is.nil?
-        @is.eps_basic
+        @is.eps_diluted || @is.eps_basic
       end
 
     end

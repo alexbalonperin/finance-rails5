@@ -15,7 +15,7 @@ FactoryGirl.define do
     net_income_common_stock '34766000'
     preferred_dividends_income_statement_impact '0'
     eps_basic '1.19'
-    eps_diluted '1.18'
+    eps_diluted '1.19'
     weighted_avg_shares '29110000'
     weighted_avg_shares_diluted '29581000'
     dividends_per_basic_common_share '0.24'

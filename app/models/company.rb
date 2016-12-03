@@ -82,6 +82,26 @@ class Company < ApplicationRecord
     sector.id
   end
 
+  def current_price
+    latest_historical_data.adjusted_close
+  end
+
+  def price_at(date)
+    # d = Date.parse(date)
+    d = date
+    price = nil
+    loop do
+      hd = historical_data.where("trade_date = date('#{d}')").first
+      if hd.present?
+        price = hd.adjusted_close
+        break
+      else
+        d -= 1.day
+      end
+    end
+    price
+  end
+
   def historical_data_for(year)
     historical_data.where("extract(year from trade_date) = #{year}")
   end

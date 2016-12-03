@@ -26,16 +26,16 @@ module Financials
       {
           'return_on_equity_5y_annual_rate_of_return' => lambda { |roe| roe_criteria(roe) },
           'return_on_equity_10y_annual_rate_of_return' => lambda { |roe| roe_criteria(roe) },
-          'eps_basic_5y_annual_rate_of_return' => lambda { |eps| eps_criteria(eps) },
-          'eps_basic_10y_annual_rate_of_return' => lambda { |eps| eps_criteria(eps) },
+          'eps_diluted_5y_annual_rate_of_return' => lambda { |eps| eps_criteria(eps) },
+          'eps_diluted_10y_annual_rate_of_return' => lambda { |eps| eps_criteria(eps) },
       }
     end
 
     def multi_criteria
       {
           'ROR_steady_growth' => lambda { |ki| steady_growth?(ki, 'return_on_equity_yoy_growth') },
-          'EPS_steady_growth' => lambda { |ki| steady_growth?(ki, 'eps_basic_yoy_growth') },
-          'EPS_positive' => lambda { |ki| steady_growth?(ki, 'eps_basic') },
+          'EPS_steady_growth' => lambda { |ki| steady_growth?(ki, 'eps_diluted_yoy_growth') },
+          'EPS_positive' => lambda { |ki| steady_growth?(ki, 'eps_diluted') },
           'FCF_positive' => lambda { |ki| steady_growth?(ki, 'free_cash_flow') },
           'Current_ratio_positive' => lambda { |ki| steady_growth?(ki, 'current_ratio', @current_ratio_min) }
       }

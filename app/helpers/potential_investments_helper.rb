@@ -16,6 +16,11 @@ module PotentialInvestmentsHelper
     "#{worst} ~ [#{min} - #{max}] ~ #{best}".html_safe
   end
 
+  def extended_range_for(obj, symbol, type)
+    values = %w[worst min max best].map { |el| obj.send("#{symbol}_#{el}") }
+    extended_range(*values, type)
+  end
+
   def evaluate(pi)
     if pi.good?
       'success'

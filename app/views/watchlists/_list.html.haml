@@ -1,0 +1,64 @@
+.title= title
+.content
+  .table-responsive
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th Sym
+          %th Comp Name
+          %th Sector
+          %th Industry
+          %th Annual RoR (past 10y)
+          %th Current EPS
+          %th Projected EPS (1y)
+          %th Projected EPS (5y)
+          -#%th Avg P/E (5y)
+          -#%th Avg P/E (10y)
+          %th Price at beginning of year
+          %th Current Price
+          -#%th Maximum price
+          %th Projected Price range (1y)
+          %th Projected RoR range (1y)
+          %th Projected Price range (5y)
+          %th Projected RoR range (5y)
+
+      %tbody
+
+        - watchlists.each do |wl|
+          %tr
+            %td= wl.company.symbol
+            %td.col-md-2= link_to wl.company.name.html_safe, wl.company
+            %td= link_to wl.company.sector_name, wl.company.sector
+            %td= link_to truncate(wl.company.industry_name, length: 22), wl.company.industry
+            %td= number_to_percentage(wl.eps_diluted_10y_annual_rate_of_return, precision: 2)
+            -#%td= number_to_percentage(kfi.roe_5y_annual_compounding_ror * 100, precision: 2)
+            -#%td= number_to_percentage(pi.roe_10y_annual_compounding_ror * 100, precision: 2)
+            -#%td= number_to_percentage([pi.eps_5y_annual_compounding_ror, 1000].min * 100, precision: 2)
+            -#%td= number_to_percentage([pi.eps_10y_annual_compounding_ror, 1000].min * 100, precision: 2)
+            %td= number_with_precision(wl.eps_diluted, precision: 2)
+            %td= number_with_precision(wl.projected_eps_1y, precision: 2)
+            %td= number_with_precision(wl.projected_eps_5y, precision: 2)
+            -#%td= number_with_precision(pi.price_earnings_ratio_10y_avg, precision: 2)
+            %td= number_to_currency(wl.price_at_beginning_of_year, precision: 2)
+            %td= number_to_currency(wl.company.current_price, precision: 2)
+            -#%td= number_to_currency(pi.max_price, precision: 2)
+            %td.col-md-3= extended_range_for(wl, :projected_price_1y, :currency)
+            %td.col-md-3= extended_range_for(wl, :projected_rate_of_return_1y, :percent)
+            %td.col-md-3= extended_range_for(wl, :projected_price_5y, :currency)
+            %td.col-md-3= extended_range_for(wl, :projected_rate_of_return_5y, :percent)
+            -#%td.col-md-3= extended_range(pi.projected_rate_of_return_worst, pi.projected_rate_of_return_min, pi.projected_rate_of_return_max, pi.projected_rate_of_return_best, :percent)
+
+    .alert.alert-info(role="alert")
+      %strong Notice
+      %p
+        %ul
+          %li "annual ror" means "annual compounding rate of return"
+          %li "nr past FS" means "number of past financial statements"
+      %p
+        %dl
+          %dt [green]
+          %dd - current price <= max price AND projected worst ror > 0 AND projected min ror > 15%
+          %dt [red]
+          %dd - current price > max price
+          %dt [yellow]
+          %dd - projected worst ror <= 0

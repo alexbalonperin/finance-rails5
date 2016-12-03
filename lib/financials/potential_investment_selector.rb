@@ -40,9 +40,7 @@ module Financials
         index = 1
         selected = @companies.select do |company|
           puts "(#{index}/#{@companies.size}) Evaluating #{company.name} (#{company.id})"
-          kfi = company.latest_key_financial_indicators.map(&:attributes).inject({}) { |h, kfi| h[kfi['year']] = kfi; h }
-          ki = ::Financials::KeyIndicatorsBuilder::KeyIndicator.new(kfi)
-          ki ||= KeyIndicatorsBuilder.new(company).build
+          ki = KeyIndicatorsBuilder.new(company).build
           select = meet_criteria?(ki)
           selected_ki[company.id] = ki if select
           index += 1
@@ -110,9 +108,9 @@ module Financials
          :roe_5y_annual_compounding_ror => ki.current_year['return_on_equity_5y_annual_rate_of_return'],
          :roe_10y_annual_compounding_ror => ki.current_year['return_on_equity_10y_annual_rate_of_return'],
          :roe_steady_growth => steady_growth?(ki, 'return_on_equity_yoy_growth'),
-         :eps_5y_annual_compounding_ror => ki.current_year['eps_basic_5y_annual_rate_of_return'],
-         :eps_10y_annual_compounding_ror => ki.current_year['eps_basic_10y_annual_rate_of_return'],
-         :eps_steady_growth => steady_growth?(ki, 'eps_basic_yoy_growth'),
+         :eps_5y_annual_compounding_ror => ki.current_year['eps_diluted_5y_annual_rate_of_return'],
+         :eps_10y_annual_compounding_ror => ki.current_year['eps_diluted_10y_annual_rate_of_return'],
+         :eps_steady_growth => steady_growth?(ki, 'eps_diluted_yoy_growth'),
          :n_past_financial_statements => ki.n_past_financial_statements,
          :year => Time.current.year
       })
