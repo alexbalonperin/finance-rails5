@@ -1,8 +1,8 @@
-PATH
-  remote: ~/dev/yahoo-finance
+GIT
+  remote: https://github.com/zolrag13/yahoo-finance.git
+  revision: 51153e642198db7bd58d0412c53f8f979ff03a6e
   specs:
-    yahoo-finance (1.1.0)
-      json
+    yahoo-finance (1.0.0)
 
 GEM
   remote: https://rubygems.org/
