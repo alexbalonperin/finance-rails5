@@ -23,6 +23,7 @@ default: &default
 
 development:
   <<: *default
+  username: abp
   database: finance_development
 
   # The specified database role being used to connect to postgres.
@@ -81,5 +82,5 @@ test:
 production:
   <<: *default
   database: finance_prod
-  username: finance-rails5
+  username: abp
   password: <%= ENV['FINANCE-RAILS5_DATABASE_PASSWORD'] %>
