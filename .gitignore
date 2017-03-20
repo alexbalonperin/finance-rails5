@@ -83,4 +83,5 @@ bower.json
 ehthumbs.db
 Thumbs.db
 
-public/financial_statements
+data/financial_statements
+
