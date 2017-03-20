@@ -84,7 +84,6 @@ ActiveRecord::Schema.define(version: 20161115144842) do
     t.date     "first_trade_date"
     t.string   "ipo_year"
     t.decimal  "market_cap"
-    t.index ["active"], name: "index_companies_on_active", using: :btree
     t.index ["industry_id"], name: "index_companies_on_industry_id", using: :btree
     t.index ["name", "symbol", "industry_id", "market_id"], name: "index_companies_on_name_symbol_industry_id_market_id", unique: true, using: :btree
   end
