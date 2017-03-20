@@ -2,7 +2,7 @@ module Client
 
   module FinancialStatement
 
-    DOWNLOAD_DIR = 'public/financial_statements'
+    DOWNLOAD_DIR = 'data/financial_statements'
 
     class Provider
       require 'open-uri'

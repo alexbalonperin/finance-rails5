@@ -4,7 +4,7 @@ module Client
 
     class StockRow < Provider
 
-      SERVICE_URI = 'https://stockrow.com'
+      SERVICE_URI = 'https://stockrow.com/api/companies'
       FILE_NAME = 'financials'
 
       PERIODS = %w[q y t]

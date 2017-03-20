@@ -3,7 +3,7 @@ module Importer
   class StatementImporter
     require 'roo'
 
-    DOWNLOAD_DIR = 'public/financial_statements'
+    DOWNLOAD_DIR = 'data/financial_statements'
 
     def initialize(symbol, dry_run = false)
       @symbol = symbol
