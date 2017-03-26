@@ -16,6 +16,7 @@
 //= require bootstrap.min
 //= require bootstrap-table.min
 //= require bootstrap-table-sticky-header.min
+//= require bootstrap-table-fixed-columns
 //= require_tree ./_extensions
 //= require highstock
 //= require_tree ./charts

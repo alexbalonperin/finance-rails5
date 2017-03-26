@@ -1,16 +1,12 @@
 - income_statements = company.income_statements.sort_by(&:year)
-.row
-  .col-lg-12
-    %table.table
-      %thead
-        %tr
-          %th
-          - income_statements.each do |income_statement|
-            %th= income_statement.year
-      %tbody
-      - display_income_attributes.each do |attribute, options|
-        %tr
-          %td.attribute= options[:display].call(attribute)
-          - income_statements.each do |income_statement|
-            %td= options[:format].call(income_statement.send(attribute))
+%table.table
+  %tr
+    %th.headcol.first
+    - income_statements.each do |income_statement|
+      %td.long.first= income_statement.year
+  - display_income_attributes.each do |attribute, options|
+    %tr
+      %th.headcol= options[:display].call(attribute)
+      - income_statements.each do |income_statement|
+        %td.long= options[:format].call(income_statement.send(attribute))
 

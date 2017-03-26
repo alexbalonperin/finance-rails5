@@ -1,16 +1,12 @@
 - balance_sheets = company.balance_sheets.sort_by(&:year)
-.row
-  .col-lg-12
-    %table.table
-      %thead
-        %tr
-          %th
-          - balance_sheets.each do |balance_sheet|
-            %th= balance_sheet.year
-      %tbody
-      - display_balance_sheet_attributes.each do |attribute, options|
-        %tr
-          %td.attribute= options[:display].call(attribute)
-          - balance_sheets.each do |balance_sheet|
-            %td= options[:format].call(balance_sheet.send(attribute))
 
+%table.table
+  %tr
+    %th.headcol.first
+    - balance_sheets.each do |balance_sheet|
+      %td.long.first= balance_sheet.year
+  - display_balance_sheet_attributes.each do |attribute, options|
+    %tr
+      %th.headcol= options[:display].call(attribute)
+      - balance_sheets.each do |balance_sheet|
+        %td.long= options[:format].call(balance_sheet.send(attribute))

@@ -1,16 +1,12 @@
 - cash_flow_statements = company.cash_flow_statements.sort_by(&:year)
-.row
-  .col-lg-12
-    %table.table
-      %thead
-        %tr
-          %th
-          - cash_flow_statements.each do |cash_flow_statement|
-            %th= cash_flow_statement.year
-      %tbody
-      - display_cash_flow_attributes.each do |attribute, options|
-        %tr
-          %td.attribute= options[:display].call(attribute)
-          - cash_flow_statements.each do |cash_flow_statement|
-            %td= options[:format].call(cash_flow_statement.send(attribute))
+%table.table
+  %tr
+    %th.headcol.first
+    - cash_flow_statements.each do |cash_flow_statement|
+      %td.long.first= cash_flow_statement.year
+  - display_cash_flow_attributes.each do |attribute, options|
+    %tr
+      %th.headcol= options[:display].call(attribute)
+      - cash_flow_statements.each do |cash_flow_statement|
+        %td.long= options[:format].call(cash_flow_statement.send(attribute))
 

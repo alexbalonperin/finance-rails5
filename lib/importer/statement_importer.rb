@@ -37,7 +37,7 @@ module Importer
       file_path = "#{@file_path}/#{type}"
       file = latest_file(file_path)
       if file.nil?
-        error = "Couldn't find any file to import for symbol '#{@symbol}"
+        error = "Couldn't find any file to import for symbol '#{@symbol}'"
         puts error
         record_error(type, 'missing', error)
         return

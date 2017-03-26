@@ -13,6 +13,7 @@
  *= require bootstrap
  *= require bootstrap-table.min
  *= require bootstrap-table-sticky-header
+ *= require bootstrap-table-fixed-columns
  *= require sidebar
  *= require colors
  *= require font-awesome

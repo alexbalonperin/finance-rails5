@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161115144842) do
+ActiveRecord::Schema.define(version: 20170325173120) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,16 @@ ActiveRecord::Schema.define(version: 20161115144842) do
     t.decimal  "cash_and_equivalents_usd"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.decimal  "investments_current"
+    t.decimal  "investments_non_current"
+    t.decimal  "property_plant_and_equipment_net"
+    t.decimal  "tax_assets"
+    t.decimal  "debt_current"
+    t.decimal  "debt_non_current"
+    t.decimal  "tax_liabilities"
+    t.decimal  "deferred_revenue"
+    t.decimal  "deposit_liabilities"
+    t.decimal  "investments"
     t.index ["company_id", "year"], name: "index_balance_sheets_on_company_id_and_year", unique: true, using: :btree
     t.index ["company_id"], name: "index_balance_sheets_on_company_id", using: :btree
   end
@@ -57,8 +67,12 @@ ActiveRecord::Schema.define(version: 20161115144842) do
     t.decimal  "net_cash_flow_from_financing"
     t.decimal  "effect_of_exchange_rate_changes_on_cash"
     t.decimal  "net_cash_flow_change_in_cash_and_cash_equivalents"
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+    t.decimal  "share_based_compensation"
+    t.decimal  "net_cash_flow_business_acquisitions_and_disposals"
+    t.decimal  "net_cash_flow_investment_acquisitions_and_disposals"
+    t.decimal  "free_cash_flow"
     t.index ["company_id", "year"], name: "index_cash_flow_statements_on_company_id_and_year", unique: true, using: :btree
     t.index ["company_id"], name: "index_cash_flow_statements_on_company_id", using: :btree
   end
@@ -84,6 +98,7 @@ ActiveRecord::Schema.define(version: 20161115144842) do
     t.date     "first_trade_date"
     t.string   "ipo_year"
     t.decimal  "market_cap"
+    t.index ["active"], name: "index_companies_on_active", using: :btree
     t.index ["industry_id"], name: "index_companies_on_industry_id", using: :btree
     t.index ["name", "symbol", "industry_id", "market_id"], name: "index_companies_on_name_symbol_industry_id_market_id", unique: true, using: :btree
   end
@@ -146,6 +161,11 @@ ActiveRecord::Schema.define(version: 20161115144842) do
     t.decimal  "eps_basic_usd"
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
+    t.decimal  "operating_expenses"
+    t.decimal  "operating_income"
+    t.decimal  "earnings_before_tax"
+    t.decimal  "net_income_to_non_controlling_interests"
+    t.decimal  "ebitda"
     t.index ["company_id", "year"], name: "index_income_statements_on_company_id_and_year", unique: true, using: :btree
     t.index ["company_id"], name: "index_income_statements_on_company_id", using: :btree
   end

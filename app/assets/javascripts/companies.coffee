@@ -12,6 +12,7 @@ document.addEventListener 'turbolinks:load', ->
     [
       '<a class="show" href="/companies/' + row.id + '" title="Show company: ' + row.name + '">Show</a> '
     ].join('')
+
   columns = [ [
     {
       field: 'symbol'

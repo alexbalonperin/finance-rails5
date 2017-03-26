@@ -32,22 +32,22 @@
   -#               %td= label
   -#               %td= number_to_percentage(kfi.to_f * 100, precision: 4)
 
-.row
+.row.kfi
   .col-md-12
     .element-container
       .title Key Financials
       .content
-        %table.table
-          %thead
-            %th
-            - @ki.per_year_in_asc_order.each do |year, _|
-              %th= year
-          %tbody
+        .pane
+          %table.table
+            %tr
+              %th.headcol.first
+              - @ki.per_year_in_asc_order.each do |year, _|
+                %td.long.first= year
             - kfis.each do |kfi, format|
               %tr
-                %td= kfi.to_s
+                %th.headcol= kfi.to_s
                 - @ki.per_year_in_asc_order.each do |_, stat|
-                  %td= format.call(stat[kfi])
+                  %td.long= format.call(stat[kfi])
 .row.financial-statements
   .col-md-12
     .element-container

@@ -24,7 +24,12 @@ module Importer
         'Revenues (USD)' => :revenues_usd,
         'Earning Before Interest & Taxes (USD)' => :ebit_usd,
         'Net Income Common Stock (USD)' => :net_income_common_stock_usd,
-        'Earnings per Basic Share (USD)' => :eps_basic_usd
+        'Earnings per Basic Share (USD)' => :eps_basic_usd,
+        'Operating Expenses' => :operating_expenses,
+        'Operating Income' => :operating_income,
+        'Earnings before Tax' => :earnings_before_tax,
+        'Net Income to Non-Controlling Interests' => :net_income_to_non_controlling_interests,
+        'Earnings Before Interest, Taxes & Depreciation Amortization (EBITDA)' => :ebitda
     }
     BALANCE_SHEET_MAPPING = {
         'Cash and Equivalents' => :cash_and_equivalents,
@@ -44,7 +49,18 @@ module Importer
         'Shareholders Equity' => :shareholders_equity,
         'Shareholders Equity (USD)' => :shareholders_equity_usd,
         'Total Debt (USD)' => :total_debt_usd,
-        'Cash and Equivalents (USD)' => :cash_and_equivalents_usd
+        'Cash and Equivalents (USD)' => :cash_and_equivalents_usd,
+        'Investments Current' => :investments_current,
+        'Investments Non-Current' => :investments_non_current,
+        'Property, Plant & Equipment Net' => :property_plant_and_equipment_net,
+        'Tax Assets' => :tax_assets,
+        'Debt Current' => :debt_current,
+        'Debt Non-Current' => :debt_non_current,
+        'Tax Liabilities' => :tax_liabilities,
+        'Deferred Revenue' => :deferred_revenue,
+        'Deposit Liabilities' => :deposit_liabilities,
+        'Investments' => :investments,
+
     }
     CASH_FLOW_STAT_MAPPING = {
         'Depreciation, Amortization & Accretion' => :depreciation_amortization_accretion,
@@ -56,7 +72,11 @@ module Importer
         'Payment of Dividends & Other Cash Distributions' => :payment_of_dividends_and_other_cash_distributions,
         'Net Cash Flow from Financing' => :net_cash_flow_from_financing,
         'Effect of Exchange Rate Changes on Cash' => :effect_of_exchange_rate_changes_on_cash,
-        'Net Cash Flow / Change in Cash & Cash Equivalents' => :net_cash_flow_change_in_cash_and_cash_equivalents
+        'Net Cash Flow / Change in Cash & Cash Equivalents' => :net_cash_flow_change_in_cash_and_cash_equivalents,
+        'Share Based Compensation' => :share_based_compensation,
+        'Net Cash Flow - Business Acquisitions and Disposals' => :net_cash_flow_business_acquisitions_and_disposals,
+        'Net Cash Flow - Investment Acquisitions and Disposals' => :net_cash_flow_investment_acquisitions_and_disposals,
+        'Free Cash Flow' => :free_cash_flow
     }
 
     def income_stat_mapping

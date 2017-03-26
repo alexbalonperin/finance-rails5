@@ -19,6 +19,8 @@ document.addEventListener 'turbolinks:load', ->
       searchOnEnterKey = options.searchOnEnterKey ? true
       sortParams = sortParams ? {}
       rowStyle = options.rowStyle ? {}
+      fixedColumns = options.fixedColumns ? false
+      fixedNumber = options.fixedNumber ? 0
 
       table.bootstrapTable
         pageSize: pageSize
@@ -28,6 +30,8 @@ document.addEventListener 'turbolinks:load', ->
         sortOrder: sortOrder
         searchOnEnterKey: searchOnEnterKey
         rowStyle: rowStyle
+        fixedColumns: fixedColumns
+        fixedNumber: fixedNumber
         queryParams: (params) ->
           if sortParams[params['sort']] != undefined
             params['sort'] = sortParams[params['sort']]

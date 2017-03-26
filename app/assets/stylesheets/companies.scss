@@ -49,20 +49,84 @@
 }
 
 .financial-statements {
-  td {
-    min-width: 120px;
+  .content { padding: 0}
+  .tab-pane.active, .pane {
+      overflow-x:scroll;
+      overflow-y:visible;
+      padding:0;
+  }
+  table {
+    border-spacing:0;
+  }
+  td, th {
+    margin:0;
+    white-space:nowrap;
+  }
+  .headcol {
+      position:absolute;
+      left:16px;
+      top:auto;
+      border-right: 1px solid grey;
+  }
+  .first {
+    height: 38px;
+    border:0px;
+  }
+  .long {
+    letter-spacing:0.1em;
     text-align: right;
+    height: 38px;
   }
-  td.attribute {
-    text-align: left;
-    min-width: 200px;
-    font-weight: bold;
+
+  #income {
+    margin-left:23.5em;
+    .headcol {
+       width:23.5em;
+    }
   }
-  th {
-    text-align: center;
+  #balance {
+    margin-left:23.5em;
+    .headcol {
+      width:23.5em;
+    }
   }
-  .tab-content{
-    max-width: 1200px;
-    overflow-x:scroll;
+  #cashflow {
+    margin-left:27em;
+    .headcol {
+      width:27em;
+    }
+  }
+}
+
+.kfi {
+  .content { padding: 0}
+  .pane {
+      overflow-x:scroll;
+      overflow-y:visible;
+      padding:0;
+      margin-left:15.2em;
+  }
+  table {
+    border-spacing:0;
+  }
+  td, th {
+    margin:0;
+    white-space:nowrap;
+  }
+  .headcol {
+      position:absolute;
+      left:16px;
+      top:auto;
+      width:15.2em;
+      border-right: 1px solid grey;
+  }
+  .first {
+    height: 38px;
+    border:0px;
+  }
+  .long {
+    letter-spacing:0.1em;
+    text-align: right;
+    height: 38px;
   }
 }
