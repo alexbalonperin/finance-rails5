@@ -7,21 +7,20 @@
           %th Sym
           %th Comp Name
           %th Sector
-          %th Industry
           %th Year
           %th ROE annual ror (5y)
           %th ROE annual ror (10y)
           %th EPS annual ror (5y)
           %th EPS annual ror (10y)
-          %th Current EPS
-          %th Projected EPS
+          %th Cur EPS
+          %th Proj EPS
           %th Avg P/E (5y)
           %th Avg P/E (10y)
-          %th Current Price
-          %th Maximum price
-          %th Projected Price range (5y)
-          %th Projected ror range (5y)
-          %th Nr past FS
+          %th Cur Price
+          %th Max price
+          %th Proj Price range (5y) ($)
+          %th Proj ror range (5y) (%)
+          %th Industry
           %th
 
       %tbody
@@ -30,9 +29,8 @@
           - pi.projection(selector.selector_name)
           %tr(class="#{evaluate(pi)}")
             %td= pi.company.symbol
-            %td.col-md-2= link_to pi.company.name.html_safe, pi.company
-            %td= link_to pi.company.sector_name, pi.company.sector
-            %td= link_to truncate(pi.company.industry_name, length: 22), pi.company.industry
+            %td.col-sm-2= link_to pi.company.name.html_safe, pi.company
+            %td.col-md-1= link_to pi.company.sector_name, pi.company.sector
             %td= pi.year
             %td= number_to_percentage(pi.roe_5y_annual_compounding_ror * 100, precision: 2)
             %td= number_to_percentage(pi.roe_10y_annual_compounding_ror * 100, precision: 2)
@@ -44,10 +42,10 @@
             %td= number_with_precision(pi.price_earnings_ratio_10y_avg, precision: 2)
             %td= number_to_currency(pi.current_price, precision: 2)
             %td= number_to_currency(pi.max_price, precision: 2)
-            %td.col-md-3= extended_range(pi.projected_price_worst, pi.projected_price_min, pi.projected_price_max, pi.projected_price_best, :currency)
-            %td.col-md-3= extended_range(pi.projected_rate_of_return_worst, pi.projected_rate_of_return_min, pi.projected_rate_of_return_max, pi.projected_rate_of_return_best, :percent)
-            %td= number_with_precision(pi.n_past_financial_statements, precision: 0)
-            %td
+            %td.col-lg-3= extended_range(pi.projected_price_worst, pi.projected_price_min, pi.projected_price_max, pi.projected_price_best, :currency)
+            %td.col-lg-3= extended_range(pi.projected_rate_of_return_worst, pi.projected_rate_of_return_min, pi.projected_rate_of_return_max, pi.projected_rate_of_return_best, :percent)
+            %td.col-md-2= link_to truncate(pi.company.industry_name, length: 22), pi.company.industry
+            %td.col-md-2
               .btn-group.btn-group-xs{"aria-label" => "...", :role => "group"}
                 %button.btn.btn-primary.btn-default.add-to-watchlist{ 'data-id' => pi.company.id }
                   %span.glyphicon.glyphicon-zoom-in
