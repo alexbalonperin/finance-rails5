@@ -102,6 +102,20 @@ class Company < ApplicationRecord
     price
   end
 
+  def adjusted_close_beginning_of(year)
+    hd = historical_data_for(year)
+    hd_first = hd.sort_by(&:trade_date).first
+    return if hd_first.nil?
+    hd_first.adjusted_close
+  end
+
+  def adjusted_close_end_of(year)
+    hd = historical_data_for(year)
+    hd_last = hd.sort_by(&:trade_date).last
+    return if hd_last.nil?
+    hd_last.adjusted_close
+  end
+
   def historical_data_for(year)
     historical_data.where("extract(year from trade_date) = #{year}")
   end

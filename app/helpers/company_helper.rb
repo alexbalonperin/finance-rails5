@@ -12,7 +12,7 @@ module CompanyHelper
 
   def currency_func(val, precision = 0)
     return 0.0 if val.nil?
-    number_to_currency(val, precision: precision)
+    number_to_currency(val/1_000_000, precision: precision)
   end
 
   def kfis

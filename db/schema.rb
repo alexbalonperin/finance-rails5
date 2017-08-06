@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170325173120) do
+ActiveRecord::Schema.define(version: 20170409023240) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -271,21 +271,43 @@ ActiveRecord::Schema.define(version: 20170325173120) do
 
   create_table "projections", force: :cascade do |t|
     t.integer  "company_id"
-    t.boolean  "latest",                         default: true
+    t.boolean  "latest",                             default: true
     t.decimal  "current_price"
-    t.decimal  "projected_eps"
-    t.decimal  "projected_price_worst"
-    t.decimal  "projected_price_min"
-    t.decimal  "projected_price_max"
-    t.decimal  "projected_price_best"
-    t.decimal  "projected_rate_of_return_worst"
-    t.decimal  "projected_rate_of_return_min"
-    t.decimal  "projected_rate_of_return_max"
-    t.decimal  "projected_rate_of_return_best"
-    t.datetime "created_at",                                    null: false
-    t.datetime "updated_at",                                    null: false
+    t.decimal  "projected_eps_1y"
+    t.decimal  "projected_price_worst_1y"
+    t.decimal  "projected_price_min_1y"
+    t.decimal  "projected_price_max_1y"
+    t.decimal  "projected_price_best_1y"
+    t.decimal  "projected_rate_of_return_worst_1y"
+    t.decimal  "projected_rate_of_return_min_1y"
+    t.decimal  "projected_rate_of_return_max_1y"
+    t.decimal  "projected_rate_of_return_best_1y"
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
     t.string   "selector"
-    t.decimal  "max_price"
+    t.decimal  "projected_value_1y"
+    t.string   "year"
+    t.decimal  "actual_price"
+    t.decimal  "projected_eps_5y"
+    t.decimal  "projected_price_worst_5y"
+    t.decimal  "projected_price_min_5y"
+    t.decimal  "projected_price_max_5y"
+    t.decimal  "projected_price_best_5y"
+    t.decimal  "projected_rate_of_return_worst_5y"
+    t.decimal  "projected_rate_of_return_min_5y"
+    t.decimal  "projected_rate_of_return_max_5y"
+    t.decimal  "projected_rate_of_return_best_5y"
+    t.decimal  "projected_eps_10y"
+    t.decimal  "projected_price_worst_10y"
+    t.decimal  "projected_price_min_10y"
+    t.decimal  "projected_price_max_10y"
+    t.decimal  "projected_price_best_10y"
+    t.decimal  "projected_rate_of_return_worst_10y"
+    t.decimal  "projected_rate_of_return_min_10y"
+    t.decimal  "projected_rate_of_return_max_10y"
+    t.decimal  "projected_rate_of_return_best_10y"
+    t.decimal  "projected_value_5y"
+    t.decimal  "projected_value_10y"
     t.index ["company_id"], name: "index_projections_on_company_id", using: :btree
   end
 

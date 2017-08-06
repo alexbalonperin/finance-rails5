@@ -17,7 +17,7 @@
           %th Avg P/E (5y)
           %th Avg P/E (10y)
           %th Cur Price
-          %th Max price
+          %th Proj Value
           %th Proj Price range (5y) ($)
           %th Proj ror range (5y) (%)
           %th Industry
@@ -26,31 +26,31 @@
       %tbody
 
         - potential_investments.each do |pi|
-          - pi.projection(selector.selector_name)
-          %tr(class="#{evaluate(pi)}")
-            %td= pi.company.symbol
-            %td.col-sm-2= link_to pi.company.name.html_safe, pi.company
-            %td.col-md-1= link_to pi.company.sector_name, pi.company.sector
-            %td= pi.year
-            %td= number_to_percentage(pi.roe_5y_annual_compounding_ror * 100, precision: 2)
-            %td= number_to_percentage(pi.roe_10y_annual_compounding_ror * 100, precision: 2)
-            %td= number_to_percentage([pi.eps_5y_annual_compounding_ror, 1000].min * 100, precision: 2)
-            %td= number_to_percentage([pi.eps_10y_annual_compounding_ror, 1000].min * 100, precision: 2)
-            %td= number_with_precision(pi.eps_diluted, precision: 2)
-            %td= number_with_precision(pi.projected_eps, precision: 2)
-            %td= number_with_precision(pi.price_earnings_ratio_5y_avg, precision: 2)
-            %td= number_with_precision(pi.price_earnings_ratio_10y_avg, precision: 2)
-            %td= number_to_currency(pi.current_price, precision: 2)
-            %td= number_to_currency(pi.max_price, precision: 2)
-            %td.col-lg-3= extended_range(pi.projected_price_worst, pi.projected_price_min, pi.projected_price_max, pi.projected_price_best, :currency)
-            %td.col-lg-3= extended_range(pi.projected_rate_of_return_worst, pi.projected_rate_of_return_min, pi.projected_rate_of_return_max, pi.projected_rate_of_return_best, :percent)
-            %td.col-md-2= link_to truncate(pi.company.industry_name, length: 22), pi.company.industry
-            %td.col-md-2
-              .btn-group.btn-group-xs{"aria-label" => "...", :role => "group"}
-                %button.btn.btn-primary.btn-default.add-to-watchlist{ 'data-id' => pi.company.id }
-                  %span.glyphicon.glyphicon-zoom-in
-                %button.btn.btn-primary.btn-default.add-to-portfolio{ 'data-id' => pi.company.id }
-                  %span.glyphicon.glyphicon-plus
+          - pi.projections.each do |proj|
+            %tr(class="#{evaluate(pi)}")
+              %td= pi.company.symbol
+              %td.col-sm-2= link_to pi.company.name.html_safe, pi.company
+              %td.col-md-1= link_to pi.company.sector_name, pi.company.sector
+              %td= proj.year
+              %td= number_to_percentage(pi.roe_5y_annual_compounding_ror * 100, precision: 2)
+              %td= number_to_percentage(pi.roe_10y_annual_compounding_ror * 100, precision: 2)
+              %td= number_to_percentage([pi.eps_5y_annual_compounding_ror, 1000].min * 100, precision: 2)
+              %td= number_to_percentage([pi.eps_10y_annual_compounding_ror, 1000].min * 100, precision: 2)
+              %td= number_with_precision(pi.eps_diluted, precision: 2)
+              %td= number_with_precision(proj.projected_eps_1y, precision: 2)
+              %td= number_with_precision(pi.price_earnings_ratio_5y_avg, precision: 2)
+              %td= number_with_precision(pi.price_earnings_ratio_10y_avg, precision: 2)
+              %td= number_to_currency(proj.current_price, precision: 2)
+              %td= number_to_currency(proj.projected_value_1y, precision: 2)
+              %td.col-lg-3= extended_range(proj.projected_price_worst_1y, proj.projected_price_min_1y, proj.projected_price_max_1y, proj.projected_price_best_1y, :currency)
+              %td.col-lg-3= extended_range(proj.projected_rate_of_return_worst_1y*100, proj.projected_rate_of_return_min_1y*100, proj.projected_rate_of_return_max_1y*100, proj.projected_rate_of_return_best_1y*100, :percent)
+              %td.col-md-2= link_to truncate(pi.company.industry_name, length: 22), pi.company.industry
+              %td.col-md-2
+                .btn-group.btn-group-xs{"aria-label" => "...", :role => "group"}
+                  %button.btn.btn-primary.btn-default.add-to-watchlist{ 'data-id' => pi.company.id }
+                    %span.glyphicon.glyphicon-zoom-in
+                  %button.btn.btn-primary.btn-default.add-to-portfolio{ 'data-id' => pi.company.id }
+                    %span.glyphicon.glyphicon-plus
 
     .alert.alert-info(role="alert")
       %strong Notice

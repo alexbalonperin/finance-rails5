@@ -19,7 +19,6 @@ module Financials
       @free_cash_flow_min = FREE_CASH_FLOW_MIN
       @current_ratio_min = CURRENT_RATIO_MIN
       @prev_records = PotentialInvestment.latest(@selector)
-      @prev_projections = ::Projection.latest(@selector)
     end
 
     def single_criteria

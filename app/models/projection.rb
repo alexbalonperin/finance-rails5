@@ -2,8 +2,11 @@ class Projection < ApplicationRecord
 
   belongs_to :company
 
-  def self.latest(type = 'basic')
-    Projection.where('latest = true AND selector = ?', type)
+  def to_s
+    s = "Company: #{company.name}\n"
+    s << "   projections: #{year}\n"
+    s << "                    1y        5y        10y\n"
+    s << "   projected eps: %.2f      %.2f      %.2f\n" % [projected_eps_1y || 0, projected_eps_5y || 0, projected_eps_10y || 0]
+    s
   end
-
 end

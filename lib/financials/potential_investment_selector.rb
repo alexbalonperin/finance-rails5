@@ -35,7 +35,6 @@ module Financials
     def select
       ActiveRecord::Base.transaction do
         @prev_records.update_all(:latest => false)
-        @prev_projections.update_all(:latest => false)
         selected_ki = {}
         index = 1
         selected = @companies.select do |company|
@@ -75,30 +74,7 @@ module Financials
       selected.each do |company|
         ki = selected_ki[company.id]
         save_potential_investment(company, ki)
-        save_projection(company, ki)
       end
-    end
-
-    def save_projection(company, ki)
-      current_price = company.latest_historical_data.adjusted_close
-      projection = Financials::Projection.new(ki)
-      projection.project(current_price)
-      ::Projection.create({
-         :company_id => company.id,
-         :selector => @selector,
-         :current_price => current_price,
-         :projected_eps => projection['projected_eps'],
-         :projected_price_worst => projection['projected_price_worst'],
-         :projected_price_min => projection['projected_price_min'],
-         :projected_price_max => projection['projected_price_max'],
-         :projected_price_best => projection['projected_price_best'],
-         :projected_rate_of_return_worst => projection['projected_rate_of_return_worst'],
-         :projected_rate_of_return_min => projection['projected_rate_of_return_min'],
-         :projected_rate_of_return_max => projection['projected_rate_of_return_max'],
-         :projected_rate_of_return_best => projection['projected_rate_of_return_best'],
-         :max_price => projection['max_price']
-      })
-
     end
 
     def save_potential_investment(company, ki)

@@ -6,6 +6,6 @@
                                                 :title => 'Potential Investments',
                                                 :selector => Financials::BasicSelector.new }
       %hr
-      = render :partial => 'list', :locals => { :potential_investments => @promising_investments,
-                                                :title => 'Promising Investments',
-                                                :selector => Financials::PromisingCompaniesSelector.new }
+      /= render :partial => 'list', :locals => { :potential_investments => @promising_investments,
+      /                                          :title => 'Promising Investments',
+      /                                          :selector => Financials::PromisingCompaniesSelector.new }
