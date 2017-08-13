@@ -18,13 +18,13 @@ module Client
 
       def records_to_historical_data(records, company_id)
         records.inject([]) do |arr, record|
-          arr << HistoricalDatum.new(trade_date: record.trade_date,
+          arr << HistoricalDatum.new(trade_date: record.date,
                                      open: record.open,
                                      high: record.high,
                                      low: record.low,
                                      close: record.close,
                                      volume: record.volume,
-                                     adjusted_close: record.adjusted_close,
+                                     adjusted_close: record.adj_close,
                                      company_id: company_id)
         end
       end

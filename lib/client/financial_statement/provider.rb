@@ -15,12 +15,12 @@ module Client
 
       def downloading_statement(url, symbol, type)
         file_path = "#{DOWNLOAD_DIR}/#{symbol}/#{type}/"
-        FileUtils::mkdir_p file_path
         file_name = "#{Time.current.strftime('%Y%m%d%H%M%S')}.xlsx"
-        file_path << file_name
+        full_path = "#{file_path}#{file_name}"
         begin
           open(url) do |in_io|
-            File.open(file_path, 'w+') do |out_io|
+            FileUtils::mkdir_p file_path
+            File.open(full_path, 'w+') do |out_io|
               out_io.print in_io.read
             end
           end

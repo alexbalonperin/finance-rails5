@@ -7,8 +7,8 @@ module Client
       SERVICE_URI = 'https://stockrow.com/api/companies'
       FILE_NAME = 'financials'
 
-      PERIODS = %w[q y t]
-      TYPES = %w[metrics cashflow balance income growth]
+      PERIODS = %w[MRQ MRY MRT]
+      TYPES = ["Metrics", "Cash Flow", "Balance Sheet", "Income Statement", "Growth"]
 
       def build_url(symbol, type, period)
         unless PERIODS.include?(period)
@@ -18,23 +18,24 @@ module Client
           raise "Type '#{type}' is unavailable. Please select one of #{TYPES.join(", ")}."
         end
 
-        "#{SERVICE_URI}/#{symbol}/#{FILE_NAME}.xlsx?d=#{period}&s=#{type}"
+        url_symbol = symbol.gsub(".","").gsub("^", "_P_")
+        "#{SERVICE_URI}/#{url_symbol}/#{FILE_NAME}.xlsx?dimension=#{period}&section=#{type}"
       end
 
       def income_statement(symbol, period)
-        type = 'income'
+        type = 'Income Statement'
         url = build_url(symbol, type, period)
         downloading_statement(url, symbol, type)
       end
 
       def balance_sheet(symbol, period)
-        type = 'balance'
+        type = 'Balance Sheet'
         url = build_url(symbol, type, period)
         downloading_statement(url, symbol, type)
       end
 
       def cashflow_statement(symbol, period)
-        type = 'cashflow'
+        type = 'Cash Flow'
         url = build_url(symbol, type, period)
         downloading_statement(url, symbol, type)
       end
@@ -46,11 +47,11 @@ module Client
         puts "FOUND #{total} companies from which we need the financial statements"
         missing_companies.each_with_index do |company, index|
           puts "(#{index}/#{total}) Downloading financial statements for '#{company.name}' (ID: #{company.id}, Symbol: #{company.symbol})."
-          income_statement(company.symbol, 'y')
+          income_statement(company.symbol, 'MRY')
           puts '------ Income statement downloaded'
-          balance_sheet(company.symbol, 'y')
+          balance_sheet(company.symbol, 'MRY')
           puts '------ Balance sheet downloaded'
-          cashflow_statement(company.symbol, 'y')
+          cashflow_statement(company.symbol, 'MRY')
           puts '------ Cash flow statement downloaded'
         end
       end
