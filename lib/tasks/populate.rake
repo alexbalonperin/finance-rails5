@@ -51,9 +51,9 @@ namespace :populate do
   desc 'set market to company'
   task markets: :environment do
     Market.select(:name).map(&:name).each do |name|
-      nyse_companies = client.companies([name.downcase])
-      puts "Number of companies on the #{name} market: #{nyse_companies.size}."
-      companies = Company.where("market_id is null and symbol in ('#{nyse_companies.map{|c| c.symbol.strip }.join("', '")}')")
+      companies_in_market = client.companies([name.downcase])
+      puts "Number of companies on the #{name} market: #{companies_in_market.size}."
+      companies = Company.where("market_id is null and symbol in ('#{companies_in_market.map{|c| c.symbol.strip }.join("', '")}')")
       puts "Found #{companies.size} companies to update."
       companies.update_all(:market_id => Market.find_by_name(name).id)
       puts "Done adding market to companies in #{name}."
