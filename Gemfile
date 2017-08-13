@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-
+ruby "~> 2.3.0"
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.0'
 # Use postgresql as the database for Active Record
@@ -23,6 +23,9 @@ gem 'font-awesome-rails', '~> 4.6.3.1'
 gem 'jquery-rails', '~> 4.1.1'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
+
+gem 'parallel'
+gem 'ruby-progressbar'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # bundle exec rake doc:rails generates the API under doc/api.
@@ -35,21 +38,17 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-gem 'require_reloader', '~> 0.2.0'
-
-gem 'yahoo-finance', :git => 'https://github.com/zolrag13/yahoo-finance.git'
-#gem 'yahoo-finance', :path => '~/dev/yahoo-finance'
-
-gem 'stock_quote', '~> 1.2.3'
+#gem 'require_reloader', '~> 0.2.0'
 
 gem 'roo', '~> 2.5.0'
 
 gem 'whenever', :require => false
 
+gem 'quandl'
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platform: :mri
   gem 'factory_girl_rails', '~> 4.7.0'
   gem 'rspec-rails', '~> 3.5.1'
 end
