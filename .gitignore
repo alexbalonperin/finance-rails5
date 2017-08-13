@@ -84,5 +84,5 @@ bower.json
 ehthumbs.db
 Thumbs.db
 
-data/financial_statements
+data/*
 docker
