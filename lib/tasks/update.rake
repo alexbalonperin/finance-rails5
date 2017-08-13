@@ -1,7 +1,7 @@
 namespace :update do
 
   def client
-    @client ||= Client::HistoricalPrice::Yahoo.new
+    @client ||= Client::HistoricalPrice::QuandlClient.new
   end
 
   desc 'update historical data for all companies in the database'
