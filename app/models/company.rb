@@ -130,6 +130,26 @@ class Company < ApplicationRecord
     hist_data.first if hist_data.present?
   end
 
+  def last_open_ended_trading_date
+    time = Time.current
+    if time.monday?
+      time = time - 3.days
+    elsif time.sunday?
+      time = time - 2.days
+    elsif time.saturday?
+      time = time - 1.day
+    end
+    time.to_date
+  end
+
+  def historical_data_uptodate?
+      last = last_trade_date
+      start_date = last.present? ? last + 1.day : nil
+      start_date.present? &&
+          start_date >= last_open_ended_trading_date &&
+          start_date <= Time.current.to_date
+  end
+
   def growth(lower_bound = 1.week.ago, upper_bound = Time.now)
     lower, upper = historical_data.where(['trade_date = ? or trade_date = ?', lower_bound.to_date.beginning_of_week, upper_bound.to_date.end_of_week + 1.day])
     lower ||= historical_data.joins(:company).where('trade_date = companies.first_trade_date').first

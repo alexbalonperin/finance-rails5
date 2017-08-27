@@ -4,18 +4,6 @@ module Client
 
     class Provider
 
-      def last_open_ended_trading_date
-        time = Time.current
-        if time.monday?
-          time = time - 3.days
-        elsif time.sunday?
-          time = time - 2.days
-        elsif time.saturday?
-          time = time - 1.day
-        end
-        time.to_date
-      end
-
       def records_to_historical_data(records, company_id)
         records.inject([]) do |arr, record|
           arr << HistoricalDatum.new(trade_date: record.date,
@@ -24,17 +12,15 @@ module Client
                                      low: record.low,
                                      close: record.close,
                                      volume: record.volume,
-                                     adjusted_close: record.adj_close,
+                                     adjusted_close: record.adjusted_close,
                                      company_id: company_id)
         end
       end
 
       def historical_data_update(company)
         last = company.last_trade_date
-        start_date = last.present? ? last + 1.day : nil
-        if start_date.present? &&
-            start_date >= last_open_ended_trading_date &&
-            start_date <= Time.current.to_date
+        start_date = last.present? ? last + 1.day : Time.now() - 30.years
+        if company.historical_data_uptodate?
           puts "Historical data up-to-date for #{company.name}"
           return
         end
