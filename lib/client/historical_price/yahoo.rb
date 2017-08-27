@@ -28,6 +28,10 @@ module Client
         client.historical_quotes(symbol, opts)
       end
 
+      def symbol_changes
+        client.symbol_changes
+      end
+
     end
 
   end

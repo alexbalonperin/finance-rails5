@@ -32,6 +32,40 @@ namespace :update do
     puts 'Done updating historical data'
   end
 
+  task test: :environment do
+    company = Company.where('symbol = ?', 'BRK-A').first
+    puts company.name, company.id, company.symbol
+
+    records = client.historical_data_update(company)
+    data = client.records_to_historical_data(records, company.id)
+    last_trade_date = data.sort_by(&:trade_date).last.trade_date
+
+    company.update(:last_trade_date => last_trade_date)
+    result = HistoricalDatum.import(data)
+  end
+
+  task symbol_changes: :environment do
+    records = client.symbol_changes
+    companies = Company.where('symbol in (?)', records.map(&:old_symbol))
+    old_symbols = companies.map(&:symbol)
+    records.select { |record| old_symbols.include?(record.old_symbol) }.each do |record|
+      c_old = companies.find { |c| c.symbol == record.old_symbol }
+      puts "Changing symbol for company #{c_old.name} from #{record.old_symbol} to #{record.new_symbol} (effective date: #{record.effective_date})"
+      c_new = c_old.dup
+      c_new.symbol = record.new_symbol
+      c_old.active = false
+      begin
+        if c_new.save && c_old.save
+          puts "Done changing symbol for company #{c_old.name}"
+        else
+          puts "Could not update symbol for company #{c_old.name}"
+        end
+      rescue StandardError => e
+        puts "Could not update symbol for company #{c_old.name}"
+      end
+    end
+  end
+
   desc 'resolve financial statement errors'
   task resolve_fs_errors: :environment do
     resolver = Financials::StatementIssueResolver.new
