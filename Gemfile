@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby "~> 2.3.0"
+ruby "2.3.0"
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.0'
 # Use postgresql as the database for Active Record
@@ -39,6 +39,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # gem 'capistrano-rails', group: :development
 
 #gem 'require_reloader', '~> 0.2.0'
+gem 'yahoo-finance', :git => 'https://github.com/zolrag13/yahoo-finance.git', :branch => :temporary
 
 gem 'roo', '~> 2.5.0'
 
