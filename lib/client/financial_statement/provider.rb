@@ -13,8 +13,13 @@ module Client
         FileUtils::mkdir_p DOWNLOAD_DIR
       end
 
-      def downloading_statement(url, symbol, type)
-        file_path = "#{DOWNLOAD_DIR}/#{symbol}/#{type}/"
+      def downloading_statement(url, period, symbol, type)
+        period_folder = if period == 'MRQ'
+          'quarterly'
+        elsif period == 'MRY'
+          'yearly'
+        end
+        file_path = "#{DOWNLOAD_DIR}/#{period_folder}/#{symbol}/#{type}/"
         file_name = "#{Time.current.strftime('%Y%m%d%H%M%S')}.xlsx"
         full_path = "#{file_path}#{file_name}"
         begin
