@@ -1,0 +1,2 @@
+class CikLookup < ApplicationRecord
+end

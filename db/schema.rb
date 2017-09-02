@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170409023240) do
+ActiveRecord::Schema.define(version: 20170902092224) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -77,6 +77,15 @@ ActiveRecord::Schema.define(version: 20170409023240) do
     t.index ["company_id"], name: "index_cash_flow_statements_on_company_id", using: :btree
   end
 
+  create_table "cik_lookups", force: :cascade do |t|
+    t.string   "cik"
+    t.integer  "company_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cik", "company_id"], name: "index_cik_lookups_on_cik_and_company_id", unique: true, using: :btree
+    t.index ["company_id"], name: "index_cik_lookups_on_company_id", using: :btree
+  end
+
   create_table "commodities", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
@@ -117,6 +126,18 @@ ActiveRecord::Schema.define(version: 20170409023240) do
     t.string   "code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "filing_releases", force: :cascade do |t|
+    t.string   "cik"
+    t.integer  "company_id"
+    t.string   "form_type"
+    t.string   "date"
+    t.string   "filename"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id", "form_type", "date"], name: "index_filing_releases_on_company_id_and_form_type_and_date", unique: true, using: :btree
+    t.index ["company_id"], name: "index_filing_releases_on_company_id", using: :btree
   end
 
   create_table "historical_data", force: :cascade do |t|
@@ -340,10 +361,12 @@ ActiveRecord::Schema.define(version: 20170409023240) do
 
   add_foreign_key "balance_sheets", "companies"
   add_foreign_key "cash_flow_statements", "companies"
+  add_foreign_key "cik_lookups", "companies"
   add_foreign_key "companies", "industries"
   add_foreign_key "companies", "markets"
   add_foreign_key "companies_changes", "companies", column: "from_id"
   add_foreign_key "companies_changes", "companies", column: "to_id"
+  add_foreign_key "filing_releases", "companies"
   add_foreign_key "historical_data", "companies"
   add_foreign_key "income_statements", "companies"
   add_foreign_key "industries", "sectors"

@@ -1,0 +1,2 @@
+class FilingRelease < ApplicationRecord
+end
