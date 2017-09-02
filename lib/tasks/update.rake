@@ -32,18 +32,6 @@ namespace :update do
     puts 'Done updating historical data'
   end
 
-  task test: :environment do
-    company = Company.where('symbol = ?', 'BRK-A').first
-    puts company.name, company.id, company.symbol
-
-    records = client.historical_data_update(company)
-    data = client.records_to_historical_data(records, company.id)
-    last_trade_date = data.sort_by(&:trade_date).last.trade_date
-
-    company.update(:last_trade_date => last_trade_date)
-    result = HistoricalDatum.import(data)
-  end
-
   task symbol_changes: :environment do
     records = client.symbol_changes
     companies = Company.where('symbol in (?)', records.map(&:old_symbol))
@@ -64,6 +52,18 @@ namespace :update do
         puts "Could not update symbol for company #{c_old.name}"
       end
     end
+  end
+
+  desc 'get latest filings information'
+  task latest_filings: :environment do
+    client = Client::FinancialStatement::Edgar.new
+    client.get_latest_filing
+  end
+
+  desc 'get cik for each company'
+  task cik_to_company_name: :environment do
+    client = Client::FinancialStatement::Edgar.new
+    client.cik_to_company_name
   end
 
   desc 'resolve financial statement errors'

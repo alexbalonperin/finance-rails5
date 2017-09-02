@@ -144,13 +144,13 @@ namespace :populate do
   end
 
   desc 'download quarterly financial statements'
-  task quarterly_financials: :environment do
+  task download_quarterly_financials: :environment do
     client = Client::FinancialStatement::StockRow.new
     client.download_financials('MRQ')
   end
 
   desc 'download yearly financial statements'
-  task financials: :environment do
+  task download_financials: :environment do
     client = Client::FinancialStatement::StockRow.new
     client.download_financials('MRY')
   end
@@ -168,11 +168,14 @@ namespace :populate do
     Rake::Task['populate:companies'].invoke
     Rake::Task['populate:markets'].invoke
     Rake::Task['update:symbol_changes'].invoke
+    Rake::Task['update:cik_to_company_name'].invoke
+    Rake::Task['update:latest_filings'].invoke
     Rake::Task['update:historical_data'].invoke
     Rake::Task['populate:deactivate'].invoke
     Rake::Task['populate:last_trade_date'].invoke
     Rake::Task['populate:first_trade_date'].invoke
-    #Rake::Task['populate:financials'].invoke
+    #Rake::Task['populate:download_financials'].invoke
+    #Rake::Task['populate:download_quarterly_financials'].invoke
     # Rake::Task['update:potential_investments'].invoke
   end
 
