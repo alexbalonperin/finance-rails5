@@ -26,7 +26,7 @@ module Client
         end
         puts "Updating historical data for : #{company.name}"
         begin
-          historical_quotes(company.symbol, :start_date => start_date)
+          historical_quotes(company.symbol.gsub('.', '-'), :start_date => start_date)
         rescue StandardError => e
           puts "Couldn't fetch data for company #{company.name}. Error: #{e.message}"
           company.update(:skip_historical_data => true)
