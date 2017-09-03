@@ -53,6 +53,7 @@ module Client
           data
         end
 
+        puts "Found #{r.size} new cik mappings"
         CikLookup.import(r.uniq {|a| a.company_id }) if r.present?
       end
 
@@ -68,7 +69,7 @@ module Client
           candidates = companies[record.cik]
           next data if candidates.nil?
           company_id = candidates.sort_by(&:created_at).reverse.first.company_id
-          element = FilingRelease.where(['cik = ? and date = ? and form_type = ?', record.cik, record.date, record.form_type])
+          element = FilingRelease.where(['company_id = ? and date = ? and form_type = ?', company_id, record.date, record.form_type])
           if element.empty?
             data << FilingRelease.new({
               company_id: company_id,
@@ -80,6 +81,7 @@ module Client
           end
           data
         end
+        puts "Found #{r.size} new filings"
         FilingRelease.import(r.uniq {|a| [a.cik, a.date, a.form_type]}) if r.present?
       end
 
