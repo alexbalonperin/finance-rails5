@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170902092224) do
+ActiveRecord::Schema.define(version: 20170903085412) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(version: 20170902092224) do
     t.decimal  "deferred_revenue"
     t.decimal  "deposit_liabilities"
     t.decimal  "investments"
+    t.decimal  "cash_and_short_term_investments"
     t.index ["company_id", "year"], name: "index_balance_sheets_on_company_id_and_year", unique: true, using: :btree
     t.index ["company_id"], name: "index_balance_sheets_on_company_id", using: :btree
   end
@@ -187,6 +188,11 @@ ActiveRecord::Schema.define(version: 20170902092224) do
     t.decimal  "earnings_before_tax"
     t.decimal  "net_income_to_non_controlling_interests"
     t.decimal  "ebitda"
+    t.decimal  "ebitda_margin"
+    t.decimal  "ebit_margin"
+    t.decimal  "profit_margin"
+    t.decimal  "free_cash_flow_margin"
+    t.decimal  "consolidated_income"
     t.index ["company_id", "year"], name: "index_income_statements_on_company_id_and_year", unique: true, using: :btree
     t.index ["company_id"], name: "index_income_statements_on_company_id", using: :btree
   end

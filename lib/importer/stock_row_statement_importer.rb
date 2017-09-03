@@ -29,7 +29,12 @@ module Importer
         'Operating Income' => :operating_income,
         'Earnings before Tax' => :earnings_before_tax,
         'Net Income to Non-Controlling Interests' => :net_income_to_non_controlling_interests,
-        'Earnings Before Interest, Taxes & Depreciation Amortization (EBITDA)' => :ebitda
+        'Earnings Before Interest, Taxes & Depreciation Amortization (EBITDA)' => :ebitda,
+        'EBITDA Margin' => :ebitda_margin,
+        'EBIT Margin' => :ebit_margin,
+        'Profit Margin' => :profit_margin,
+        'Free Cash Flow Margin' => :free_cash_flow_margin,
+        'Consolidated Income' => :consolidated_income
     }
     BALANCE_SHEET_MAPPING = {
         'Cash and Equivalents' => :cash_and_equivalents,
@@ -60,7 +65,7 @@ module Importer
         'Deferred Revenue' => :deferred_revenue,
         'Deposit Liabilities' => :deposit_liabilities,
         'Investments' => :investments,
-
+        'Cash and Short Term Investments' => :cash_and_short_term_investments
     }
     CASH_FLOW_STAT_MAPPING = {
         'Depreciation, Amortization & Accretion' => :depreciation_amortization_accretion,
