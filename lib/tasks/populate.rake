@@ -109,7 +109,6 @@ namespace :populate do
         end
         h
       end
-      puts updates
       Company.update(updates.keys, updates.values)
       i += 1
     end
@@ -131,7 +130,6 @@ namespace :populate do
         end
         h
       end
-      puts updates
       Company.update(updates.keys, updates.values)
       i += 1
     end
@@ -168,6 +166,7 @@ namespace :populate do
     Rake::Task['populate:companies'].invoke
     Rake::Task['populate:markets'].invoke
     Rake::Task['update:symbol_changes'].invoke
+    Rake::Task['update:mergers'].invoke
     Rake::Task['update:cik_to_company_name'].invoke
     Rake::Task['update:latest_filings'].invoke
     Rake::Task['update:historical_data'].invoke
