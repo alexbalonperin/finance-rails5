@@ -12,6 +12,7 @@ namespace :update do
     companies = Company.where('skip_historical_data is false and active')
     companies = companies.reject { |c| c.historical_data_uptodate? }
     puts "Found #{companies.size} to update"
+    next if companies.empty?
     batch_size = (companies.size.to_f/number_of_processes).ceil
     Parallel.map(companies.sort.each_slice(batch_size), in_processes: number_of_processes) do |company_batch|
       company_batch.each_with_index do |company, i|

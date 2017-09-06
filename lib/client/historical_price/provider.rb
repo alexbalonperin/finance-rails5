@@ -6,7 +6,7 @@ module Client
 
       def records_to_historical_data(records, company_id)
         records.inject([]) do |arr, record|
-          arr << HistoricalDatum.new(trade_date: record.date,
+          arr << HistoricalDatum.new(trade_date: record.trade_date,
                                      open: record.open,
                                      high: record.high,
                                      low: record.low,
