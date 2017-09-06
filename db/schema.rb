@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170903232248) do
+ActiveRecord::Schema.define(version: 20170906071846) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -137,8 +137,9 @@ ActiveRecord::Schema.define(version: 20170903232248) do
     t.string   "form_type"
     t.string   "date"
     t.string   "filename"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.boolean  "downloaded", default: false
     t.index ["company_id", "form_type", "date"], name: "index_filing_releases_on_company_id_and_form_type_and_date", unique: true, using: :btree
     t.index ["company_id"], name: "index_filing_releases_on_company_id", using: :btree
   end
