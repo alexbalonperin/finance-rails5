@@ -39,7 +39,7 @@ module Client
         filename = "data/cik_lookup/#{Time.now.strftime("%Y%m%d")}.txt"
         download_file(filename, path) unless File.file?(filename)
         records = file_to_records(filename, method(:cik_record))
-        companies = Company.all.group_by { |r| sanitize_company_name(r.name) }
+        companies = Company.active.group_by { |r| sanitize_company_name(r.name) }
         r = records.inject([]) do |data, record|
           record_name = sanitize_company_name(record.company_name)
           next data unless companies.has_key?(record_name)
@@ -102,7 +102,7 @@ module Client
         download_file(filename, path) unless File.file?(filename)
         records = file_to_records(filename, method(:filing_record), skip=10)
         records.each { |r| r.cik = r.cik.rjust(10, '0')}
-        companies = CikLookup.all.group_by(&:cik)
+        companies = CikLookup.active.group_by(&:cik)
         r = records.inject([]) do |data, record|
           next data unless companies.has_key?(record.cik)
           candidates = companies[record.cik]
