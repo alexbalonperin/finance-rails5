@@ -3,6 +3,10 @@ module Client
   module FinancialStatement
 
     DOWNLOAD_DIR = 'data/financial_statements'
+    PERIOD_TO_FORM_TYPE = {
+      'MRY' => '10-K',
+      'MRQ' => '10-Q'
+    }
 
     class Provider
       require 'open-uri'
@@ -36,6 +40,10 @@ module Client
 
       def downloaded_symbols
         Utils::FileUtil.folder_names(DOWNLOAD_DIR)
+      end
+
+      def new_reports(period = 'MRY')
+        FilingRelease.where('form_type = ? and not downloaded', PERIOD_TO_FORM_TYPE[period])
       end
 
     end

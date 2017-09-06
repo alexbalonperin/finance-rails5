@@ -43,20 +43,23 @@ module Client
       end
 
       def download_financials(period = 'MRY')
-        ds = []# downloaded_symbols
-        missing_companies = @companies.reject { |c| ds.include?(c.symbol) }
-        total = missing_companies.size
-        puts "FOUND #{total} companies from which we need the financial statements"
-        #missing_companies.sort.each_with_index do |company, i|
-        Parallel.map(missing_companies.sort.each_slice(500).with_index, in_processes: 15, progress: "Downloading #{period} financial statements") do |company_batch, i|
-          company_batch.each_with_index do |company, i|
-            puts "(#{i + 1}/#{total}) Downloading financial statements for '#{company.name}' (ID: #{company.id}, Symbol: #{company.symbol})."
+        reports = new_reports(period)
+        total = reports.size
+        puts "FOUND #{total} financial reports to download"
+        Parallel.map(reports.sort.each_slice(100).with_index, in_processes: 5, progress: "Downloading #{period} financial statements") do |report_batch, i|
+          report_batch.each_with_index do |report, j|
+            company = report.company
+            puts "(#{(i + 1)*(j + 1)}/#{total}) Downloading financial statements for '#{company.name}' (ID: #{company.id}, Symbol: #{company.symbol})."
             income_statement(company.symbol, period)
             puts '------ Income statement downloaded'
             balance_sheet(company.symbol, period)
             puts '------ Balance sheet downloaded'
             cashflow_statement(company.symbol, period)
             puts '------ Cash flow statement downloaded'
+            report.downloaded = true
+            if !report.save
+              puts "Couldn't mark report as downloaded for company #{company.name} (id: #{company.id}, symbol: #{company.symbol})"
+            end
           end
         end
       end
