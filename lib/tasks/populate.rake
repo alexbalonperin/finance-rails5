@@ -1,3 +1,5 @@
+require 'benchmark'
+
 namespace :populate do
 
   def client
@@ -161,21 +163,24 @@ namespace :populate do
 
   desc 'populate the database with all entities'
   task all: :environment do
-    Rake::Task['populate:sectors'].invoke
-    Rake::Task['populate:industries'].invoke
-    Rake::Task['populate:companies'].invoke
-    Rake::Task['populate:markets'].invoke
-    Rake::Task['update:symbol_changes'].invoke
-    Rake::Task['update:mergers'].invoke
-    Rake::Task['update:cik_to_company_name'].invoke
-    Rake::Task['update:latest_filings'].invoke
-    Rake::Task['update:historical_data'].invoke
-    Rake::Task['populate:deactivate'].invoke
-    Rake::Task['populate:last_trade_date'].invoke
-    Rake::Task['populate:first_trade_date'].invoke
-    #Rake::Task['populate:download_financials'].invoke
-    #Rake::Task['populate:download_quarterly_financials'].invoke
-    # Rake::Task['update:potential_investments'].invoke
+    puts Benchmark.measure {
+      Rake::Task['populate:sectors'].invoke
+      Rake::Task['populate:industries'].invoke
+      Rake::Task['populate:companies'].invoke
+      Rake::Task['populate:markets'].invoke
+      Rake::Task['update:symbol_changes'].invoke
+      Rake::Task['update:mergers'].invoke
+      Rake::Task['update:cik_to_company_name'].invoke
+      Rake::Task['update:latest_filings'].invoke
+      Rake::Task['update:historical_data'].invoke
+      sleep(10)
+      Rake::Task['populate:deactivate'].invoke
+      Rake::Task['populate:last_trade_date'].invoke
+      Rake::Task['populate:first_trade_date'].invoke
+      #Rake::Task['populate:download_financials'].invoke
+      #Rake::Task['populate:download_quarterly_financials'].invoke
+      # Rake::Task['update:potential_investments'].invoke
+    }
   end
 
 end
