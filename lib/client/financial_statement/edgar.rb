@@ -57,32 +57,20 @@ module Client
         CikLookup.import(r.uniq {|a| a.company_id }) if r.present?
       end
 
-      def get_latest_filing()
+      def get_latest_filings()
         path = 'full-index/master.idx'
         filename = "data/filing_releases/#{Time.now.strftime("%Y%m%d")}.idx"
-        download_file(filename, path) unless File.file?(filename)
-        records = file_to_records(filename, method(:filing_record), skip=10)
-        records.each { |r| r.cik = r.cik.rjust(10, '0')}
-        companies = CikLookup.all.group_by(&:cik)
-        r = records.inject([]) do |data, record|
-          next data unless companies.has_key?(record.cik)
-          candidates = companies[record.cik]
-          next data if candidates.nil?
-          company_id = candidates.sort_by(&:created_at).reverse.first.company_id
-          element = FilingRelease.where(['company_id = ? and date = ? and form_type = ?', company_id, record.date, record.form_type])
-          if element.empty?
-            data << FilingRelease.new({
-              company_id: company_id,
-              cik: record.cik,
-              form_type: record.form_type,
-              date: record.date,
-              filename: record.filename
-            })
-          end
-          data
-        end
-        puts "Found #{r.size} new filings"
-        FilingRelease.import(r.uniq {|a| [a.cik, a.date, a.form_type]}) if r.present?
+        get_filings(path, filename)
+      end
+
+      def get_old_filings(year, quarter)
+        raise ArgumentException unless ['QTR1', 'QTR2', 'QTR3', 'QTR4'].include?(quarter)
+        puts "Getting Filings information for quarter #{year}/#{quarter}"
+        path = "full-index/#{year}/#{quarter}/master.idx"
+        directory = "data/filing_releases/#{year}/#{quarter}"
+        FileUtils.mkdir_p directory
+        filename = "#{directory}/#{Time.now.strftime("%Y%m%d")}.idx"
+        get_filings(path, filename)
       end
 
       private
@@ -108,6 +96,32 @@ module Client
           data << to_record.call(line)
         end
         data
+      end
+
+      def get_filings(path, filename)
+        download_file(filename, path) unless File.file?(filename)
+        records = file_to_records(filename, method(:filing_record), skip=10)
+        records.each { |r| r.cik = r.cik.rjust(10, '0')}
+        companies = CikLookup.all.group_by(&:cik)
+        r = records.inject([]) do |data, record|
+          next data unless companies.has_key?(record.cik)
+          candidates = companies[record.cik]
+          next data if candidates.nil?
+          company_id = candidates.sort_by(&:created_at).reverse.first.company_id
+          element = FilingRelease.where(['company_id = ? and date = ? and form_type = ?', company_id, record.date, record.form_type])
+          if element.empty?
+            data << FilingRelease.new({
+              company_id: company_id,
+              cik: record.cik,
+              form_type: record.form_type,
+              date: record.date,
+              filename: record.filename
+            })
+          end
+          data
+        end
+        puts "Found #{r.size} new filings"
+        FilingRelease.import(r.uniq {|a| [a.cik, a.date, a.form_type]}) if r.present?
       end
 
     end

@@ -84,7 +84,13 @@ namespace :update do
   desc 'get latest filings information'
   task latest_filings: :environment do
     client = Client::FinancialStatement::Edgar.new
-    client.get_latest_filing
+    client.get_latest_filings
+  end
+
+  desc 'get old filings information'
+  task :old_filings, [:year, :quarter] => [:environment] do |t, args|
+    client = Client::FinancialStatement::Edgar.new
+    client.get_old_filings(args[:year], args[:quarter])
   end
 
   desc 'get cik for each company'
