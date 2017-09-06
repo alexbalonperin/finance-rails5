@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/zolrag13/yahoo-finance.git
-  revision: e4ed96f13fa071e2ef0c0ee3947d4306b51da4ed
+  revision: cacf4826a28a23078ef060141bcb2f4a4e4d1443
   branch: temporary
   specs:
     yahoo-finance (1.2.1)
@@ -155,7 +155,7 @@ GEM
     mime-types-data (3.2016.0521)
     mini_portile2 (2.2.0)
     minitest (5.10.3)
-    multi_json (1.12.1)
+    multi_json (1.12.2)
     multi_xml (0.6.0)
     multipart-post (2.0.0)
     nenv (0.3.0)
@@ -366,6 +366,9 @@ DEPENDENCIES
   web-console (~> 3.3.1)
   whenever
   yahoo-finance!
+
+RUBY VERSION
+   ruby 2.3.0p0
 
 BUNDLED WITH
    1.13.6
