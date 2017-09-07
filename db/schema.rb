@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170906082341) do
+ActiveRecord::Schema.define(version: 20170907141718) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -197,6 +197,7 @@ ActiveRecord::Schema.define(version: 20170906082341) do
     t.decimal  "free_cash_flow_margin"
     t.decimal  "consolidated_income"
     t.string   "form_type"
+    t.decimal  "revenue_growth"
     t.index ["company_id", "report_date", "form_type"], name: "income_statements_unique_idx", unique: true, using: :btree
     t.index ["company_id"], name: "index_income_statements_on_company_id", using: :btree
   end

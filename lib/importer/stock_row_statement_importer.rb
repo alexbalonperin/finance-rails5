@@ -4,18 +4,22 @@ module Importer
 
     INCOME_STAT_MAPPING = {
         'Revenues' => :revenues,
+        'Revenue Growth' => :revenue_growth,
         'Cost of Revenue' => :cost_of_revenue,
         'Gross Profit' => :gross_profit,
         'Selling, General and Administrative Expense' => :selling_general_and_administrative_expense,
         'Research and Development Expense' => :research_and_development_expense,
         'Earning Before Interest & Taxes (EBIT)' => :ebit,
+        'EBIT' => :ebit,
         'Interest Expense' => :interest_expense,
         'Income Tax Expense' => :income_tax_expense,
         'Net Income' => :net_income,
         'Net Income Common Stock' => :net_income_common_stock,
         'Preferred Dividends Income Statement Impact' => :preferred_dividends_income_statement_impact,
         'Earnings per Basic Share' => :eps_basic,
+        'EPS' => :eps_basic,
         'Earnings per Diluted Share' => :eps_diluted,
+        'EPS Diluted' => :eps_diluted,
         'Weighted Average Shares' => :weighted_avg_shares,
         'Weighted Average Shares Diluted' => :weighted_avg_shares_diluted,
         'Dividends per Basic Common Share' => :dividends_per_basic_common_share,
@@ -30,6 +34,7 @@ module Importer
         'Earnings before Tax' => :earnings_before_tax,
         'Net Income to Non-Controlling Interests' => :net_income_to_non_controlling_interests,
         'Earnings Before Interest, Taxes & Depreciation Amortization (EBITDA)' => :ebitda,
+        'EBITDA' => :ebitda,
         'EBITDA Margin' => :ebitda_margin,
         'EBIT Margin' => :ebit_margin,
         'Profit Margin' => :profit_margin,
@@ -69,13 +74,17 @@ module Importer
     }
     CASH_FLOW_STAT_MAPPING = {
         'Depreciation, Amortization & Accretion' => :depreciation_amortization_accretion,
+        'Depreciation & Amortization' => :depreciation_amortization_accretion,
         'Net Cash Flow from Operations' => :net_cash_flow_from_operations,
+        'Operating Cash Flow' => :net_cash_flow_from_operations,
         'Capital Expenditure' => :capital_expenditure,
         'Net Cash Flow from Investing' => :net_cash_flow_from_investing,
+        'Investing Cash Flow' => :net_cash_flow_from_investing,
         'Issuance (Repayment) of Debt Securities' => :issuance_repayment_of_debt_securities,
         'Issuance (Purchase) of Equity Shares' => :issuance_purchase_of_equity_shares,
         'Payment of Dividends & Other Cash Distributions' => :payment_of_dividends_and_other_cash_distributions,
         'Net Cash Flow from Financing' => :net_cash_flow_from_financing,
+        'Financing Cash Flow' => :net_cash_flow_from_financing,
         'Effect of Exchange Rate Changes on Cash' => :effect_of_exchange_rate_changes_on_cash,
         'Net Cash Flow / Change in Cash & Cash Equivalents' => :net_cash_flow_change_in_cash_and_cash_equivalents,
         'Share Based Compensation' => :share_based_compensation,
@@ -109,11 +118,11 @@ module Importer
     end
 
 
-    def map_data(type, mapping)
+    def map_data(type, mapping, form_type=FORM_10K)
       i = 0
       h = {}
       years = []
-      book = workbook(type)
+      book = workbook(type, form_type)
       return if book.nil?
       book.each_row_streaming do |row|
         next if row.blank?

@@ -161,6 +161,12 @@ namespace :populate do
     importer.import
   end
 
+  desc 'import financial statements'
+  task import_financial_statements: :environment do
+    importer = Importer::StockRowStatementBulkImporter.new
+    importer.import
+  end
+
   desc 'populate the database with all entities'
   task all: :environment do
     puts Benchmark.measure {

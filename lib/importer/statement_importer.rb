@@ -1,3 +1,5 @@
+require 'upsert/active_record_upsert'
+
 module Importer
 
   class StatementImporter
@@ -7,11 +9,15 @@ module Importer
     FORM_10K = '10-K'
     FORM_10Q = '10-Q'
     FORM_TYPES = [FORM_10K, FORM_10Q]
+    FORM_TYPE_TO_PERIOD = {
+      FORM_10K => 'yearly',
+      FORM_10Q => 'quarterly'
+    }
 
     def initialize(symbol, dry_run = false)
       @symbol = symbol
       @company = Company.where(:symbol => @symbol).first
-      @file_path = "#{DOWNLOAD_DIR}/#{@symbol}"
+      @file_path = DOWNLOAD_DIR
       @dry_run = dry_run
     end
 
@@ -36,8 +42,9 @@ module Importer
       end
     end
 
-    def workbook(type)
-      file_path = "#{@file_path}/#{type}"
+    def workbook(type, form_type=FORM_10K)
+      period = FORM_TYPE_TO_PERIOD[form_type]
+      file_path = "#{@file_path}/#{period}/#{@symbol}/#{type}"
       file = latest_file(file_path)
       if file.nil?
         error = "Couldn't find any file to import for symbol '#{@symbol}'"
@@ -66,18 +73,7 @@ module Importer
           puts "Would import: #{entity.inspect}"
           next
         end
-        klass.upsert({company_id: @company.id, report_date: kfi.report_date}, entity)
-        #if klass.where(:year => year, :company_id => @company.id).first.present?
-        #  puts "------- #{text} data for company #{@company.name}, year #{year} already exists."
-        #else
-        #  puts "------- importing data for year #{year}"
-        #  entity = kfi.merge({:year => year, :company_id => @company.id})
-        #  if @dry_run
-        #    puts "Would import: #{entity.inspect}"
-        #    next
-        #  end
-        #  klass.create(entity)
-        end
+        klass.upsert({company_id: @company.id, report_date: kfi[:report_date]}, entity)
       end
       puts 'Done'
     end
@@ -101,15 +97,15 @@ module Importer
     end
 
     def import_income_statement(form_type=FORM_10K)
-      import_data(IncomeStatement, 'income', income_stat_mapping, form_type)
+      import_data(IncomeStatement, 'Income Statement', income_stat_mapping, form_type)
     end
 
     def import_balance_sheet(form_type=FORM_10K)
-      import_data(BalanceSheet, 'balance', balance_sheet_mapping, form_type)
+      import_data(BalanceSheet, 'Balance Sheet', balance_sheet_mapping, form_type)
     end
 
     def import_cashflow_statement(form_type=FORM_10K)
-      import_data(CashFlowStatement, 'cashflow', cashflow_statement_mapping, form_type)
+      import_data(CashFlowStatement, 'Cash Flow', cashflow_statement_mapping, form_type)
     end
 
   end
