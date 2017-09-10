@@ -184,14 +184,15 @@ namespace :populate do
       Rake::Task['update:mergers'].invoke
       Rake::Task['update:cik_to_company_name'].invoke
       Rake::Task['update:latest_filings'].invoke
-      Rake::Task['update:historical_data'].invoke
-      sleep(10)
       Rake::Task['populate:deactivate'].invoke
       Rake::Task['populate:last_trade_date'].invoke
       Rake::Task['populate:first_trade_date'].invoke
-      #Rake::Task['populate:download_financials'].invoke
-      #Rake::Task['populate:download_quarterly_financials'].invoke
-      # Rake::Task['update:potential_investments'].invoke
+      Rake::Task['populate:download_financials'].invoke
+      Rake::Task['populate:download_quarterly_financials'].invoke
+      Rake::Task['populate:import_financials'].invoke
+      Rake::Task['populate:import_quarterly_financials'].invoke
+      Rake::Task['update:historical_data'].invoke
+      #Rake::Task['update:potential_investments'].invoke
     }
   end
 
