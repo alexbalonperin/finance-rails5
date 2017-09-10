@@ -11,7 +11,7 @@ module Importer
     def import(form_type=FORM_10K)
       filings = filings_to_import(form_type)
       total = filings.size
-      filings.take(1).each_with_index do |filing, index|
+      filings.each_with_index do |filing, index|
         company = filing.company
         puts "(#{index}/#{total}) Importing Statements for company #{company.name}"
         importer = @importer.new(company.symbol, @dry_run)

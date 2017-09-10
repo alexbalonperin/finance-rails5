@@ -64,16 +64,16 @@ module Importer
       puts '****************DRY RUN*************' if @dry_run
       text = klass.to_s.split(/(?=[A-Z])/).join(' ').downcase
       puts "Importing #{text} data for company #{@company.name} (ID: #{@company.id}, Symbol: #{@company.symbol})"
-      h = map_data(type, mapping)
+      h = map_data(type, mapping, form_type)
       return if h.nil?
-      h.each do |year, kfi|
-        puts "------- importing data for year #{year}"
-        entity = kfi.merge({:year => year, :company_id => @company.id, created_at: Time.now, updated_at: Time.now, form_type: form_type})
+      h.each do |date, kfi|
+        puts "------- importing data for date #{date}"
+        entity = kfi.merge({:year => date.year, :company_id => @company.id, created_at: Time.now, updated_at: Time.now, form_type: form_type})
         if @dry_run
           puts "Would import: #{entity.inspect}"
           next
         end
-        klass.upsert({company_id: @company.id, report_date: kfi[:report_date]}, entity)
+        klass.upsert({company_id: @company.id, report_date: kfi[:report_date], form_type: form_type}, entity)
       end
       puts 'Done'
     end

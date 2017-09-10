@@ -106,33 +106,32 @@ module Importer
     end
 
     def init_years(row, h)
-      years = row.drop(1)
-      years = years.map do |cell|
+      dates = row.drop(1)
+      dates = dates.map do |cell|
         time = cell.value
-        year = time.year
-        h[year] = {}
-        h[year][:report_date] = time.to_s
-        year
+        h[time] = {}
+        h[time][:report_date] = time.to_s
+        time
       end
-      [years, h]
+      [dates, h]
     end
 
 
     def map_data(type, mapping, form_type=FORM_10K)
       i = 0
       h = {}
-      years = []
+      dates = []
       book = workbook(type, form_type)
       return if book.nil?
       book.each_row_streaming do |row|
         next if row.blank?
         if i == 0
-          years, h = init_years(row, h)
+          dates, h = init_years(row, h)
         else
           label = row.first.value.strip
           kfi = row.drop(1)
           kfi.each_with_index do |cell, index|
-            h[years[index]][mapping[label]] = cell.value
+            h[dates[index]][mapping[label]] = cell.value
           end
         end
         i += 1

@@ -2,8 +2,7 @@ module Importer
 
   class StockRowStatementBulkImporter < StatementBulkImporter
 
-    def initialize(companies = nil, dry_run = false)
-      @companies = companies || Company.active
+    def initialize(dry_run = false)
       @importer = StockRowStatementImporter
       @dry_run = dry_run
     end

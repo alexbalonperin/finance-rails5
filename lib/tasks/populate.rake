@@ -161,10 +161,16 @@ namespace :populate do
     importer.import
   end
 
-  desc 'import financial statements'
-  task import_financial_statements: :environment do
+  desc 'import yearly financial statements'
+  task import_financials: :environment do
     importer = Importer::StockRowStatementBulkImporter.new
     importer.import
+  end
+
+  desc 'import quarterly financial statements'
+  task import_quarterly_financials: :environment do
+    importer = Importer::StockRowStatementBulkImporter.new
+    importer.import('10-Q')
   end
 
   desc 'populate the database with all entities'
