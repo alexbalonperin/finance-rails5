@@ -16,7 +16,7 @@ namespace :update do
     batch_size = (companies.size.to_f/number_of_processes).ceil
     Parallel.map(companies.sort.each_slice(batch_size), in_processes: number_of_processes) do |company_batch|
       company_batch.each_with_index do |company, i|
-        puts "#{i+1}: #{company.name}"
+        puts "#{i+1}: #{company.name} (id: #{company.id}, symbol: #{company.symbol})"
         begin
           records = client.historical_data_update(company)
         rescue
