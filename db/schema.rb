@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170909044257) do
+ActiveRecord::Schema.define(version: 20171112102913) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -116,8 +116,8 @@ ActiveRecord::Schema.define(version: 20170909044257) do
   end
 
   create_table "companies_changes", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", default: -> { "now()" }, null: false
+    t.datetime "updated_at", default: -> { "now()" }, null: false
     t.integer  "from_id"
     t.integer  "to_id"
     t.index ["from_id"], name: "index_companies_changes_on_from_id", using: :btree
@@ -141,6 +141,7 @@ ActiveRecord::Schema.define(version: 20170909044257) do
     t.datetime "updated_at",                 null: false
     t.boolean  "downloaded", default: false
     t.boolean  "imported",   default: false
+    t.boolean  "available",  default: true
     t.index ["cik", "company_id", "form_type", "date"], name: "filing_releases_unique_idx", unique: true, using: :btree
     t.index ["company_id"], name: "index_filing_releases_on_company_id", using: :btree
   end
@@ -276,8 +277,8 @@ ActiveRecord::Schema.define(version: 20170909044257) do
   end
 
   create_table "mergers", force: :cascade do |t|
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",   default: -> { "now()" }, null: false
+    t.datetime "updated_at",   default: -> { "now()" }, null: false
     t.integer  "acquiring_id"
     t.integer  "acquired_id"
     t.index ["acquired_id"], name: "index_mergers_on_acquired_id", using: :btree
