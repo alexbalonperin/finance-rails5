@@ -47,8 +47,11 @@ namespace :update do
       c_new = c_old.dup
       c_new.symbol = record.new_symbol
       c_old.active = false
+      company_change = CompaniesChange.new
+      company_change.from = c_old
+      company_change.to = c_new
       begin
-        if c_new.save && c_old.save
+        if c_new.save && c_old.save && company_change.save
           puts "Done changing symbol for company #{c_old.name}"
         else
           puts "Could not update symbol for company #{c_old.name}. New: #{c_new.errors.full_messages}, Old: #{c_old.errors.full_messages}"
