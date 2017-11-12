@@ -14,6 +14,8 @@ module Importer
       puts "Found #{total} reports to import"
       filings.each_with_index do |filing, index|
         company = filing.company
+        next unless company.active
+        next unless filing.available
         puts "(#{index}/#{total}) Importing Statements for company #{company.name}"
         importer = @importer.new(company.symbol, @dry_run)
         importer.import_statements(form_type)

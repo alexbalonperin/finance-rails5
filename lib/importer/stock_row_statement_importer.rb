@@ -140,7 +140,7 @@ module Importer
     rescue => e
       puts "Couldn't read file #{type}. Error: #{e}"
       record_error(type, 'unreadable', e)
-      {}
+      raise e
     end
 
   end
