@@ -10,6 +10,7 @@ module Importer
 
     def import(form_type=FORM_10K)
       filings = filings_to_import(form_type)
+      filings = filings.select(&:available)
       total = filings.size
       puts "Found #{total} reports to import"
       filings.each_with_index do |filing, index|
@@ -18,8 +19,13 @@ module Importer
         next unless filing.available
         puts "(#{index}/#{total}) Importing Statements for company #{company.name}"
         importer = @importer.new(company.symbol, @dry_run)
-        importer.import_statements(form_type)
-        filing.imported = true
+        begin
+          importer.import_statements(form_type)
+          filing.imported = true
+        rescue => e
+          puts "Coudn't find statements for company #{company.id} - #{form_type} (filing: #{filing.id})"
+          filing.available = false
+        end
         if !filing.save
           puts "Couldn't mark report as imported for company #{company.name} (id: #{company.id}, symbol: #{company.symbol})"
         end
