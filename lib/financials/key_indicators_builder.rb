@@ -97,7 +97,7 @@ module Financials
 
       def period_growth(label, period_start, period_end = Time.current.year)
         data = data_in_period(label, period_start, period_end)
-        period(data)
+        growth(data.first, data.last)
       end
 
       def yoy_growth(label, period_start, period_end = Time.current.year)
@@ -188,7 +188,7 @@ module Financials
       #         :eps_basic => 2.43
       #     },
       #   }
-      #   data_in_period(2, :debt_to_equity)
+      #   data_in_period(:debt_to_equity, 2014)
       #    =>  [1.23, 1.33]
       #
       def data_in_period(label, period_start, period_end = Time.current.year)
@@ -211,7 +211,7 @@ module Financials
       #         :eps_basic => 2.43
       #     },
       #   }
-      #   data_as_hash(2014, :debt_to_equity)
+      #   data_as_hash(:debt_to_equity, 2014)
       #    => {'2015' => 1.23, '2014' => 1.33}
       #
       def data_as_hash(label, period_start, period_end = Time.current.year)

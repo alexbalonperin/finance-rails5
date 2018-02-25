@@ -89,11 +89,6 @@ module Financials
         arr.max
       end
 
-      # assuming arr is sorted from newest to oldest
-      def period(arr)
-        growth(arr.first, arr.last)
-      end
-
       def yoy(years)
         prev = nil
         h = {}
@@ -103,7 +98,7 @@ module Financials
             prev = cur
             next
           end
-          h[year.to_s] = period([cur, prev])
+          h[year.to_s] = growth(cur, prev)
           prev = cur
         end
         h
