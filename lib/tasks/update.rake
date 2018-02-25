@@ -91,6 +91,22 @@ namespace :update do
   end
 
   desc 'get old filings information'
+  task all_old_filings: :environment do
+    client = Client::FinancialStatement::Edgar.new
+    (1993..2015).to_a.reverse.each do |year|
+      ['QTR1', 'QTR2', 'QTR3', 'QTR4'].each do |quarter|
+        client.get_old_filings(year, quarter)
+      end
+    end
+  end
+
+  desc 'set fiscal year focus and fiscal period focus to statements'
+  task set_period_focus: :environment do
+    client = Client::FinancialStatement::Edgar.new
+    client.set_period_focus
+  end
+
+  desc 'get old filings information'
   task :old_filings, [:year, :quarter] => [:environment] do |t, args|
     client = Client::FinancialStatement::Edgar.new
     client.get_old_filings(args[:year], args[:quarter])

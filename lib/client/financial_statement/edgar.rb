@@ -3,6 +3,8 @@ module Client
   module FinancialStatement
     require 'open-uri'
     require 'cgi'
+    require 'zip'
+    require 'csv'
 
     class Edgar
         SERVICE_URI = 'https://www.sec.gov/Archives/edgar/'
@@ -73,7 +75,75 @@ module Client
         get_filings(path, filename)
       end
 
+      def set_period_focus()
+        income_statements = IncomeStatement.select("f.filename, income_statements.*").joins("
+            inner join filing_releases f on f.company_id = income_statements.company_id
+                                        and f.form_type = income_statements.form_type
+                                        and to_char(income_statements.report_date, 'YYYY-MM-DD') = f.date")
+        balance_sheets = BalanceSheet.select("f.filename, balance_sheets.*").joins("
+            inner join filing_releases f on f.company_id = balance_sheets.company_id
+                                        and f.form_type = balance_sheets.form_type
+                                        and to_char(balance_sheets.report_date, 'YYYY-MM-DD') = f.date")
+        cash_flow_statements = CashFlowStatement.select("f.filename, cash_flow_statements.*").joins("
+            inner join filing_releases f on f.company_id = cash_flow_statements.company_id
+                                        and f.form_type = cash_flow_statements.form_type
+                                        and to_char(cash_flow_statements.report_date, 'YYYY-MM-DD') = f.date")
+
+        find_element = lambda do |adsh, details, el|
+           adsh == el.filename.split("/").last.split(".").first &&
+           el.form_type == details[:form_type]
+        end
+
+        [2011].each do |year|
+        #(2009..2017).to_a.each do |year|
+          %w[q2].each do |period|
+          #%w[q1 q2 q3 q4].each do |period|
+            puts "Getting filing details for period #{year}:#{period}"
+            filings_details = get_filings_details(year, period)
+            next if filings_details.nil?
+            key, value = filings_details.first
+            {key => value}.each do |adsh, details|
+              next if adsh.nil?
+              income_statement = income_statements.find { |i| find_element.call(adsh, details, i) }
+              balance_sheet = balance_sheets.find { |i| find_element.call(adsh, details, i) }
+              cash_flow_statement = cash_flow_statements.find { |i| find_element.call(adsh, details, i) }
+              puts income_statement, balance_sheet, cash_flow_statement
+              next if income_statement.nil? || balance_sheet.nil? || cash_flow_statement.nil?
+              income_statement.year = balance_sheet.year = cash_flow_statement.year = details[:year]
+              income_statement.period = balance_sheet.period = cash_flow_statement.period = details[:period]
+              unless income_statement.save && balance_sheet.save && cash_flow_statement.save
+                puts "Couldn't save year and period for filing details #{adsh}: #{details}"
+              end
+            end
+          end
+        end
+      end
+
       private
+
+      def get_filings_details(year, period)
+         result = {}
+         path = "data/edgar_financials/#{year}#{period}"
+         Zip::File.open("#{path}.zip") do |zipfile|
+           entry = zipfile.find_entry("sub.txt")
+           next if entry.nil?
+           filename = "#{path}/#{entry.name}"
+           unless File.exist?(filename)
+             FileUtils::mkdir_p(File.dirname(filename))
+             zipfile.extract(entry, filename)
+           end
+           CSV.foreach("data/edgar_financials/#{year}#{period}/#{entry.name}", headers: true, col_sep: "\t") do |line|
+              result[line['adsh']] = {
+                cik: line['cik'],
+                year: line['fy'],
+                period: line['fp'],
+                filed: line['filed'],
+                form_type: line['form']
+              }
+           end
+         end
+         result
+      end
 
       def download_file(filename, path)
         puts "Downloading file"
