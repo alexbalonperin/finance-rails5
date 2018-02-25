@@ -4,34 +4,43 @@ class Company < ApplicationRecord
   has_many :historical_data
   has_many :subsidiaries_mergers, :class_name => 'Merger', :foreign_key => :acquiring_id
   has_many :income_statements do
-    def latest
-      self.order('year desc').limit(1)
+    def yearly
+      self.where(:form_type => PERIOD_TO_FORM_TYPE['MRY'])
+    end
+    def latest(period = 'MRY')
+      self.where(:form_type => PERIOD_TO_FORM_TYPE[period]).order('year desc').limit(1)
     end
 
-    def oldest
-      self.order('year asc').limit(1)
+    def oldest(period = 'MRY')
+      self.where(:form_type => PERIOD_TO_FORM_TYPE[period]).order('year asc').limit(1)
     end
 
-    def at(year)
-      self.where(:year => year).limit(1)
+    def at(year, period = 'MRY')
+      self.where(:year => year, :form_type => PERIOD_TO_FORM_TYPE[period]).limit(1)
     end
   end
   has_many :balance_sheets do
-    def latest
-      self.order('year desc').limit(1)
+    def yearly
+      self.where(:form_type => PERIOD_TO_FORM_TYPE['MRY'])
+    end
+    def latest(period = 'MRY')
+      self.where(:form_type => PERIOD_TO_FORM_TYPE[period]).order('year desc').limit(1)
     end
 
-    def oldest
-      self.order('year asc').limit(1)
+    def oldest(period = 'MRY')
+      self.where(:form_type => PERIOD_TO_FORM_TYPE[period]).order('year asc').limit(1)
     end
   end
   has_many :cash_flow_statements do
-    def latest
-      self.order('year desc').limit(1)
+    def yearly
+      self.where(:form_type => PERIOD_TO_FORM_TYPE['MRY'])
+    end
+    def latest(period = 'MRY')
+      self.where(:form_type => PERIOD_TO_FORM_TYPE[period]).order('year desc').limit(1)
     end
 
-    def oldest
-      self.order('year asc').limit(1)
+    def oldest(period = 'MRY')
+      self.where(:form_type => PERIOD_TO_FORM_TYPE[period]).order('year asc').limit(1)
     end
   end
   has_many :key_financial_indicators do
@@ -53,6 +62,11 @@ class Company < ApplicationRecord
   has_one :was, :through => :companies_changes_to, :source => :from
 
   validates :name, :symbol, presence: true
+
+  PERIOD_TO_FORM_TYPE = {
+    'MRY' => '10-K',
+    'MRQ' => '10-Q'
+  }
 
   def latest_kfi
     key_financial_indicators.latest
