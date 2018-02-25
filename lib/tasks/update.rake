@@ -84,6 +84,38 @@ namespace :update do
     Merger.import(data) if data.present?
   end
 
+  desc 'Manual Symbol changes'
+  task manual_symbol_changes: :environment do
+    data = []
+    CSV.foreach('data/symbol_change/changes.csv') do |row|
+      next if row.first == 'from'
+      from_symbol = row.first
+      to_symbol = row.last
+      puts "Changing symbol from #{from_symbol} to #{to_symbol}"
+      from = Company.where('symbol = ?', from_symbol).first
+      to = Company.new(
+        name: from.name,
+        industry: from.industry,
+        symbol: to_symbol,
+        market_id: from.market_id,
+        last_trade_date: from.last_trade_date,
+        first_trade_date: from.first_trade_date,
+        ipo_year: from.ipo_year,
+        market_cap: from.market_cap
+      )
+      company_change = CompaniesChange.new
+      company_change.from = from
+      company_change.to = to
+      already_exists = Company.where("symbol = ?", to_symbol).first
+      unless already_exists
+        from.active = false
+        if !from.save || !company_change.save || !to.save
+          puts "Couldn't change symbol for company #{from.name} (#{from.symbol})."
+        end
+      end
+    end
+  end
+
   desc 'get latest filings information'
   task latest_filings: :environment do
     client = Client::FinancialStatement::Edgar.new
