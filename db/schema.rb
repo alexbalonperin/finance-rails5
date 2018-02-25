@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171112102913) do
+ActiveRecord::Schema.define(version: 20171119095655) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(version: 20171112102913) do
     t.decimal  "investments"
     t.decimal  "cash_and_short_term_investments"
     t.string   "form_type"
+    t.string   "period"
     t.index ["company_id", "report_date", "form_type"], name: "balance_sheets_unique_idx", unique: true, using: :btree
     t.index ["company_id"], name: "index_balance_sheets_on_company_id", using: :btree
   end
@@ -76,6 +77,7 @@ ActiveRecord::Schema.define(version: 20171112102913) do
     t.decimal  "net_cash_flow_investment_acquisitions_and_disposals"
     t.decimal  "free_cash_flow"
     t.string   "form_type"
+    t.string   "period"
     t.index ["company_id", "report_date", "form_type"], name: "cash_flow_statements_unique_idx", unique: true, using: :btree
     t.index ["company_id"], name: "index_cash_flow_statements_on_company_id", using: :btree
   end
@@ -200,6 +202,7 @@ ActiveRecord::Schema.define(version: 20171112102913) do
     t.decimal  "consolidated_income"
     t.string   "form_type"
     t.decimal  "revenue_growth"
+    t.string   "period"
     t.index ["company_id", "report_date", "form_type"], name: "income_statements_unique_idx", unique: true, using: :btree
     t.index ["company_id"], name: "index_income_statements_on_company_id", using: :btree
   end
