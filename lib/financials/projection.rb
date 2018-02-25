@@ -9,8 +9,18 @@ module Financials
          pi.company.projections.update_all(:latest => false)
          ki = KeyIndicatorsBuilder.new(pi.company).build
          projection = Projection.new(ki, pi.company)
-         projection.save_projection(pi.company, year)
+         projection.save_projection(year)
        end
+    end
+
+    def self.project_for_all_companies(year)
+      companies = Company.active
+      companies.each do |company|
+         company.projections.update_all(:latest => false)
+         ki = KeyIndicatorsBuilder.new(company).build
+         projection = Projection.new(ki, company)
+         projection.save_projection(year)
+      end
     end
 
     def initialize(ki, company)
@@ -29,7 +39,10 @@ module Financials
       s
     end
 
-    def project(current_price, year)
+    def project(year)
+      company = @company
+      income_statement = company.income_statements.at(year).first
+      current_price = company.price_at(income_statement.report_date)
       this_year = @ki.per_year[year]
       min_per, max_per = [this_year['price_earnings_ratio_5y_avg'], this_year['price_earnings_ratio_10y_avg']].minmax
       worst_per, best_per = [this_year['price_earnings_ratio_10y_min'], this_year['price_earnings_ratio_10y_max']]
@@ -52,9 +65,10 @@ module Financials
       @projection
     end
 
-
-    def save_projection(company, year)
-      projection = project(company.adjusted_close_beginning_of(year), year)
+    def save_projection(year)
+      company = @company
+      #TODO: use price at date of the financial report
+      projection = project(year)
       ::Projection.create({
          :company_id => company.id,
          :year => year,

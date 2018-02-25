@@ -11,6 +11,10 @@ class Company < ApplicationRecord
     def oldest
       self.order('year asc').limit(1)
     end
+
+    def at(year)
+      self.where(:year => year).limit(1)
+    end
   end
   has_many :balance_sheets do
     def latest
