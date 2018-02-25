@@ -1,3 +1,5 @@
+require 'client/yahoo_client.rb'
+
 module Client
 
   module HistoricalPrice
@@ -30,6 +32,15 @@ module Client
 
       def symbol_changes
         client.symbol_changes
+      end
+
+
+      def client_v7
+        @client ||= Client::YahooFinanceClientV7.new
+      end
+
+      def quote(symbol, opts = {})
+        client_v7.quotes(symbol)
       end
 
     end
