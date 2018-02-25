@@ -44,6 +44,7 @@ module Client
 
       def download_financials(period = 'MRY')
         reports = new_reports(period)
+        reports = reports.select(&:available)
         total = reports.size
         puts "FOUND #{total} #{period} financial reports to download"
         Parallel.map(reports.sort.each_slice(100).with_index, in_processes: 5, progress: "Downloading #{period} financial statements") do |report_batch, i|
