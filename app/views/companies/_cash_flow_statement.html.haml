@@ -1,4 +1,4 @@
-- cash_flow_statements = company.cash_flow_statements.sort_by(&:year)
+- cash_flow_statements = company.cash_flow_statements.yearly.sort_by(&:year)
 %table.table
   %tr
     %th.headcol.first
