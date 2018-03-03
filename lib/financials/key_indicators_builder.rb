@@ -17,10 +17,10 @@ module Financials
     def initialize(company)
       @company = company
 
-      @balance_sheets = company.balance_sheets.inject({}) { |h, bs| h[bs.year] = bs; h }
-      @income_statements = company.income_statements.inject({}) { |h, bs| h[bs.year] = bs; h }
-      @cash_flow_statements = company.cash_flow_statements.inject({}) { |h, bs| h[bs.year] = bs; h }
-      @years = company.balance_sheets.map(&:year)
+      @balance_sheets = company.balance_sheets.yearly.inject({}) { |h, bs| h[bs.year] = bs; h }
+      @income_statements = company.income_statements.yearly.inject({}) { |h, bs| h[bs.year] = bs; h }
+      @cash_flow_statements = company.cash_flow_statements.yearly.inject({}) { |h, bs| h[bs.year] = bs; h }
+      @years = @balance_sheets.keys
     end
 
     def build
@@ -29,7 +29,13 @@ module Financials
 
       years = @years.sort.reverse
       res = years.inject(KeyIndicator.new) do |kfi, year|
-        calc = KFICalculator.new(@company.historical_data_for(year), @balance_sheets[year], @income_statements[year], @cash_flow_statements[year], @balance_sheets[(year.to_i-1).to_s])
+        calc = KFICalculator.new(
+          @company.historical_data_for(year),
+          @balance_sheets[year],
+          @income_statements[year],
+          @cash_flow_statements[year],
+          @balance_sheets[(year.to_i-1).to_s]
+        )
         KFI.each { |label, func| kfi.add(year, label, func.call(calc)) }
         kfi
       end
