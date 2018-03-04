@@ -95,7 +95,7 @@ class CompaniesController < ApplicationController
     def set_company
         @company = Company.find(params[:id])
     rescue => e
-        @company = Company.find_by_symbol(params[:id])
+        @company = Company.where("symbol = ? and active", params[:id]).first
         raise "Coudn't find company #{params[:id]}" if @company.nil?
     end
 
