@@ -6,6 +6,9 @@
       .content
         %p#notice= notice
         %p
+          %strong ID:
+          = raw @company.id
+        %p
           %strong Name:
           = raw @company.name
         %p
@@ -38,36 +41,42 @@
       .title Key Financials
       .content
         .pane
-          %table.table
-            %tr
-              %th.headcol.first
-              - @ki.per_year_in_asc_order.each do |year, _|
-                %td.long.first= year
-            - kfis.each do |kfi, format|
+          - if @ki.present? && @ki.per_year_in_asc_order.present?
+            %table.table
               %tr
-                %th.headcol= kfi.to_s
-                - @ki.per_year_in_asc_order.each do |_, stat|
-                  %td.long= format.call(stat[kfi])
+                %th.headcol.first
+                - @ki.per_year_in_asc_order.each do |year, _|
+                  %td.long.first= year
+              - kfis.each do |kfi, format|
+                %tr
+                  %th.headcol= kfi.to_s
+                  - @ki.per_year_in_asc_order.each do |_, stat|
+                    %td.long= format.call(stat[kfi])
+          - else
+            %div No Key Financials
 .row.financial-statements
   .col-md-12
     .element-container
       .title Financial Statements
       .content
         %div
-          %ul.nav.nav-tabs.financials-tabs(role="tablist")
-            %li.active(role="presentation")
-              %a(href="#income" aria-controls="income" role="tab" data-toggle="tab") Income Statement
-            %li(role="presentation")
-              %a(href="#balance" aria-controls="balance" role="tab" data-toggle="tab") Balance Sheet
-            %li(role="presentation")
-              %a(href="#cashflow" aria-controls="cashflow" role="tab" data-toggle="tab") Cash Flow Statement
-          .tab-content
-            #income.tab-pane.active(role="tabpanel")
-              = render :partial => 'income_statement', :locals => { :company => @company }
-            #balance.tab-pane(role="tabpanel")
-              = render :partial => 'balance_sheet', :locals => { :company => @company }
-            #cashflow.tab-pane(role="tabpanel")
-              = render :partial => 'cash_flow_statement', :locals => { :company => @company }
+          - if @company.income_statements.present?
+            %ul.nav.nav-tabs.financials-tabs(role="tablist")
+              %li.active(role="presentation")
+                %a(href="#income" aria-controls="income" role="tab" data-toggle="tab") Income Statement
+              %li(role="presentation")
+                %a(href="#balance" aria-controls="balance" role="tab" data-toggle="tab") Balance Sheet
+              %li(role="presentation")
+                %a(href="#cashflow" aria-controls="cashflow" role="tab" data-toggle="tab") Cash Flow Statement
+            .tab-content
+              #income.tab-pane.active(role="tabpanel")
+                = render :partial => 'income_statement', :locals => { :company => @company }
+              #balance.tab-pane(role="tabpanel")
+                = render :partial => 'balance_sheet', :locals => { :company => @company }
+              #cashflow.tab-pane(role="tabpanel")
+                = render :partial => 'cash_flow_statement', :locals => { :company => @company }
+          - else
+            %div No financial statements
 
 .row
   .col-md-12
