@@ -76,7 +76,7 @@ module Client
       private
 
       def download_file(filename, path)
-        puts "Downloading file"
+        puts "Downloading file: #{filename}"
         File.open(filename, "wb") do |saved_file|
           open(SERVICE_URI + path) do |index_file|
             saved_file.write(index_file.read)
