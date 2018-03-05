@@ -34,11 +34,13 @@ class PotentialInvestment < ApplicationRecord
   end
 
   def projections
-    @projections = [2015, 2016].map { |year| projection(year) }
+    current_year = Time.current.year
+    @projections = [current_year - 1, current_year].map { |year| projection(year) }
   end
 
   def latest_projection
-    projection(2016)
+    current_year = Time.current.year
+    projection(current_year)
   end
 
   def projection(year)
