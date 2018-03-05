@@ -266,8 +266,8 @@ module Financials
       end
 
       def return_on_equity_ratio
-        return BigDecimal(0) if @bs.nil? || @is.nil?
-        return BigDecimal(0) if @bs.shareholders_equity.nil? || @is.net_income.nil?
+        return BigDecimal(0) if @bs.nil? || @is.nil? || @pbs.nil?
+        return BigDecimal(0) if @bs.shareholders_equity.nil? || @is.net_income.nil? || @pbs.shareholders_equity.nil?
         return_on_equity(@is.net_income, (@bs.shareholders_equity + @pbs.shareholders_equity)/2)
       end
 

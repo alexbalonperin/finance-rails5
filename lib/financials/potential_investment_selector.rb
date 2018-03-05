@@ -8,12 +8,7 @@ module Financials
     end
 
     def active_companies
-      Company.where(:id =>
-           Company.active
-                  .select('companies.id')
-                  .joins(:key_financial_indicators).where("first_trade_date < now() - interval '8 years'")
-                  .group('companies.id, key_financial_indicators.year')
-                  .having("key_financial_indicators.year::int = (extract(year from now()) - 1)"))
+      Company.active.where("first_trade_date < now() - interval '8 years'")
     end
 
     def roe_criteria(roe)
@@ -24,29 +19,32 @@ module Financials
       eps.present? && eps * 100 > @eps_min
     end
 
-    def single_criteria
+    def current_ratio_criteria(ki)
+      constant_value?(ki, 'current_ratio', @current_ratio_min)
+    end
+
+    def free_cash_flow_growth_criteria(ki)
+      steady_growth?(ki, 'free_cash_flow')
+    end
+
+    def roe_growth_criteria(ki)
+      steady_growth?(ki, 'return_on_equity_yoy_growth')
+    end
+
+    def eps_growth_criteria(ki)
+      steady_growth?(ki, 'eps_diluted_yoy_growth')
+    end
+
+    def eps_min_criteria(ki)
+      constant_value?(ki, 'eps_diluted')
+    end
+
+    def single_year_criteria
       raise 'Should be implemented by subclass'
     end
 
-    def multi_criteria
+    def multi_year_criteria
       raise 'Should be implemented by subclass'
-    end
-
-    def select
-      ActiveRecord::Base.transaction do
-        @prev_records.update_all(:latest => false)
-        selected_ki = {}
-        index = 1
-        selected = @companies.select do |company|
-          puts "(#{index}/#{@companies.size}) Evaluating #{company.name} (#{company.id})"
-          ki = KeyIndicatorsBuilder.new(company).build
-          select = meet_criteria?(ki)
-          selected_ki[company.id] = ki if select
-          index += 1
-          select
-        end
-        save(selected, selected_ki)
-      end
     end
 
     def steady_growth?(ki, label, value = 0)
@@ -57,23 +55,43 @@ module Financials
 
     def constant_value?(ki, label, value = 0)
       data = ki.data_in_period(label, Time.current.year - @steady_growth_n_years)
-      data.compact.all? { |d| d >= value }
+      positive = data.compact.select { |d| d >= value }
+      positive.size >= (@positive_constant_value_percentage * data.size).floor
     end
 
     def meet_criteria?(ki)
       return false if ki.per_year.blank?
-      this_year = ki.per_year[Time.current.year.to_s] ||
-                  ki.per_year[(Time.current.year - 1).to_s] ||
-                  ki.per_year[(Time.current.year - 2).to_s]
-      single = single_criteria.all? { |label, func| func.call(this_year[label]) }
-      multi = multi_criteria.all? { |_, func| func.call(ki) }
-      single && multi
+      per_year = ki.per_year.compact
+      current_year = Time.current.year
+      this_year = per_year[current_year.to_s] ||
+                  per_year[(current_year - 1).to_s] ||
+                  per_year[(current_year - 2).to_s]
+      return false if this_year.nil?
+      total_criteria = single_year_criteria.size + multi_year_criteria.size
+      single = single_year_criteria.select { |label, func|
+        result = func.call(this_year[label])
+        puts "-------- Result for #{label}: #{result}"
+        result
+      }
+      multi = multi_year_criteria.select { |label, func|
+        result = func.call(ki)
+        puts "-------- Result for #{label}: #{result}"
+        result
+      }
+      (single.size + multi.size) >= (@positive_criteria_percentage * total_criteria).floor
     end
 
-    def save(selected, selected_ki)
-      selected.each do |company|
-        ki = selected_ki[company.id]
-        save_potential_investment(company, ki)
+    def select
+      ActiveRecord::Base.transaction do
+        @prev_records.update_all(:latest => false)
+        @companies.each_with_index do |company, index|
+          puts "(#{index}/#{@companies.size}) Evaluating #{company.name} (#{company.id})"
+          ki = KeyIndicatorsBuilder.new(company).build
+          if meet_criteria?(ki)
+            puts "Selected company #{company.name} (id: #{company.id}, symbol: #{company.symbol})"
+            save_potential_investment(company, ki)
+          end
+        end
       end
     end
 

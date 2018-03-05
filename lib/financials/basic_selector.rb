@@ -8,6 +8,8 @@ module Financials
     CURRENT_RATIO_MIN = 1
     POSITIVE_GROWTH_PERCENTAGE = 0.7
     STEADY_GROWTH_N_YEARS = 10
+    CONSTANT_VALUE_PERCENTAGE = 0.8
+    POSITIVE_CRITERIA_PERCENTAGE = 0.9
 
     def initialize(companies = nil)
       @companies = companies || active_companies
@@ -16,12 +18,14 @@ module Financials
       @positive_growth_percentage = POSITIVE_GROWTH_PERCENTAGE
       @selector = SELECTOR
       @steady_growth_n_years = STEADY_GROWTH_N_YEARS
+      @positive_constant_value_percentage = CONSTANT_VALUE_PERCENTAGE
       @free_cash_flow_min = FREE_CASH_FLOW_MIN
       @current_ratio_min = CURRENT_RATIO_MIN
       @prev_records = PotentialInvestment.latest
+      @positive_criteria_percentage = POSITIVE_CRITERIA_PERCENTAGE
     end
 
-    def single_criteria
+    def single_year_criteria
       {
           'return_on_equity_5y_annual_rate_of_return' => lambda { |roe| roe_criteria(roe) },
           'return_on_equity_10y_annual_rate_of_return' => lambda { |roe| roe_criteria(roe) },
@@ -30,13 +34,13 @@ module Financials
       }
     end
 
-    def multi_criteria
+    def multi_year_criteria
       {
-          'ROR_steady_growth' => lambda { |ki| steady_growth?(ki, 'return_on_equity_yoy_growth') },
-          'EPS_steady_growth' => lambda { |ki| steady_growth?(ki, 'eps_diluted_yoy_growth') },
-          'EPS_positive' => lambda { |ki| constant_value?(ki, 'eps_diluted') },
-          'FCF_positive' => lambda { |ki| steady_growth?(ki, 'free_cash_flow') },
-          'Current_ratio_positive' => lambda { |ki| constant_value?(ki, 'current_ratio', @current_ratio_min) }
+          'ROE_steady_growth' => lambda { |ki| roe_growth_criteria(ki) },
+          'EPS_steady_growth' => lambda { |ki| eps_growth_criteria(ki) },
+          'EPS_positive' => lambda { |ki| eps_min_criteria(ki) },
+          'FCF_positive' => lambda { |ki| free_cash_flow_growth_criteria(ki) },
+          'Current_ratio_positive' => lambda { |ki| current_ratio_criteria(ki) }
       }
     end
 
