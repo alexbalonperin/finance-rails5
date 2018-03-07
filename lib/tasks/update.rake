@@ -6,6 +6,10 @@ namespace :update do
     @client ||= Client::HistoricalPrice::Yahoo.new
   end
 
+  def historical_data_client
+    @client ||= Client::HistoricalPrice::Investopedia.new
+  end
+
   desc 'update historical data for all companies in the database'
   task historical_data: :environment do
     number_of_processes = 15
@@ -19,16 +23,20 @@ namespace :update do
       company_batch.each_with_index do |company, i|
         puts "#{i+1}: #{company.name} (id: #{company.id}, symbol: #{company.symbol})"
         begin
-          records = client.historical_data_update(company)
+          records = historical_data_client.historical_data_update(company)
         rescue
           puts "Error fetching historical data for company #{company}"
           next
         end
         next if records.nil? || records.empty?
-        data = client.records_to_historical_data(records, company.id)
+        data = historical_data_client.records_to_historical_data(records, company.id)
         last_trade_date = data.sort_by(&:trade_date).last.trade_date
         company.update(:last_trade_date => last_trade_date)
-        HistoricalDatum.import(data)
+        duplicate_config = {
+          constraint_name: :for_upsert,
+          columns: [:open, :high, :low, :close, :adjusted_close, :volume]
+        }
+        HistoricalDatum.import(data, on_duplicate_key_update: duplicate_config)
       end
     end
     ActiveRecord::Base.connection.reconnect!
