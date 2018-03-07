@@ -17,7 +17,7 @@ module Client
         FileUtils::mkdir_p DOWNLOAD_DIR
       end
 
-      def downloading_statement(url, period, symbol, type)
+      def downloading_statement(symbol, url, period, symbol, type)
         period_folder = if period == 'MRQ'
           'quarterly'
         elsif period == 'MRY'
@@ -34,7 +34,7 @@ module Client
             end
           end
         rescue => e
-          puts "Couldn't fetch the #{type} statement. Error: #{e}"
+          puts "Couldn't fetch the #{type} statement for symbol #{symbol}. Error: #{e}"
         end
       end
 
