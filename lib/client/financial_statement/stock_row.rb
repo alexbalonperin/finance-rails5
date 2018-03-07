@@ -27,19 +27,19 @@ module Client
       def income_statement(symbol, period)
         type = 'Income Statement'
         url = build_url(symbol, type, period)
-        downloading_statement(symbol, url, period, symbol, type)
+        downloading_statement(url, period, symbol, type)
       end
 
       def balance_sheet(symbol, period)
         type = 'Balance Sheet'
         url = build_url(symbol, type, period)
-        downloading_statement(symbol, url, period, symbol, type)
+        downloading_statement(url, period, symbol, type)
       end
 
       def cashflow_statement(symbol, period)
         type = 'Cash Flow'
         url = build_url(symbol, type, period)
-        downloading_statement(symbol, url, period, symbol, type)
+        downloading_statement(url, period, symbol, type)
       end
 
       def download_financials(period = 'MRY')
