@@ -111,6 +111,7 @@ module Financials
 
       def growth(current, previous)
         return 0.0 if previous.nil? || previous.zero?
+        return 0.0 if current.nil? || current.zero?
         cur = BigDecimal(current, 5)
         prev = BigDecimal(previous, 5)
         ((cur - prev) / prev) * (prev.sign / BigDecimal(2))
