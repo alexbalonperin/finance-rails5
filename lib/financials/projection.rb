@@ -6,6 +6,7 @@ module Financials
     def self.project_for_potential_investments(year)
        pis = PotentialInvestment.latest
        pis.each do |pi|
+         puts "Project returns for company #{pi.company.name} (id: #{pi.company.id})"
          pi.company.projections.update_all(:latest => false)
          ki = KeyIndicatorsBuilder.new(pi.company).build
          projection = Projection.new(ki, pi.company)
@@ -41,8 +42,9 @@ module Financials
 
     def project(year)
       company = @company
-      income_statement = company.income_statements.at(year).first
+      income_statement = company.income_statements.at(year).first || company.income_statements.latest.first
       current_price = company.price_at(income_statement.report_date)
+      year = income_statement.year
       this_year = @ki.per_year[year]
       min_per, max_per = [this_year['price_earnings_ratio_5y_avg'], this_year['price_earnings_ratio_10y_avg']].minmax
       worst_per, best_per = [this_year['price_earnings_ratio_10y_min'], this_year['price_earnings_ratio_10y_max']]
