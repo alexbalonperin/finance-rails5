@@ -22,7 +22,7 @@ module Financials
 
     def import
       @companies.each_with_index do |company, index|
-        puts "(#{index + 1}/#{@companies.size}) Generating KFI for company #{company.name}"
+        puts "(#{index + 1}/#{@companies.size}) Generating KFI for company #{company.name} (id: #{company.id})"
         kib = KeyIndicatorsBuilder.new(company)
         ki = kib.build
         ActiveRecord::Base.transaction do
