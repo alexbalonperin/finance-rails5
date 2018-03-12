@@ -155,6 +155,12 @@ namespace :populate do
     client.download_financials('MRY')
   end
 
+  desc 'download all yearly financial statements'
+  task download_all_financials: :environment do
+    client = Client::FinancialStatement::StockRow.new
+    client.download_all_financials('MRY')
+  end
+
   desc 'generate key financial indicators'
   task kfi: :environment do
     importer = Financials::KeyIndicatorsImporter.new
@@ -165,6 +171,12 @@ namespace :populate do
   task import_financials: :environment do
     importer = Importer::StockRowStatementBulkImporter.new
     importer.import
+  end
+
+  desc 'import all yearly financial statements'
+  task import_all_financials: :environment do
+    importer = Importer::StockRowStatementBulkImporter.new
+    importer.import_all
   end
 
   desc 'import quarterly financial statements'

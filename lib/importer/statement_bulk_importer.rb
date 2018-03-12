@@ -33,6 +33,23 @@ module Importer
       puts 'Done'
     end
 
+    def import_all(form_type=FORM_10K)
+      companies = Company.active
+      total = companies.size
+      puts "Found #{total} reports to import"
+      companies.each_with_index do |company, index|
+        puts "(#{index}/#{total}) Importing Statements for company #{company.name}"
+        importer = @importer.new(company.symbol, @dry_run)
+        begin
+          importer.import_statements(form_type)
+        rescue => e
+          puts "Coudn't find statements for company #{company.id} - #{form_type}"
+        end
+      end
+      puts 'Done'
+    end
+
+
     def filings_to_import(form_type=FORM_10K)
       FilingRelease.where('form_type = ? and not imported', form_type)
     end
