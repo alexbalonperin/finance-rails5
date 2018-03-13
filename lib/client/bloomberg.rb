@@ -5,21 +5,26 @@ module Client
   class Bloomberg
       BASE_URL = "https://www.bloomberg.com/quote"
       COUNTRY = "US"
+      Tor.configure do |config|
+         config.port = 9150
+      end
 
       def self.check_all
-        companies = Company.active.drop(922)
+        companies = Company.active
         total = companies.size
         companies.map(&:symbol).each_with_index do |symbol, i|
           puts "--------------------------------------------------"
           puts "(#{i}/#{total}) symbol: #{symbol}"
           market_status(symbol)
           puts "--------------------------------------------------"
+          sleep(15)
         end
       end
 
       def self.market_status(symbol)
         url = "#{BASE_URL}/#{URI.escape(symbol)}:#{COUNTRY}"
-        doc = Nokogiri::HTML(open(url))
+        result = Tor::HTTP.get(URI(url))
+        doc = Nokogiri::HTML(result.body)
         market_status = doc.search(".market-status")[0]
         message = doc.search(".market-status-message")[0]
         puts market_status
@@ -35,9 +40,12 @@ module Client
           delisting(symbol)
         elsif status == "ticker change" || status == "pending listing"
           puts status
+        else
+          puts "Symbol #{symbol} is live"
         end
       rescue => e
         puts "ERROR: #{e}"
+        puts e.backtrace
       end
 
       def self.delisting(delisted_symbol)

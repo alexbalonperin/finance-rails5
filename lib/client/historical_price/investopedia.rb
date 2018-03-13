@@ -8,13 +8,8 @@ module Client
     class Investopedia < Provider
 
       BASE_URL = "https://www.investopedia.com/markets/api/partial"
-
-      def initialize
-        @country = 'us'
-      end
-
-      def client
-        @client ||= ::Client.new
+      Tor.configure do |config|
+         config.port = 9150
       end
 
       def historical_quotes(symbol, opts = {})
@@ -26,7 +21,9 @@ module Client
           EndDate: Time.now.strftime("%m/%d/%Y")
         }
         url = "#{BASE_URL}/historical/?#{URI.escape(params.map{|k, v| "#{k}=#{v}"}.join("&"))}"
-				doc = Nokogiri::HTML(open(url))
+
+        result = Tor::HTTP.get(URI(url))
+        doc = Nokogiri::HTML(result.body)
         data = doc.search(".data")[0]
         headers = data.search("th").map(&:text)
         result = []
