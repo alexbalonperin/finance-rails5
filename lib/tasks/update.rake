@@ -7,7 +7,7 @@ namespace :update do
   end
 
   def historical_data_client
-    @client ||= Client::HistoricalPrice::Investopedia.new
+    @historical_data_client ||= Client::HistoricalPrice::Investopedia.new
   end
 
   desc 'update historical data for all companies in the database'
@@ -15,7 +15,7 @@ namespace :update do
     number_of_processes = 15
     companies = Company.where('skip_historical_data is false and active')
     companies = companies.reject { |c| c.historical_data_uptodate? }
-    puts "Found #{companies.size} to update"
+    puts "Found #{companies.size} companies to update"
     next if companies.empty?
     batch_size = (companies.size.to_f/number_of_processes).ceil
     Parallel.map(companies.sort.each_slice(batch_size), in_processes: number_of_processes) do |company_batch|
