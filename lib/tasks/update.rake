@@ -43,6 +43,35 @@ namespace :update do
     puts 'Done updating historical data'
   end
 
+  desc 'indices historical data import'
+  task indices_historical_data_import: :environment do
+    ["^DJI", "^GSPC"].each do |symbol|
+      records = []
+      index = Company.find_by_symbol(symbol)
+      CSV.foreach("data/indices/#{symbol}.csv", headers: true) do |row|
+        next if row.first == 'Date'
+        records << OpenStruct.new({
+          'symbol': symbol,
+          'trade_date': Date.parse(row["Date"]).to_s,
+          'open': row["Open"].to_f,
+          'high': row["High"].to_f,
+          'low': row["Low"].to_f,
+          'close': row["Close"].to_f,
+          'adjusted_close': row["Adj Close"].to_f,
+          'volume': row["Volume"].gsub(/[^\d^\.]/, '').to_i
+        })
+      end
+      data = historical_data_client.records_to_historical_data(records, index.id)
+      last_trade_date = data.sort_by(&:trade_date).last.trade_date
+      index.update(:last_trade_date => last_trade_date)
+      duplicate_config = {
+        constraint_name: :for_upsert,
+        columns: [:open, :high, :low, :close, :adjusted_close, :volume]
+      }
+      HistoricalDatum.import(data, on_duplicate_key_update: duplicate_config)
+    end
+  end
+
   task symbol_changes: :environment do
     records = client.symbol_changes
     companies = Company.where('symbol in (?)', records.map(&:old_symbol))
