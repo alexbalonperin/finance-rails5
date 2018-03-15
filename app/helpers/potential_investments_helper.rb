@@ -29,6 +29,8 @@ module PotentialInvestmentsHelper
   def evaluate(pi)
     if pi.good?
       'success'
+    elsif pi.too_young?
+      'info'
     elsif pi.bad?
       'danger'
     elsif pi.not_so_good?
