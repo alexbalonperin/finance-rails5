@@ -2,15 +2,28 @@ class PotentialInvestment < ApplicationRecord
 
   belongs_to :company
 
-  def self.latest(type = 'basic')
-    PotentialInvestment.where('latest = true AND selector = ?', type)
+  def self.latest(type = 'basic', year = Time.current.year)
+    PotentialInvestment.where("latest AND selector = ? AND year = '?'", type, year)
   end
 
   def self.sorted_latest(type = 'basic')
     pis = PotentialInvestment.latest(type)
-    pis.sort_by do |pi|
-      [-pi.n_past_financial_statements, -pi.eps_5y_annual_compounding_ror, -pi.roe_5y_annual_compounding_ror]
-    end
+    current_year = Time.current.year
+    too_young, ok = pis.partition(&:too_young?)
+    good_pis, remaining = ok.partition(&:good?)
+    bad_pis, not_so_good_pis = remaining.partition(&:bad?)
+
+    [not_so_good_pis, bad_pis, too_young].map do |arr|
+      arr.sort_by do |pi|
+        company = pi.company
+        proj = company.projections.where("latest and year = '?'", current_year - 1).first
+        [-(proj.projected_value_1y - company.current_price), -pi.eps_5y_annual_compounding_ror, -pi.roe_5y_annual_compounding_ror]
+      end
+    end.flatten
+  end
+
+  def too_young?
+    n_past_financial_statements < 8
   end
 
   def good?
@@ -35,25 +48,25 @@ class PotentialInvestment < ApplicationRecord
 
   def projections
     current_year = Time.current.year
-    @projections = [current_year - 1, current_year].map { |year| projection(year) }
+    @projections = company.projections.where("latest = true and year = '?'", current_year - 1)
   end
 
   def latest_projection
     current_year = Time.current.year
-    projection(current_year)
+    projection(current_year - 1)
   end
 
   def projection(year)
-    p = company.projections.where("latest = true AND year = ?", year.to_s).first || company.projections.where("latest = true").first
-    puts company.id, p
-    p
+    company.projections.where("latest = true AND year = ?", year.to_s).first || company.projections.where("latest = true").first
   end
 
   def price_earnings_ratio_10y_avg
+    return 0.0 if kfi.nil?
     kfi.price_earnings_ratio_10y_avg
   end
 
   def price_earnings_ratio_5y_avg
+    return 0.0 if kfi.nil?
     kfi.price_earnings_ratio_5y_avg
   end
   #
@@ -74,6 +87,7 @@ class PotentialInvestment < ApplicationRecord
   # end
 
   def eps_diluted
+    return 0.0 if kfi.nil?
     kfi.eps_diluted
   end
 
