@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180307150759) do
+ActiveRecord::Schema.define(version: 20180310145129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -347,6 +347,7 @@ ActiveRecord::Schema.define(version: 20180307150759) do
     t.decimal  "projected_rate_of_return_best_10y"
     t.decimal  "projected_value_5y"
     t.decimal  "projected_value_10y"
+    t.decimal  "price_at_reporting_time"
     t.index ["company_id"], name: "index_projections_on_company_id", using: :btree
   end
 

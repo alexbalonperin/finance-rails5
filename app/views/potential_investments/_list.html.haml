@@ -16,8 +16,8 @@
           %th Proj EPS
           %th Avg P/E (5y)
           %th Avg P/E (10y)
-          %th Cur Price
-          %th Proj Value
+          %th Cur Price (At reporting time)
+          %th Intrinsic Value (Actual)
           %th Proj Price range (5y) ($)
           %th Proj ror range (5y) (%)
           %th Industry
@@ -40,8 +40,8 @@
               %td= number_with_precision(proj.projected_eps_1y, precision: 2)
               %td= number_with_precision(pi.price_earnings_ratio_5y_avg, precision: 2)
               %td= number_with_precision(pi.price_earnings_ratio_10y_avg, precision: 2)
-              %td= number_to_currency(proj.current_price, precision: 2)
-              %td= number_to_currency(proj.projected_value_1y, precision: 2)
+              %td= "#{number_to_currency(pi.company.current_price, precision: 2)} (#{proj.price_at_reporting_time})"
+              %td= "#{number_to_currency(proj.projected_value_1y, precision: 2)} (#{proj.actual_price})"
               %td.col-lg-3= extended_range(proj.projected_price_worst_1y, proj.projected_price_min_1y, proj.projected_price_max_1y, proj.projected_price_best_1y, :currency)
               %td.col-lg-3= extended_range(proj.projected_rate_of_return_worst_1y*100, proj.projected_rate_of_return_min_1y*100, proj.projected_rate_of_return_max_1y*100, proj.projected_rate_of_return_best_1y*100, :percent)
               %td.col-md-2= link_to truncate(pi.company.industry_name, length: 22), pi.company.industry

@@ -7,7 +7,7 @@ module Financials
        pis = PotentialInvestment.latest
        pis.each do |pi|
          puts "Project returns for company #{pi.company.name} (id: #{pi.company.id})"
-         pi.company.projections.update_all(:latest => false)
+         pi.company.projections.where(year: year).update_all(:latest => false)
          ki = KeyIndicatorsBuilder.new(pi.company).build
          projection = Projection.new(ki, pi.company)
          projection.save_projection(year)
@@ -43,7 +43,7 @@ module Financials
     def project(year)
       company = @company
       income_statement = company.income_statements.at(year).first || company.income_statements.latest.first
-      current_price = company.price_at(income_statement.report_date)
+      @price_at_reporting_time = company.price_at(income_statement.report_date)
       year = income_statement.year
       this_year = @ki.per_year[year]
       min_per, max_per = [this_year['price_earnings_ratio_5y_avg'], this_year['price_earnings_ratio_10y_avg']].minmax
@@ -57,10 +57,10 @@ module Financials
         @projection["projected_price_min_#{period}y"] = @projection["projected_eps_#{period}y"] * min_per
         @projection["projected_price_max_#{period}y"] = @projection["projected_eps_#{period}y"] * max_per
         @projection["projected_price_best_#{period}y"] = @projection["projected_eps_#{period}y"] * best_per
-        @projection["projected_rate_of_return_worst_#{period}y"] = annual_rate_of_return(current_price, @projection["projected_price_worst_#{period}y"], period)
-        @projection["projected_rate_of_return_min_#{period}y"] = annual_rate_of_return(current_price, @projection["projected_price_min_#{period}y"], period)
-        @projection["projected_rate_of_return_max_#{period}y"] = annual_rate_of_return(current_price, @projection["projected_price_max_#{period}y"], period)
-        @projection["projected_rate_of_return_best_#{period}y"] = annual_rate_of_return(current_price, @projection["projected_price_best_#{period}y"], period)
+        @projection["projected_rate_of_return_worst_#{period}y"] = annual_rate_of_return(@price_at_reporting_time, @projection["projected_price_worst_#{period}y"], period)
+        @projection["projected_rate_of_return_min_#{period}y"] = annual_rate_of_return(@price_at_reporting_time, @projection["projected_price_min_#{period}y"], period)
+        @projection["projected_rate_of_return_max_#{period}y"] = annual_rate_of_return(@price_at_reporting_time, @projection["projected_price_max_#{period}y"], period)
+        @projection["projected_rate_of_return_best_#{period}y"] = annual_rate_of_return(@price_at_reporting_time, @projection["projected_price_best_#{period}y"], period)
         @projection["projected_value_#{period}y"] = present_val(@projection["projected_eps_#{period}y"], @target_rate, period) * this_year['price_earnings_ratio']
       end
       puts self.to_s
@@ -74,9 +74,10 @@ module Financials
       ::Projection.create({
          :company_id => company.id,
          :year => year,
-         :actual_price => company.adjusted_close_end_of(year),
+         :actual_price => company.adjusted_close_end_of(year + 1),
          :selector => @selector,
          :current_price => company.current_price,
+         :price_at_reporting_time => @price_at_reporting_time,
          :projected_eps_1y => projection['projected_eps_1y'],
          :projected_price_worst_1y => projection['projected_price_worst_1y'],
          :projected_price_min_1y => projection['projected_price_min_1y'],
