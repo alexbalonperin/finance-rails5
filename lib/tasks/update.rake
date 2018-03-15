@@ -156,4 +156,48 @@ namespace :update do
     selector.select
   end
 
+  desc 'calculate projections for potential investments'
+  task :potential_investments_projections, [:year] => [:environment] do |r, args|
+    Financials::Projection.project_for_potential_investments(args[:year] || Time.current.year - 1)
+  end
+
+  desc 'statements health check'
+  task statements_health_check: :environment do
+    companies = Company.active
+    companies.each_with_index do |company, j|
+      #puts "#{j+1}: checking company #{company.name}"
+      bs_years = company.balance_sheets.yearly.map(&:year).sort
+      is_years = company.income_statements.yearly.map(&:year).sort
+      cfs_years = company.cash_flow_statements.yearly.map(&:year).sort
+      if check_years(bs_years)
+        puts "Balance sheet for company #{company.name} (#{company.id}/#{company.symbol}) missing"
+        puts bs_years.join(',')
+      end
+      if check_years(is_years)
+        puts "Income statement for company #{company.name} (#{company.id}/#{company.symbol}) missing"
+        puts is_years.join(',')
+      end
+      if check_years(cfs_years)
+        puts "Cash flow statement for company #{company.name} (#{company.id}/#{company.symbol}) missing"
+        puts cfs_years.join(',')
+      end
+    end
+  end
+
+  def check_years(years)
+    error = false
+    years.each_with_index do |year, i|
+      next if i >= years.size - 1
+      if years[i + 1].to_i != year.to_i + 1
+        error = true
+      end
+    end
+    error
+  end
+
+  desc 'quote'
+  task quote: :environment do
+    client.quote("AAPL")
+  end
+
 end
