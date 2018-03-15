@@ -12,7 +12,7 @@ namespace :update do
 
   desc 'update historical data for all companies in the database'
   task historical_data: :environment do
-    number_of_processes = 15
+    number_of_processes = 5
     companies = Company.where('skip_historical_data is false and active')
     companies = companies.reject { |c| c.historical_data_uptodate? }
     puts "Found #{companies.size} companies to update"
