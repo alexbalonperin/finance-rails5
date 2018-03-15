@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180310145129) do
+ActiveRecord::Schema.define(version: 20180315143039) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -154,7 +154,7 @@ ActiveRecord::Schema.define(version: 20180310145129) do
     t.decimal  "high"
     t.decimal  "low"
     t.decimal  "close"
-    t.integer  "volume"
+    t.bigint   "volume"
     t.decimal  "adjusted_close"
     t.integer  "company_id"
     t.datetime "created_at",     null: false
