@@ -38,6 +38,7 @@ module Importer
       total = companies.size
       puts "Found #{total} reports to import"
       companies.each_with_index do |company, index|
+        next if company.skip_financials
         puts "(#{index}/#{total}) Importing Statements for company #{company.name}"
         importer = @importer.new(company.symbol, @dry_run)
         begin

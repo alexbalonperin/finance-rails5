@@ -68,6 +68,7 @@ module Client
         Parallel.map(companies.sort.each_slice(100).with_index, in_processes: 5, progress: "Downloading #{period} financial statements") do |company_batch, i|
           ActiveRecord::Base.connection.reconnect!
           company_batch.each_with_index do |company, j|
+            next if company.skip_financials
             download(company, i, j, total, period)
           end
         end
