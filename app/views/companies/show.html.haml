@@ -24,16 +24,31 @@
           %p
             %strong Details:
             = @company.details
-  -# .col-md-7
-  -#   .element-container
-  -#     .title Key Statistics
-  -#     .content
-  -#       %table.table
-  -#         %tbody
-  -#           - @ki.all.each do |label, kfi|
-  -#             %tr
-  -#               %td= label
-  -#               %td= number_to_percentage(kfi.to_f * 100, precision: 4)
+.row.indices
+  .col-md-12
+    .element-container
+      .title Financial index comparison (Annual rate of return)
+      .content
+        .pane
+          %table.table
+            %tbody
+              %tr
+                %td
+                - @company_summary.each do |year, data|
+                  %td= year
+              %tr
+                %td= "EOY price"
+                - @company_summary.each do |year, data|
+                  %td= number_to_currency(data[:end_price], precision: 2)
+              - [[@company_summary, @company.name], [@sp500, "S&P500"], [@dow, "Dow Jones"]].each do |index, name|
+                %tr
+                  %td= raw name
+                  - index.each do |year, data|
+                    - ror = data["annual_rate_of_return_1y"]
+                    - if ror.nil?
+                      %td= ""
+                    - else
+                      %td= number_to_percentage(ror.to_f, precision: 2)
 
 .row.kfi
   .col-md-12

@@ -1,4 +1,10 @@
 class Company < ApplicationRecord
+    extend Financials::Calculator::Growth
+    extend Financials::Calculator::Compounding
+
+  SP500 = "^GSPC"
+  DOW = "^DJI"
+
   belongs_to :industry
   has_one :sector, :through => :industry
   has_many :historical_data
@@ -132,6 +138,34 @@ class Company < ApplicationRecord
     hd_last = hd.sort_by(&:trade_date).last
     return if hd_last.nil?
     hd_last.adjusted_close
+  end
+
+  def self.summary(symbol)
+    index = Company.find_by_symbol(symbol)
+    current_year = Time.current.year
+    result = {}
+    ((current_year - 20)..(current_year - 1)).inject({}) do |hash, year|
+      price_at_beginning_of_year = index.adjusted_close_beginning_of(year)
+      price_at_end_of_year = index.adjusted_close_end_of(year)
+      growth = growth(price_at_end_of_year, price_at_beginning_of_year)
+      hash[year] = {
+        start_price: price_at_beginning_of_year,
+        end_price: price_at_end_of_year,
+        growth: growth
+
+      }
+      [1, 3, 5, 10].each do |period|
+        if hash[year-period].present?
+          hash[year]["growth_#{period}y"] = growth(price_at_end_of_year, hash[year-period][:start_price]).to_f * 100
+          hash[year]["annual_rate_of_return_#{period}y"] = annual_rate_of_return(hash[year-period][:start_price], price_at_end_of_year, period).to_f * 100
+        end
+      end
+      if year > current_year - 11
+        result[year] = hash[year]
+      end
+      hash
+    end
+    result
   end
 
   def historical_data_for(year)

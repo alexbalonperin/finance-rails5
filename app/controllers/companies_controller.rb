@@ -39,6 +39,9 @@ class CompaniesController < ApplicationController
     def show
         kib = Financials::KeyIndicatorsBuilder.new(@company)
         @ki = kib.build
+        @sp500 = Company.summary(Company::SP500)
+        @dow = Company.summary(Company::DOW)
+        @company_summary = Company.summary(@company.symbol)
     end
 
     # GET /companies/new
