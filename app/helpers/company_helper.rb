@@ -1,5 +1,15 @@
 module CompanyHelper
 
+  def compare_with_index(company_ror, dow_ror, sp500_ror)
+    if company_ror > dow_ror && company_ror > sp500_ror
+      'success'
+    elsif company_ror > dow_ror || company_ror > sp500_ror
+      'warning'
+    elsif company_ror < dow_ror && company_ror < sp500_ror
+      'danger'
+    end
+  end
+
   def percent_func(val, precision = 1)
     return 0.0 if val.nil?
     number_to_percentage(val.to_f * 100, precision: precision)

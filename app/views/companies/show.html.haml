@@ -40,7 +40,17 @@
                 %td= "EOY price"
                 - @company_summary.each do |year, data|
                   %td= number_to_currency(data[:end_price], precision: 2)
-              - [[@company_summary, @company.name], [@sp500, "S&P500"], [@dow, "Dow Jones"]].each do |index, name|
+              %tr
+                %td= raw @company.name
+                - @company_summary.each do |year, data|
+                  - ror = data["annual_rate_of_return_1y"]
+                  - dow_ror = @dow[year]["annual_rate_of_return_1y"]
+                  - sp500_ror = @sp500[year]["annual_rate_of_return_1y"]
+                  - if ror.nil?
+                    %td= ""
+                  - else
+                    %td(class="#{compare_with_index(ror, dow_ror, sp500_ror)}")= number_to_percentage(ror.to_f, precision: 2)
+              - [[@sp500, "S&P500"], [@dow, "Dow Jones"]].each do |index, name|
                 %tr
                   %td= raw name
                   - index.each do |year, data|
