@@ -157,7 +157,7 @@ class Company < ApplicationRecord
       [1, 3, 5, 10].each do |period|
         if hash[year-period].present?
           hash[year]["growth_#{period}y"] = growth(price_at_end_of_year, hash[year-period][:start_price]).to_f * 100
-          hash[year]["annual_rate_of_return_#{period}y"] = annual_rate_of_return(hash[year-period][:start_price], price_at_end_of_year, period).to_f * 100
+          hash[year]["annual_rate_of_return_#{period}y"] = annual_rate_of_return(hash[year-period][:end_price], price_at_end_of_year, period).to_f * 100
         end
       end
       if year > current_year - 11
