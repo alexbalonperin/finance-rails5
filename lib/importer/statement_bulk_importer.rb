@@ -23,7 +23,8 @@ module Importer
           importer.import_statements(form_type)
           filing.imported = true
         rescue => e
-          puts "Coudn't find statements for company #{company.id} - #{form_type} (filing: #{filing.id})"
+          puts "Coudn't find statements for company #{company.id} - #{form_type} (filing: #{filing.id}) (Error: #{e})"
+          puts e.backtrace
           filing.available = false
         end
         if !filing.save
