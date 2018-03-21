@@ -69,6 +69,7 @@ module Importer
       h.each do |date, kfi|
         puts "------- importing data for date #{date}"
         entity = kfi.merge({:year => date.year, :company_id => @company.id, created_at: Time.now, updated_at: Time.now, form_type: form_type})
+        entity = entity.delete_if { |key, _| key.blank? }
         if @dry_run
           puts "Would import: #{entity.inspect}"
           next
