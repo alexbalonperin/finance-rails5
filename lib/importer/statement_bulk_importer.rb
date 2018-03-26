@@ -24,8 +24,6 @@ module Importer
           filing.imported = true
         rescue => e
           puts "Coudn't find statements for company #{company.id} - #{form_type} (filing: #{filing.id}) (Error: #{e})"
-          puts e.backtrace
-          filing.available = false
         end
         if !filing.save
           puts "Couldn't mark report as imported for company #{company.name} (id: #{company.id}, symbol: #{company.symbol})"
