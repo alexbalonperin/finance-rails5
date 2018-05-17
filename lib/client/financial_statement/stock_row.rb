@@ -69,11 +69,7 @@ module Client
           ActiveRecord::Base.connection.reconnect!
           company_batch.each_with_index do |company, j|
             next if company.skip_financials
-            begin
-              download(company, i, j, total, period)
-            rescue
-              Client::Bloomberg.market_status(symbol)
-            end
+            download(company, i, j, total, period)
           end
         end
         ActiveRecord::Base.connection.reconnect!

@@ -35,7 +35,7 @@ module Client
           end
         rescue => e
           puts "Couldn't fetch the #{type} statement for symbol #{symbol}. Error: #{e}"
-          raise e
+          Client::Bloomberg.market_status(symbol)
         end
       end
 

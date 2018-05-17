@@ -27,6 +27,7 @@ module Client
         doc = Nokogiri::HTML(result.body)
         market_status = doc.search(".market-status")[0]
         message = doc.search(".market-status-message")[0]
+        puts "MARKET STATUS"
         puts market_status
         puts message
         return if market_status.nil? || message.nil?
