@@ -13,11 +13,11 @@ class PotentialInvestment < ApplicationRecord
     good_pis, remaining = ok.partition(&:good?)
     bad_pis, not_so_good_pis = remaining.partition(&:bad?)
 
-    [not_so_good_pis, bad_pis, too_young].map do |arr|
+    [good_pis, not_so_good_pis, bad_pis, too_young].map do |arr|
       arr.sort_by do |pi|
         company = pi.company
         proj = company.projections.where("latest and year = '?'", current_year - 1).first
-        [-(proj.projected_value_1y - company.current_price), -pi.eps_5y_annual_compounding_ror, -pi.roe_5y_annual_compounding_ror]
+        [company.current_price / proj.projected_value_1y, -pi.eps_5y_annual_compounding_ror, -pi.roe_5y_annual_compounding_ror]
       end
     end.flatten
   end
@@ -29,12 +29,12 @@ class PotentialInvestment < ApplicationRecord
   def good?
     return false if latest_projection.nil?
     latest_projection.projected_rate_of_return_min_1y > 15 && latest_projection.projected_rate_of_return_worst_1y > 0 &&
-        latest_projection.current_price <= latest_projection.projected_value_1y
+      company.current_price <= latest_projection.projected_value_1y
   end
 
   def bad?
     return true if latest_projection.nil?
-    latest_projection.current_price > latest_projection.projected_value_1y
+    company.current_price > latest_projection.projected_value_1y
   end
 
   def not_so_good?
