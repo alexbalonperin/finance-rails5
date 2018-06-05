@@ -51,6 +51,7 @@ module Client
           ActiveRecord::Base.connection.reconnect!
           report_batch.each_with_index do |report, j|
             company = report.company
+            next unless company.active
             download(company, i, j, total, period)
             report.downloaded = true
             if !report.save
