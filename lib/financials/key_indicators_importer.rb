@@ -23,12 +23,16 @@ module Financials
     def import
       @companies.each_with_index do |company, index|
         puts "(#{index + 1}/#{@companies.size}) Generating KFI for company #{company.name} (id: #{company.id})"
-        kib = KeyIndicatorsBuilder.new(company)
-        ki = kib.build
-        ActiveRecord::Base.transaction do
-          company.latest_key_financial_indicators.update_all(:latest => false)
-          save(ki, company)
-        end
+        update(company)
+      end
+    end
+
+    def update(company)
+      kib = KeyIndicatorsBuilder.new(company)
+      ki = kib.build
+      ActiveRecord::Base.transaction do
+        company.latest_key_financial_indicators.update_all(:latest => false)
+        save(ki, company)
       end
     end
 

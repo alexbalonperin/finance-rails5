@@ -28,6 +28,8 @@ module Importer
         end
         if !filing.save
           puts "Couldn't mark report as imported for company #{company.name} (id: #{company.id}, symbol: #{company.symbol})"
+        else
+          KeyIndicatorsImporter.update(company)
         end
       end
       puts 'Done'
