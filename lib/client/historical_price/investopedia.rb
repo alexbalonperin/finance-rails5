@@ -30,15 +30,19 @@ module Client
           result << OpenStruct.new({
             'symbol': symbol,
             'trade_date': Date.parse(quote["Date"]).to_s,
-            'open': quote["Open"].to_f,
-            'high': quote["High"].to_f,
-            'low': quote["Low"].to_f,
-            'close': quote["Adj. Close"].to_f,
-            'adjusted_close': quote["Adj. Close"].to_f,
-            'volume': quote["Volume"].gsub(/[^\d^\.]/, '').to_i
+            'open': clean_number(quote["Open"]),
+            'high': clean_number(quote["High"]),
+            'low': clean_number(quote["Low"]),
+            'close': clean_number(quote["Adj. Close"]),
+            'adjusted_close': clean_number(quote["Adj. Close"]),
+            'volume': clean_number(quote["Volume"]).to_i
           })
         end
         result
+      end
+
+      def clean_number(input)
+        input.gsub(/[^\d^\.]/, '').to_f
       end
 
     end
