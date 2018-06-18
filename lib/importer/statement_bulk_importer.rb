@@ -29,7 +29,7 @@ module Importer
         if !filing.save
           puts "Couldn't mark report as imported for company #{company.name} (id: #{company.id}, symbol: #{company.symbol})"
         else
-          KeyIndicatorsImporter.update(company)
+          Financials::KeyIndicatorsImporter.new([company]).import
         end
       end
       puts 'Done'
