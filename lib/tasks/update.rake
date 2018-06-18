@@ -19,7 +19,6 @@ namespace :update do
     next if companies.empty?
     batch_size = (companies.size.to_f/number_of_processes).ceil
     Parallel.map(companies.sort.each_slice(batch_size), in_processes: number_of_processes) do |company_batch|
-      ActiveRecord::Base.connection.reconnect!
       company_batch.each_with_index do |company, i|
         puts "#{i+1}: #{company.name} (id: #{company.id}, symbol: #{company.symbol})"
         begin
@@ -39,7 +38,11 @@ namespace :update do
         HistoricalDatum.import(data, on_duplicate_key_update: duplicate_config)
       end
     end
-    ActiveRecord::Base.connection.reconnect!
+    begin
+      ActiveRecord::Base.connection.reconnect!
+    rescue
+      ActiveRecord::Base.connection.reconnect!
+    end
     puts 'Done updating historical data'
   end
 

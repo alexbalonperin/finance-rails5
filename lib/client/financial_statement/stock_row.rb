@@ -48,7 +48,6 @@ module Client
         total = reports.size
         puts "FOUND #{total} #{period} financial reports to download"
         Parallel.map(reports.sort.each_slice(100).with_index, in_processes: 5, progress: "Downloading #{period} financial statements") do |report_batch, i|
-          ActiveRecord::Base.connection.reconnect!
           report_batch.each_with_index do |report, j|
             company = report.company
             next unless company.active
@@ -59,7 +58,11 @@ module Client
             end
           end
         end
-        ActiveRecord::Base.connection.reconnect!
+        begin
+          ActiveRecord::Base.connection.reconnect!
+        rescue
+          ActiveRecord::Base.connection.reconnect!
+        end
       end
 
       def download_all_financials(period = 'MRY')
@@ -67,13 +70,16 @@ module Client
         total = companies.size
         puts "FOUND #{total} #{period} financial reports to download"
         Parallel.map(companies.sort.each_slice(100).with_index, in_processes: 5, progress: "Downloading #{period} financial statements") do |company_batch, i|
-          ActiveRecord::Base.connection.reconnect!
           company_batch.each_with_index do |company, j|
             next if company.skip_financials
             download(company, i, j, total, period)
           end
         end
-        ActiveRecord::Base.connection.reconnect!
+        begin
+          ActiveRecord::Base.connection.reconnect!
+        rescue
+          ActiveRecord::Base.connection.reconnect!
+        end
       end
 
       def download(company, i, j, total, period)
