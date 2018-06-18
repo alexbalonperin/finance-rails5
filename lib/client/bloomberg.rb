@@ -6,7 +6,7 @@ module Client
       BASE_URL = "https://www.bloomberg.com/quote"
       COUNTRY = "US"
       Tor.configure do |config|
-         config.port = 9150
+         config.port = 9050
       end
 
       def self.check_all
