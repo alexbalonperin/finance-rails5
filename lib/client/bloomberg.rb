@@ -30,7 +30,10 @@ module Client
         puts "MARKET STATUS"
         puts market_status
         puts message
-        return if market_status.nil? || message.nil?
+        if market_status.nil? || message.nil?
+          update_symbol(symbol) if symbol.include?("$")
+          return
+        end
         status = market_status.text.strip.downcase
         puts status
         if status == "acquired"
@@ -47,6 +50,16 @@ module Client
       rescue => e
         puts "ERROR: #{e}"
         puts e.backtrace
+      end
+
+      def self.update_symbol(symbol)
+          company = Company.find_by_symbol(symbol)
+          company.symbol = company.symbol.gsub('$', '')
+          if !company.save
+            puts "Couldn't update symbol for company #{company.name} (id: #{company.id}, symbol: #{symbol})"
+          else
+            puts "Company #{company.name} symbol was changed from #{symbol} to #{company.symbol}"
+          end
       end
 
       def self.delisting(delisted_symbol)
