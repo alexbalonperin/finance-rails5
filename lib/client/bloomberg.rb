@@ -5,9 +5,6 @@ module Client
   class Bloomberg
       BASE_URL = "https://www.bloomberg.com/quote"
       COUNTRY = "US"
-      Tor.configure do |config|
-         config.port = 9050
-      end
 
       def self.check_all
         companies = Company.active
@@ -23,8 +20,7 @@ module Client
 
       def self.market_status(symbol)
         url = "#{BASE_URL}/#{URI.escape(symbol)}:#{COUNTRY}"
-        result = Tor::HTTP.get(URI(url))
-        doc = Nokogiri::HTML(result.body)
+        doc = Nokogiri::HTML(open(url))
         market_status = doc.search(".market-status")[0]
         message = doc.search(".market-status-message")[0]
         puts "MARKET STATUS"
